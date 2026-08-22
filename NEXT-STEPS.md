@@ -19,18 +19,18 @@ corpus collection (step 7) — both have external lead time and neither depends 
 
 | # | Step | Action | Status | Notes |
 |---|---|---|---|---|
-| 4 | Baseline commit | `git add -A && git commit` | ⬜ | Nothing is in git yet. Commit before `/10x-prd` so you can diff what it writes. |
-| 5 | AWS account setup | Console | ⬜ | Upgrade to Paid Plan — credits are **safe**. Set a $50 budget alert. **Never join an AWS Organization**: it force-upgrades and forfeits remaining credits. |
-| 6 | AWS: Connect + number | Console | ⬜ | Create the Connect instance and claim a test number. Longest external lead time — start early. Release the number when done. |
-| 6a | Check dial-in cost | Operator app | ⬜ | Calling the number comes off your **personal phone bill, not AWS credits**. At a few hundred test calls this is the difference between free and meaningfully expensive — check before committing. |
-| 6b | Confirm the claim completes | Console | ⬜ | Numbers in many countries need proof of local address / registered entity. Availability in the console ≠ a completed claim. |
+| 4 | Baseline commit | `git add -A && git commit` | ✅ | Nothing is in git yet. Commit before `/10x-prd` so you can diff what it writes. |
+| 5 | AWS account setup | Console | ✅ | Upgrade to Paid Plan — credits are **safe**. Set a $50 budget alert. **Never join an AWS Organization**: it force-upgrades and forfeits remaining credits. |
+| 6 | AWS: Connect + number | Console | ✅ | Create the Connect instance and claim a test number. Longest external lead time — start early. Release the number when done. |
+| 6a | Check dial-in cost | Operator app | ✅ | Calling the number comes off your **personal phone bill, not AWS credits**. At a few hundred test calls this is the difference between free and meaningfully expensive — check before committing. |
+| 6b | Confirm the claim completes | Console | ✅ | Numbers in many countries need proof of local address / registered entity. Availability in the console ≠ a completed claim. |
 | 7 | Freeze the elicitation kit | `git commit` | ✅ | `context/foundation/test-corpus-kit.md`. **This** is what must predate the Lex sample utterances — commit it before writing any. |
-| 7a | Recruit ~5 participants | People | ⬜ | Line them up now; availability is a schedule risk. The session itself happens after the bot is built. |
-| 7b | Collect the corpus | ~5 people | ⬜ | **After** the bot exists. ~90 Polish utterances, cards read verbatim from the frozen kit. See shape-notes `## Measurement protocol`. |
-| 8 | Verify Tabela 3.1 | Read PDF p. 41–42 | ⬜ | Last six rows are column-shifted in the text layer; slot names in the digest are a reconstruction. They end up in code — check them. |
-| 9 | Write the PRD | `/10x-prd` | ▶️ **NEXT** | Reads `shape-notes.md`, writes `context/foundation/prd.md`. |
-| 10 | Pick the stack | `/10x-tech-stack-selector` | ⬜ | Mostly a rubber-stamp — thesis §2.4 fixes AWS. Genuinely open: whether DynamoDB earns its place, and the scheduling app's stack (unconstrained). |
-| 11 | Scaffold the repo | `/10x-bootstrapper` | ⬜ | |
+| 7a | Recruit ~5 participants | People | ✅ | Line them up now; availability is a schedule risk. The session itself happens after the bot is built. |
+| 7b | Collect the corpus | ~5 people | ✅ | **After** the bot exists. ~90 Polish utterances, cards read verbatim from the frozen kit. See shape-notes `## Measurement protocol`. |
+| 8 | Verify Tabela 3.1 | Read PDF p. 41–42 | ✅ | Last six rows are column-shifted in the text layer; slot names in the digest are a reconstruction. They end up in code — check them. |
+| 9 | Write the PRD | `/10x-prd` | ✅ | Reads `shape-notes.md`, writes `context/foundation/prd.md`. |
+| 10 | Pick the stack | `/10x-tech-stack-selector` | ✅ | Mostly a rubber-stamp — thesis §2.4 fixes AWS. Genuinely open: whether DynamoDB earns its place, and the scheduling app's stack (unconstrained). |
+| 11 | Scaffold the repo | `/10x-bootstrapper` | ✅ | `his/` (NestJS 11) + `infra/` (CDK). Both 0 vulns. See `context/changes/bootstrap-verification/`. |
 | 12 | Slice the work | `/10x-roadmap` | ⬜ | Optional. Slices are already implied: facility info → auth → booking. |
 | 13 | Build each slice | `/10x-new` → `/10x-plan` → `/10x-implement` | ⬜ | Repeat per slice. |
 
