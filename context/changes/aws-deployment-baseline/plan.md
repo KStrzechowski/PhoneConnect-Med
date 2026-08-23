@@ -423,11 +423,11 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Automated
 
-- [x] 1.1 CDK synthesises
-- [x] 1.2 Synthesised template contains no NAT gateway
-- [x] 1.3 Mock builds and its tests pass
-- [x] 1.4 Mock lints
-- [x] 1.5 Image builds
+- [x] 1.1 CDK synthesises — b9df546
+- [x] 1.2 Synthesised template contains no NAT gateway — b9df546
+- [x] 1.3 Mock builds and its tests pass — b9df546
+- [x] 1.4 Mock lints — b9df546
+- [x] 1.5 Image builds — b9df546
 
 #### Manual
 
@@ -441,9 +441,9 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Automated
 
-- [ ] 2.1 CDK synthesises
-- [ ] 2.2 Function code typechecks
-- [ ] 2.3 Infra tests pass
+- [x] 2.1 CDK synthesises
+- [x] 2.2 Function code typechecks
+- [x] 2.3 Infra tests pass
 
 #### Manual
 
