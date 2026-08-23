@@ -27,7 +27,7 @@ jobs:
 
       - name: Build and push the image
         env:
-          IMAGE: ${{ steps.ecr.outputs.registry }}/phoneconnect-his
+          IMAGE: ${{ steps.ecr.outputs.registry }}/phoneconnect-med-his
         run: |
           docker build -t "$IMAGE:$GITHUB_SHA" -t "$IMAGE:latest" his
           docker push "$IMAGE:$GITHUB_SHA"
@@ -52,7 +52,7 @@ jobs:
       - name: Restart the container
         env:
           REGISTRY: ${{ steps.ecr.outputs.registry }}
-          IMAGE: ${{ steps.ecr.outputs.registry }}/phoneconnect-his:${{ github.sha }}
+          IMAGE: ${{ steps.ecr.outputs.registry }}/phoneconnect-med-his:${{ github.sha }}
         run: |
           jq -n --arg registry "$REGISTRY" --arg image "$IMAGE" --arg region "$AWS_REGION" '{
             commands: [
