@@ -120,7 +120,8 @@ the number**: no bot, no contact flow, no deployed function.
   down and recreated.
 - **Change ID:** `aws-deployment-baseline`
 - **PRD refs:** NFR (a caller hears the start of a response within 2 seconds at p95),
-  §Non-Goals → "Automated delivery pipeline" (so: deploy by hand, no CI)
+  §Non-Goals → "Automated delivery pipeline" (amended 2026-08-23: application delivery is
+  by CI, infrastructure by hand)
 - **Unlocks:** S-01 — nothing user-facing can be built or verified until a deployed round trip
   exists. Also establishes the verification path every later slice uses to check itself
   end-to-end, and the environment in which the "stand-in must not dominate measured latency"
@@ -498,8 +499,11 @@ the number**: no bot, no contact flow, no deployed function.
 - **Scale and availability demonstration.** Why parked: PRD §Non-Goals. No load testing, no
   capacity increases. The p95 latency figure is the only performance number this project
   produces.
-- **Automated delivery pipeline.** Why parked: PRD §Non-Goals. Not required for a single-author,
-  one-week experiment; deployment is by hand.
+- ~~**Automated delivery pipeline.**~~ **Unparked 2026-08-23**, built in F-01
+  (`aws-deployment-baseline`). PRD §Non-Goals ruled it out while `tech-stack.md` already
+  declared GitHub Actions with auto-deploy-on-merge; the PRD entry has been amended. A push
+  to `main` touching the stand-in system rebuilds and restarts it. Infrastructure is still
+  deployed by hand.
 - **Contact flows as infrastructure-as-code.** Why parked: author's decision, recorded in
   §Baseline. Flows are hand-built in the console and not committed. Consequence to accept
   knowingly: this work does not accumulate as reviewable code and must be rebuilt by hand if the

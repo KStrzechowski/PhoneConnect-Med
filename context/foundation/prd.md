@@ -378,7 +378,12 @@ Ruled out deliberately, so they cannot creep back into a one-week build.
 - **Scale and availability demonstration.** No load testing, no capacity-limit increases, no
   1000-concurrent or 99.9% demonstration. Argued from the platform provider's published model;
   the p95 latency figure is the only performance number this project actually produces.
-- **Automated delivery pipeline.** Not required for a single-author, one-week experiment.
+- ~~**Automated delivery pipeline.**~~ **Reversed 2026-08-23** by F-01
+  (`aws-deployment-baseline`). Originally ruled out as unnecessary for a single-author,
+  one-week experiment. This entry contradicted `tech-stack.md` from the start, which had
+  already declared `ci_provider: github-actions` and `ci_default_flow: auto-deploy-on-merge`.
+  A push to `main` touching the stand-in system now rebuilds its image and restarts it on the
+  instance. Infrastructure is still deployed by hand with `cdk deploy`.
 
 **Not ruled out:** using a production-appropriate local phone number. A convenience test number
 was selected as a de-risking move because a local number requires regulatory documentation and
