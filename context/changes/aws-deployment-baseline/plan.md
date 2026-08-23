@@ -457,9 +457,9 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Automated
 
-- [x] 3.1 Workflow file is valid YAML
-- [x] 3.2 CDK synthesises
-- [x] 3.3 Trust policy is branch-scoped
+- [x] 3.1 Workflow file is valid YAML — 05319d1
+- [x] 3.2 CDK synthesises — 05319d1
+- [x] 3.3 Trust policy is branch-scoped — 05319d1
 
 #### Manual
 
@@ -473,8 +473,8 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Automated
 
-- [ ] 4.1 CDK synthesises with the context value
-- [ ] 4.2 Template grants invoke to the telephony service principal
+- [x] 4.1 CDK synthesises with the context value
+- [x] 4.2 Template grants invoke to the telephony service principal
 
 #### Manual
 
