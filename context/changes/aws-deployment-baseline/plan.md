@@ -473,8 +473,8 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Automated
 
-- [x] 4.1 CDK synthesises with the context value
-- [x] 4.2 Template grants invoke to the telephony service principal
+- [x] 4.1 CDK synthesises with the context value — 32cd788
+- [x] 4.2 Template grants invoke to the telephony service principal — 32cd788
 
 #### Manual
 
