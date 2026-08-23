@@ -47,7 +47,7 @@ that produces evidence rather than infrastructure.
 
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
-| F-01 | `aws-deployment-baseline` | (foundation) a deployed, callable path from telephony to the mock exists | — | NFR (p95 < 2s), §Non-Goals | ready |
+| F-01 | `aws-deployment-baseline` | (foundation) a deployed, callable path from telephony to the mock exists | — | NFR (p95 < 2s), §Non-Goals | in-progress |
 | F-02 | `call-measurement-substrate` | (foundation) every call and request emits a durable record | F-01 | FR-008, NFR (p95 < 2s), NFR (per-call record) | proposed |
 | F-03 | `lex-keypad-capture-spike` | (foundation) in-conversation keypad capture is confirmed or refuted | F-01 | FR-005, §Access Control L2 | proposed |
 | S-01 | `facility-info-keypad` | get address and opening hours by pressing a key, and always reach a human | F-01, F-02 | FR-009, US-02, FR-001, FR-002, FR-003, FR-006, FR-007, FR-008 | proposed |
@@ -133,7 +133,7 @@ the number**: no bot, no contact flow, no deployed function.
   depends on it. Kept deliberately minimal — one function and the mock, deployed and reachable.
   The failure mode to avoid is letting this expand into "finish the infrastructure": if it grows
   past a reachable round trip, it is eating the week that belongs to S-05.
-- **Status:** ready
+- **Status:** in-progress
 
 ### F-02: Per-call and per-request measurement substrate
 
