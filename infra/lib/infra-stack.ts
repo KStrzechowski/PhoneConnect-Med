@@ -5,6 +5,7 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import * as cr from 'aws-cdk-lib/custom-resources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
@@ -77,6 +78,45 @@ export class InfraStack extends cdk.Stack {
         retention: logs.RetentionDays.TWO_WEEKS,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
       }),
+    });
+
+    const connectInstanceArn: string | undefined = this.node.tryGetContext('connectInstanceArn');
+    if (!connectInstanceArn) {
+      throw new Error(
+        'Missing context value connectInstanceArn. Pass the Connect instance ARN, ' +
+          'for example: cdk synth -c connectInstanceArn=arn:aws:connect:eu-central-1:<account>:instance/<id>',
+      );
+    }
+
+    connectHealth.addPermission('ConnectInvoke', {
+      principal: new iam.ServicePrincipal('connect.amazonaws.com'),
+      sourceArn: connectInstanceArn,
+    });
+
+    const connectInstanceId = cdk.Arn.split(
+      connectInstanceArn,
+      cdk.ArnFormat.SLASH_RESOURCE_NAME,
+    ).resourceName;
+
+    new cr.AwsCustomResource(this, 'ConnectFunctionAssociation', {
+      onCreate: {
+        service: 'connect',
+        action: 'AssociateLambdaFunction',
+        parameters: { InstanceId: connectInstanceId, FunctionArn: connectHealth.functionArn },
+        physicalResourceId: cr.PhysicalResourceId.of(`${connectInstanceId}-connect-health`),
+      },
+      onDelete: {
+        service: 'connect',
+        action: 'DisassociateLambdaFunction',
+        parameters: { InstanceId: connectInstanceId, FunctionArn: connectHealth.functionArn },
+      },
+      policy: cr.AwsCustomResourcePolicy.fromStatements([
+        new iam.PolicyStatement({
+          actions: ['connect:AssociateLambdaFunction', 'connect:DisassociateLambdaFunction'],
+          resources: [connectInstanceArn, `${connectInstanceArn}/*`],
+        }),
+      ]),
+      installLatestAwsSdk: false,
     });
 
     const deployRole = new iam.Role(this, 'DeployRole', {

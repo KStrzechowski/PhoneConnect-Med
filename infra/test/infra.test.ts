@@ -5,7 +5,13 @@ import { InfraStack } from '../lib/infra-stack';
 let template: Template;
 
 beforeAll(() => {
-  const stack = new InfraStack(new cdk.App(), 'TestStack', {
+  const app = new cdk.App({
+    context: {
+      connectInstanceArn:
+        'arn:aws:connect:eu-central-1:123456789012:instance/11111111-2222-3333-4444-555555555555',
+    },
+  });
+  const stack = new InfraStack(app, 'TestStack', {
     env: { account: '123456789012', region: 'eu-central-1' },
   });
   template = Template.fromStack(stack);
@@ -51,4 +57,16 @@ test('the deploy role trusts only this repository on main', () => {
       ]),
     },
   });
+});
+
+test('the telephony instance may invoke the function', () => {
+  template.hasResourceProperties('AWS::Lambda::Permission', {
+    Action: 'lambda:InvokeFunction',
+    Principal: 'connect.amazonaws.com',
+    SourceArn: 'arn:aws:connect:eu-central-1:123456789012:instance/11111111-2222-3333-4444-555555555555',
+  });
+});
+
+test('synth fails without the telephony instance ARN', () => {
+  expect(() => new InfraStack(new cdk.App(), 'NoContext')).toThrow(/connectInstanceArn/);
 });
