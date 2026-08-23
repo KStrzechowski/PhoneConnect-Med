@@ -441,9 +441,9 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Automated
 
-- [x] 2.1 CDK synthesises
-- [x] 2.2 Function code typechecks
-- [x] 2.3 Infra tests pass
+- [x] 2.1 CDK synthesises — 34dcbc6
+- [x] 2.2 Function code typechecks — 34dcbc6
+- [x] 2.3 Infra tests pass — 34dcbc6
 
 #### Manual
 
@@ -457,9 +457,9 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Automated
 
-- [ ] 3.1 Workflow file is valid YAML
-- [ ] 3.2 CDK synthesises
-- [ ] 3.3 Trust policy is branch-scoped
+- [x] 3.1 Workflow file is valid YAML
+- [x] 3.2 CDK synthesises
+- [x] 3.3 Trust policy is branch-scoped
 
 #### Manual
 

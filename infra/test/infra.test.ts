@@ -34,3 +34,21 @@ test('the function is pinned to a runtime and a sub-budget timeout', () => {
     Timeout: 2,
   });
 });
+
+test('the deploy role trusts only this repository on main', () => {
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'sts:AssumeRoleWithWebIdentity',
+          Condition: {
+            StringEquals: {
+              'token.actions.githubusercontent.com:sub':
+                'repo:KStrzechowski/PhoneConnect-Med:ref:refs/heads/main',
+            },
+          },
+        }),
+      ]),
+    },
+  });
+});
