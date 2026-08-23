@@ -28,7 +28,7 @@ export class InfraStack extends cdk.Stack {
     mockSecurityGroup.addIngressRule(functionSecurityGroup, ec2.Port.tcp(mockPort));
 
     const images = new ecr.Repository(this, 'MockImages', {
-      repositoryName: 'phoneconnect-his',
+      repositoryName: 'phoneconnect-med-his',
       lifecycleRules: [{ maxImageCount: 5 }],
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       emptyOnDelete: true,

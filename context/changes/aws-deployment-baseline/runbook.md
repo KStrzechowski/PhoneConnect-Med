@@ -110,7 +110,7 @@ push.
 **Row 3.5** — the image is there under both tags:
 
 ```bash
-aws ecr describe-images --repository-name phoneconnect-his \
+aws ecr describe-images --repository-name phoneconnect-med-his \
   --query 'imageDetails[].imageTags'
 ```
 
