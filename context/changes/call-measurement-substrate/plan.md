@@ -394,11 +394,11 @@ keeping — nothing has been deployed — so it is dropped rather than migrated.
 
 #### Automated
 
-- [x] 2.1 Wrapper tests pass — core fields, duration, error outcome and re-raise
-- [x] 2.2 Handler tests pass and its response shape is unchanged
-- [x] 2.3 A handler test asserts one invocation line is written per call
-- [x] 2.4 CDK synthesises
-- [x] 2.5 Template asserts the log group retains for 90 days
+- [x] 2.1 Wrapper tests pass — core fields, duration, error outcome and re-raise — a883bb8
+- [x] 2.2 Handler tests pass and its response shape is unchanged — a883bb8
+- [x] 2.3 A handler test asserts one invocation line is written per call — a883bb8
+- [x] 2.4 CDK synthesises — a883bb8
+- [x] 2.5 Template asserts the log group retains for 90 days — a883bb8
 
 #### Manual
 
