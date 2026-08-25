@@ -25,10 +25,13 @@ test('measurement logs outlive the write-up window', () => {
   template.hasResourceProperties('AWS::Logs::LogGroup', { RetentionInDays: 90 });
 });
 
-test('every handler writes to the one measurement log group', () => {
+test('every handler writes to the one measurement log group, as parseable JSON', () => {
   template.hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs24.x',
-    LoggingConfig: { LogGroup: { Ref: Match.stringLikeRegexp('Measurements') } },
+    LoggingConfig: {
+      LogGroup: { Ref: Match.stringLikeRegexp('Measurements') },
+      LogFormat: 'JSON',
+    },
   });
 });
 

@@ -44,7 +44,7 @@ export const measured =
       throw error;
     } finally {
       record.durationMs = Date.now() - started;
-      console.log(JSON.stringify(record));
+      console.log(record);
     }
   };
 
