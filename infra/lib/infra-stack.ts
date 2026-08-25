@@ -62,6 +62,11 @@ export class InfraStack extends cdk.Stack {
       userData,
     });
 
+    const measurements = new logs.LogGroup(this, 'Measurements', {
+      retention: logs.RetentionDays.THREE_MONTHS,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
     const repoRoot = path.join(__dirname, '../..');
     const connectHealth = new NodejsFunction(this, 'ConnectHealth', {
       entry: path.join(repoRoot, 'lambdas/connect-health/index.ts'),
@@ -74,10 +79,7 @@ export class InfraStack extends cdk.Stack {
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
       timeout: cdk.Duration.seconds(2),
-      logGroup: new logs.LogGroup(this, 'ConnectHealthLogs', {
-        retention: logs.RetentionDays.TWO_WEEKS,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-      }),
+      logGroup: measurements,
     });
 
     const connectInstanceArn: string | undefined = this.node.tryGetContext('connectInstanceArn');
@@ -175,5 +177,6 @@ export class InfraStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'MockPrivateIp', { value: instance.instancePrivateIp });
     new cdk.CfnOutput(this, 'ConnectHealthFunctionName', { value: connectHealth.functionName });
     new cdk.CfnOutput(this, 'DeployRoleArn', { value: deployRole.roleArn });
+    new cdk.CfnOutput(this, 'MeasurementLogGroup', { value: measurements.logGroupName });
   }
 }

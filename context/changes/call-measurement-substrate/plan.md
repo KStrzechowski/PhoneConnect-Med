@@ -380,25 +380,25 @@ keeping — nothing has been deployed — so it is dropped rather than migrated.
 
 #### Automated
 
-- [x] 1.1 Root install succeeds and links workspace members
-- [x] 1.2 Handler tests still pass
-- [x] 1.3 CDK synthesises
-- [x] 1.4 Infra tests pass
-- [x] 1.5 The function bundles without resolution errors during synth
+- [x] 1.1 Root install succeeds and links workspace members — 1c6e7dc
+- [x] 1.2 Handler tests still pass — 1c6e7dc
+- [x] 1.3 CDK synthesises — 1c6e7dc
+- [x] 1.4 Infra tests pass — 1c6e7dc
+- [x] 1.5 The function bundles without resolution errors during synth — 1c6e7dc
 
 #### Manual
 
-- [x] 1.6 The synthesised function asset is functionally unchanged from before the migration
+- [x] 1.6 The synthesised function asset is functionally unchanged from before the migration — 1c6e7dc
 
 ### Phase 2: The measure module and its wrapper
 
 #### Automated
 
-- [ ] 2.1 Wrapper tests pass — core fields, duration, error outcome and re-raise
-- [ ] 2.2 Handler tests pass and its response shape is unchanged
-- [ ] 2.3 A handler test asserts one invocation line is written per call
-- [ ] 2.4 CDK synthesises
-- [ ] 2.5 Template asserts the log group retains for 90 days
+- [x] 2.1 Wrapper tests pass — core fields, duration, error outcome and re-raise
+- [x] 2.2 Handler tests pass and its response shape is unchanged
+- [x] 2.3 A handler test asserts one invocation line is written per call
+- [x] 2.4 CDK synthesises
+- [x] 2.5 Template asserts the log group retains for 90 days
 
 #### Manual
 

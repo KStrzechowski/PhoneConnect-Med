@@ -21,8 +21,15 @@ test('the network has no NAT gateway', () => {
   template.resourceCountIs('AWS::EC2::NatGateway', 0);
 });
 
-test('function logs expire', () => {
-  template.hasResourceProperties('AWS::Logs::LogGroup', { RetentionInDays: 14 });
+test('measurement logs outlive the write-up window', () => {
+  template.hasResourceProperties('AWS::Logs::LogGroup', { RetentionInDays: 90 });
+});
+
+test('every handler writes to the one measurement log group', () => {
+  template.hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs24.x',
+    LoggingConfig: { LogGroup: { Ref: Match.stringLikeRegexp('Measurements') } },
+  });
 });
 
 test('the mock is reachable only from the function security group', () => {
