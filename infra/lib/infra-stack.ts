@@ -62,11 +62,11 @@ export class InfraStack extends cdk.Stack {
       userData,
     });
 
-    const connectHealthDir = path.join(__dirname, '../../lambdas/connect-health');
+    const repoRoot = path.join(__dirname, '../..');
     const connectHealth = new NodejsFunction(this, 'ConnectHealth', {
-      entry: path.join(connectHealthDir, 'index.ts'),
-      projectRoot: connectHealthDir,
-      depsLockFilePath: path.join(connectHealthDir, 'package-lock.json'),
+      entry: path.join(repoRoot, 'lambdas/connect-health/index.ts'),
+      projectRoot: repoRoot,
+      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
       runtime: lambda.Runtime.NODEJS_24_X,
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
