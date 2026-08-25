@@ -3,7 +3,7 @@ project: "PhoneConnect Med"
 version: 1
 status: draft
 created: 2026-08-23
-updated: 2026-08-23
+updated: 2026-08-24
 prd_version: 1
 main_goal: market-feedback
 top_blocker: time
@@ -48,7 +48,7 @@ that produces evidence rather than infrastructure.
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
 | F-01 | `aws-deployment-baseline` | (foundation) a deployed, callable path from telephony to the mock exists | — | NFR (p95 < 2s), §Non-Goals | in-progress |
-| F-02 | `call-measurement-substrate` | (foundation) every call and request emits a durable record | F-01 | FR-008, NFR (p95 < 2s), NFR (per-call record) | proposed |
+| F-02 | `call-measurement-substrate` | (foundation) every call and request emits a durable record | F-01 | FR-008, NFR (p95 < 2s), NFR (per-call record) | in-progress |
 | F-03 | `lex-keypad-capture-spike` | (foundation) in-conversation keypad capture is confirmed or refuted | F-01 | FR-005, §Access Control L2 | proposed |
 | S-01 | `facility-info-keypad` | get address and opening hours by pressing a key, and always reach a human | F-01, F-02 | FR-009, US-02, FR-001, FR-002, FR-003, FR-006, FR-007, FR-008 | proposed |
 | S-02 | `facility-info-speech` | get the same answer by saying what they want, no menu | S-01 | FR-009, US-01, FR-001, FR-003, FR-006, FR-008 | proposed |
@@ -157,7 +157,7 @@ the number**: no bot, no contact flow, no deployed function.
   measurement after the fact is the specific failure this ordering prevents — data from before
   the retrofit would not be comparable. Scope cap: an emission contract and a destination, not a
   dashboard and not a reporting layer.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### F-03: In-conversation keypad capture confirmed
 
@@ -252,17 +252,46 @@ the number**: no bot, no contact flow, no deployed function.
   PESEL and phone number that match, then a code texted to that number.
 - **Change ID:** `otp-authentication-fallback`
 - **PRD refs:** FR-005, §Access Control → Layer 2
-- **Prerequisites:** S-03
+- **Prerequisites:** S-03; SMS production access granted on the account (see Blockers)
 - **Parallel with:** S-05, S-06
-- **Blockers:** —
+- **Blockers:**
+  - **SMS production access.** New accounts sit in the messaging sandbox: a **$1.00/month** SMS
+    spend cap and sending only to **up to 10 pre-verified destination numbers**, each verified by
+    a code the recipient reads back. Leaving the sandbox is a support case (Service Quotas → *SMS
+    Production Access*, use case **One Time Password**), answered within about 24 hours. File it
+    **before** the week this slice is built, not during it. Poland itself needs **no sender-ID
+    registration** — the country table lists sender IDs as supported with no registration
+    footnote, unlike the UK, Ireland or India — so this is the only messaging gate.
 - **Unknowns:**
-  - Does sending a text message from the telephony platform to a Polish mobile number work on
-    the current account, and what does each message cost? — Owner: user. Block: no.
-- **Risk:** Deferred past the north star deliberately. It adds an outbound-messaging dependency
-  and a cost line without adding any comparison evidence — the code is entered on the keypad in
-  both variants, so it is symmetric and measures nothing. It matters for the write-up's
-  completeness, not for the hypothesis. If the week runs short this is the second thing to drop,
-  after S-12.
+  - What does each message to a Polish mobile cost? — Owner: user. Block: no. Order of magnitude
+    is cents; the sandbox's $1/month cap binds long before per-message price does.
+- **Risk:** Deferred past the north star deliberately: the code is entered on the keypad in both
+  variants, so it is symmetric and measures nothing. **But it is no longer merely optional.**
+  S-03's caller-ID shortcut only authenticates a caller whose number already sits on a seeded
+  patient record — so demonstrating the authenticated half of the system to someone who walked
+  into the room (a supervisor, an examiner) requires either their mobile number in advance or
+  this slice. S-04 is what makes the authenticated path demonstrable to a stranger. Still
+  sequenced after S-03; no longer the second thing to drop.
+- **Demo affordance — test accounts with a fixed code.** Seeded patients carry a flag; for a
+  flagged patient the expected one-time code is a constant handed to testers in advance, and
+  nothing is sent. Chosen over skipping the OTP stage entirely because the stage's **turn count
+  and prompt sequence stay identical to the real path**, so demo sessions do not silently
+  under-report the authenticated path's cost in either variant. Three constraints: the flag is
+  checked in the **shared layer, never in a contact flow** (L-03); it is **data on the seeded
+  record**, not a hardcoded list in a handler; and F-02's per-call record must carry **which
+  auth path was taken** — caller-ID, real code, or demo — so demo sessions can be excluded from
+  absolute figures. Residual limitation to state in the write-up: a tester who already knows the
+  code skips the delivery wait, so demo sessions understate **elapsed** handling time. The
+  A-vs-B comparison is unaffected (the stage is identical in both variants, so the offset
+  cancels) and NFR-12 is unaffected (the wait is caller-side, not system response time).
+  Standing rule: **demo accounts are a demo affordance, not a measurement path.** Record as a
+  deliberate deviation from the source thesis when this slice is planned, alongside the
+  caller-ID shortcut and the two-step slot presentation.
+- **Implementation note — network position.** The handler that sends the message must **not** be
+  attached to the VPC. F-01 chose `natGateways: 0` with no interface endpoints; an SMS send from
+  inside that VPC would force an interface endpoint (~$7.30/mo) or a NAT gateway (~$33/mo) and
+  undo that decision. Split by network need: pair verification stays VPC-attached to reach the
+  mock, sending does not need the VPC at all.
 - **Status:** proposed
 
 ### S-05: Booking a visit, both variants — **north star**
