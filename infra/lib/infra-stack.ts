@@ -80,6 +80,7 @@ export class InfraStack extends cdk.Stack {
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
       timeout: cdk.Duration.seconds(2),
       logGroup: measurements,
+      loggingFormat: lambda.LoggingFormat.JSON,
     });
 
     const connectInstanceArn: string | undefined = this.node.tryGetContext('connectInstanceArn');

@@ -2,13 +2,14 @@ import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { handler } from './index.ts';
+import type { InvocationRecord } from '@pcm/measure';
 
 const sampleEvent = JSON.parse(readFileSync(new URL('./event.sample.json', import.meta.url), 'utf8'));
 
 const captureRecords = () => {
-  const lines: string[] = [];
-  mock.method(console, 'log', (line: string) => void lines.push(line));
-  return () => lines.map((line) => JSON.parse(line)).filter((record) => record.kind === 'invocation');
+  const logged: InvocationRecord[] = [];
+  mock.method(console, 'log', (record: InvocationRecord) => void logged.push(record));
+  return () => logged.filter((record) => record.kind === 'invocation');
 };
 
 test('returns the mock health payload as a flat string map', async () => {
@@ -46,7 +47,7 @@ test('emits exactly one invocation record, carrying the contact id', async () =>
   assert.equal(record.contactId, sampleEvent.Details.ContactData.ContactId);
   assert.equal(record.handler, 'connect-health');
   assert.equal(record.outcome, 'ok');
-  assert.ok(record.downstreamMs <= record.durationMs);
+  assert.ok(record.downstreamMs !== undefined && record.downstreamMs <= record.durationMs);
 });
 
 test('an unreachable mock still emits a record, marked as a failure', async () => {
@@ -59,5 +60,5 @@ test('an unreachable mock still emits a record, marked as a failure', async () =
 
   const [record] = records();
   assert.equal(record.outcome, 'error');
-  assert.match(record.error, /ECONNREFUSED/);
+  assert.match(String(record.error), /ECONNREFUSED/);
 });
