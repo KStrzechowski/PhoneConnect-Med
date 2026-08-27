@@ -62,16 +62,20 @@ contact flow did not pass `variant`.
 filter message.kind = 'invocation'
 | stats count(*) as n,
         pct(message.durationMs, 95) as p95,
-        pct(message.downstreamMs, 95) as downstreamP95,
-        sum(ispresent(message.variant) ? 0 : 1) as missingVariant
+        pct(message.downstreamMs, 95) as downstreamP95
   by message.variant
 ```
 
 `downstreamP95` is what discharges the PRD guardrail that the stand-in must not dominate measured
 latency: it is the share of `p95` spent waiting on the mock.
 
-Records with no `variant` group into their own row. `missingVariant` restates that row's `n`
-explicitly so the gap is visible without reading the grouping.
+Records with no `variant` group into their own row, identifiable by having no `message.variant`
+value in that row — that row's own `n` is the missing count directly. An earlier version of this
+query added a derived `missingVariant` column computed as `count(*) - count(message.variant)`.
+That column is gone: Logs Insights omits an aggregate over an entirely-absent field from a row's
+JSON rather than returning `0`, but the console still renders the missing cell as `0` in its
+table view — showing `0` on precisely the row meant to warn that records are missing a variant.
+Reading the no-variant row's own `n` has no such failure mode.
 
 Demo sessions are excluded from absolute figures by adding `and message.authPath != 'demo'` to the
 filter, once S-04 starts setting it.

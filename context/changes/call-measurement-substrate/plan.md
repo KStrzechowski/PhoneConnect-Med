@@ -274,8 +274,7 @@ fields @timestamp, handler, outcome, durationMs, downstreamMs, variant, authPath
 filter kind = 'invocation'
 | stats count(*) as n,
         pct(durationMs, 95) as p95,
-        pct(downstreamMs, 95) as downstreamP95,
-        sum(ispresent(variant) ? 0 : 1) as missingVariant
+        pct(downstreamMs, 95) as downstreamP95
   by variant
 ```
 
@@ -310,7 +309,8 @@ the requirement survives outside this plan. Flows are not in IaC and nothing els
 
 - The reconstruct query returns the invocation from Phase 2 when given its contact id
 - The p95 query returns a row with a non-zero count
-- Deliberately invoking without a `variant` parameter increments `missingVariant`
+- Deliberately invoking without a `variant` parameter shows up as its own row with no `variant`
+  value, whose `n` is the missing count
 - The export command produces a file containing the queried records
 - Path taken, outcome and duration are all reconstructable from a single call's records, per
   FR-008
@@ -418,6 +418,6 @@ keeping — nothing has been deployed — so it is dropped rather than migrated.
 
 - [ ] 3.2 The reconstruct query returns the Phase 2 invocation by contact id
 - [ ] 3.3 The p95 query returns a row with a non-zero count
-- [ ] 3.4 Invoking without a `variant` parameter increments `missingVariant`
+- [ ] 3.4 Invoking without a `variant` parameter shows up as its own row with no `variant` value, whose `n` is the missing count
 - [ ] 3.5 The export command produces a file containing the queried records
 - [ ] 3.6 Path, outcome and duration are reconstructable from one call's records, per FR-008
