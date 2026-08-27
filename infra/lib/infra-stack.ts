@@ -5,12 +5,12 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as cr from 'aws-cdk-lib/custom-resources';
+import * as connect from 'aws-cdk-lib/aws-connect';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
 const mockPort = 3000;
-const githubRepository = 'KStrzechowski/PhoneConnect-Med';
+const githubRepository = 'KStrzechowski@57865141/PhoneConnect-Med@1339987698';
 
 export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -96,38 +96,27 @@ export class InfraStack extends cdk.Stack {
       sourceArn: connectInstanceArn,
     });
 
-    const connectInstanceId = cdk.Arn.split(
-      connectInstanceArn,
-      cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    ).resourceName;
-
-    new cr.AwsCustomResource(this, 'ConnectFunctionAssociation', {
-      onCreate: {
-        service: 'connect',
-        action: 'AssociateLambdaFunction',
-        parameters: { InstanceId: connectInstanceId, FunctionArn: connectHealth.functionArn },
-        physicalResourceId: cr.PhysicalResourceId.of(`${connectInstanceId}-connect-health`),
-      },
-      onDelete: {
-        service: 'connect',
-        action: 'DisassociateLambdaFunction',
-        parameters: { InstanceId: connectInstanceId, FunctionArn: connectHealth.functionArn },
-      },
-      policy: cr.AwsCustomResourcePolicy.fromStatements([
-        new iam.PolicyStatement({
-          actions: ['connect:AssociateLambdaFunction', 'connect:DisassociateLambdaFunction'],
-          resources: [connectInstanceArn, `${connectInstanceArn}/*`],
-        }),
-      ]),
-      installLatestAwsSdk: false,
+    new connect.CfnIntegrationAssociation(this, 'ConnectFunctionAssociation', {
+      instanceId: connectInstanceArn,
+      integrationType: 'LAMBDA_FUNCTION',
+      integrationArn: connectHealth.functionArn,
     });
 
     const deployRole = new iam.Role(this, 'DeployRole', {
       assumedBy: new iam.OpenIdConnectPrincipal(
-        new iam.OpenIdConnectProvider(this, 'GithubOidc', {
-          url: 'https://token.actions.githubusercontent.com',
-          clientIds: ['sts.amazonaws.com'],
-        }),
+        iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+          this,
+          'GithubOidc',
+          cdk.Arn.format(
+            {
+              service: 'iam',
+              region: '',
+              resource: 'oidc-provider',
+              resourceName: 'token.actions.githubusercontent.com',
+            },
+            this,
+          ),
+        ),
         {
           StringEquals: {
             'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
