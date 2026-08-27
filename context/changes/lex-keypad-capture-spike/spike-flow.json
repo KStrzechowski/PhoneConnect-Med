@@ -1,0 +1,96 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "voice",
+  "Metadata": {
+    "entryPointPosition": { "x": 40, "y": 40 },
+    "ActionMetadata": {
+      "voice": { "position": { "x": 200, "y": 40 } },
+      "greet": { "position": { "x": 400, "y": 40 } },
+      "elicit": { "position": { "x": 600, "y": 40 } },
+      "readback": { "position": { "x": 850, "y": 40 } },
+      "unmatched": { "position": { "x": 850, "y": 220 } },
+      "disconnect": { "position": { "x": 1100, "y": 120 } }
+    }
+  },
+  "Actions": [
+    {
+      "Identifier": "voice",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Parameters": {
+        "TextToSpeechEngine": "Neural",
+        "TextToSpeechVoice": "Ola"
+      },
+      "Transitions": { "NextAction": "greet", "Errors": [], "Conditions": [] }
+    },
+    {
+      "Identifier": "greet",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "Text": "Witam w teście asystenta. Powiedz, że chcesz się zalogować.",
+        "TextToSpeechType": "text"
+      },
+      "Transitions": {
+        "NextAction": "elicit",
+        "Errors": [{ "NextAction": "disconnect", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "elicit",
+      "Type": "GetParticipantInput",
+      "Parameters": {
+        "Text": "Słucham.",
+        "TextToSpeechType": "text",
+        "LexV2Bot": {
+          "AliasArn": "arn:aws:lex:eu-central-1:ACCOUNT_ID:bot-alias/BOT_ID/BOT_ALIAS_ID"
+        }
+      },
+      "Transitions": {
+        "NextAction": "unmatched",
+        "Conditions": [
+          {
+            "NextAction": "readback",
+            "Condition": { "Operator": "Equals", "Operands": ["AuthIntent"] }
+          }
+        ],
+        "Errors": [
+          { "NextAction": "unmatched", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "unmatched", "ErrorType": "NoMatchingError" },
+          { "NextAction": "unmatched", "ErrorType": "InputTimeLimitExceeded" }
+        ]
+      }
+    },
+    {
+      "Identifier": "readback",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "Text": "Odczytuję wprowadzony numer: $.Lex.Slots.pesel. Potwierdzenie: $.Lex.Slots.confirmation.",
+        "TextToSpeechType": "text"
+      },
+      "Transitions": {
+        "NextAction": "disconnect",
+        "Errors": [{ "NextAction": "disconnect", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "unmatched",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "Text": "Nie udało się rozpoznać wypowiedzi. Kończę test.",
+        "TextToSpeechType": "text"
+      },
+      "Transitions": {
+        "NextAction": "disconnect",
+        "Errors": [{ "NextAction": "disconnect", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "disconnect",
+      "Type": "DisconnectParticipant",
+      "Parameters": {},
+      "Transitions": {}
+    }
+  ]
+}

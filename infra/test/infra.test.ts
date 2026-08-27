@@ -60,7 +60,7 @@ test('the deploy role trusts only this repository on main', () => {
           Condition: {
             StringEquals: {
               'token.actions.githubusercontent.com:sub':
-                'repo:KStrzechowski/PhoneConnect-Med:ref:refs/heads/main',
+                'repo:KStrzechowski@57865141/PhoneConnect-Med@1339987698:ref:refs/heads/main',
             },
           },
         }),
