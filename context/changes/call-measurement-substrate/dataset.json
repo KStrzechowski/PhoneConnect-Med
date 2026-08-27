@@ -1,0 +1,112 @@
+{
+    "queryLanguage": "CWLI",
+    "results": [
+        [
+            {
+                "field": "@timestamp",
+                "value": "2026-08-27 16:54:26.599"
+            },
+            {
+                "field": "message.handler",
+                "value": "connect-health"
+            },
+            {
+                "field": "message.outcome",
+                "value": "error"
+            },
+            {
+                "field": "message.durationMs",
+                "value": "1533"
+            },
+            {
+                "field": "message.downstreamMs",
+                "value": "1520"
+            },
+            {
+                "field": "message.variant",
+                "value": "keypad"
+            },
+            {
+                "field": "message.contactId",
+                "value": "11111111-2222-3333-4444-555555555555"
+            },
+            {
+                "field": "@ptr",
+                "value": "CtABCpQBCko4ODgwNTQzNjYwMzk6UGhvbmVDb25uZWN0LU1lZC1JbmZyYVN0YWNrLU1lYXN1cmVtZW50c0YyNzdGMEUzLUpUbGRoSHBCdUxldhAAGiRiMzFkOWUxNS03YzZjLTQyMGMtYTdjMi1kNzA0YzExYzRmMDIiDgj7iMmfhDQQp9akooQ0ONCB2KPnM0D7iMmfhDRIABI1GhgCBqa06+0AAAAFt4QPLwAGqQa7MAAABNIgASi805OhhDQwguKToYQ0OARAuAxI1TNQ8xwgAhACGAE="
+            }
+        ],
+        [
+            {
+                "field": "@timestamp",
+                "value": "2026-08-27 16:56:44.976"
+            },
+            {
+                "field": "message.handler",
+                "value": "connect-health"
+            },
+            {
+                "field": "message.outcome",
+                "value": "ok"
+            },
+            {
+                "field": "message.durationMs",
+                "value": "239"
+            },
+            {
+                "field": "message.downstreamMs",
+                "value": "162"
+            },
+            {
+                "field": "message.variant",
+                "value": "keypad"
+            },
+            {
+                "field": "message.contactId",
+                "value": "11111111-2222-3333-4444-555555555555"
+            },
+            {
+                "field": "@ptr",
+                "value": "CtABCpQBCko4ODgwNTQzNjYwMzk6UGhvbmVDb25uZWN0LU1lZC1JbmZyYVN0YWNrLU1lYXN1cmVtZW50c0YyNzdGMEUzLUpUbGRoSHBCdUxldhAAGiRiMzFkOWUxNS03YzZjLTQyMGMtYTdjMi1kNzA0YzExYzRmMDIiDgj7iMmfhDQQp9akooQ0ONCB2KPnM0D7iMmfhDRIABI1GhgCBqe2psYAAAAGhCpyawAGqQbE8AAABWIgASi/l5yhhDQwxpmcoYQ0OANAlgdItidQpRUgAhABGAE="
+            }
+        ],
+        [
+            {
+                "field": "@timestamp",
+                "value": "2026-08-27 17:04:55.690"
+            },
+            {
+                "field": "message.handler",
+                "value": "connect-health"
+            },
+            {
+                "field": "message.outcome",
+                "value": "error"
+            },
+            {
+                "field": "message.durationMs",
+                "value": "1522"
+            },
+            {
+                "field": "message.downstreamMs",
+                "value": "1518"
+            },
+            {
+                "field": "message.contactId",
+                "value": "11111111-2222-3333-4444-555555555555"
+            },
+            {
+                "field": "@ptr",
+                "value": "CtABCpQBCko4ODgwNTQzNjYwMzk6UGhvbmVDb25uZWN0LU1lZC1JbmZyYVN0YWNrLU1lYXN1cmVtZW50c0YyNzdGMEUzLUpUbGRoSHBCdUxldhAAGiRiMzFkOWUxNS03YzZjLTQyMGMtYTdjMi1kNzA0YzExYzRmMDIiDgj7iMmfhDQQp9akooQ0ONCB2KPnM0D7iMmfhDRIABI1GhgCBqa06+0AAAAFt4k9hAAGqQbg0AAABNIgASiVhrqhhDQwn5O6oYQ0OARApgxI7TJQvhwgAhACGAE="
+            }
+        ]
+    ],
+    "statistics": {
+        "recordsMatched": 3.0,
+        "recordsScanned": 11.0,
+        "estimatedRecordsSkipped": 0.0,
+        "bytesScanned": 4084.0,
+        "estimatedBytesSkipped": 0.0,
+        "logGroupsScanned": 1.0
+    },
+    "status": "Complete"
+}
