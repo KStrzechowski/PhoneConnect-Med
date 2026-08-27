@@ -3,7 +3,7 @@ project: "PhoneConnect Med"
 version: 1
 status: draft
 created: 2026-08-23
-updated: 2026-08-25
+updated: 2026-08-26
 prd_version: 1
 main_goal: market-feedback
 top_blocker: time
@@ -49,7 +49,7 @@ that produces evidence rather than infrastructure.
 | --- | --- | --- | --- | --- | --- |
 | F-01 | `aws-deployment-baseline` | (foundation) a deployed, callable path from telephony to the mock exists | — | NFR (p95 < 2s), §Non-Goals | in-progress |
 | F-02 | `call-measurement-substrate` | (foundation) every call and request emits a durable record | F-01 | FR-008, NFR (p95 < 2s), NFR (per-call record) | in-progress |
-| F-03 | `lex-keypad-capture-spike` | (foundation) in-conversation keypad capture is confirmed or refuted | F-01 | FR-005, §Access Control L2 | proposed |
+| F-03 | `lex-keypad-capture-spike` | (foundation) in-conversation keypad capture is confirmed or refuted | F-01 | FR-005, §Access Control L2 | in-progress |
 | S-01 | `facility-info-keypad` | get address and opening hours by pressing a key, and always reach a human | F-01, F-02 | FR-009, US-02, FR-001, FR-002, FR-003, FR-006, FR-007, FR-008 | proposed |
 | S-02 | `facility-info-speech` | get the same answer by saying what they want, no menu | S-01 | FR-009, US-01, FR-001, FR-003, FR-006, FR-008 | proposed |
 | S-03 | `caller-id-authentication` | prove identity by PESEL + phone when calling from their own number | S-02, F-03 | FR-005, §Access Control L2 | proposed |
@@ -183,7 +183,7 @@ the number**: no bot, no contact flow, no deployed function.
 - **Risk:** A throwaway spike rather than part of S-03 because finding this out late means
   rebuilding the identity flow with the week already spent. Kept to a spike deliberately — it
   confirms a mechanism, it does not build authentication. Discard the artefact afterwards.
-- **Status:** proposed
+- **Status:** in-progress
 
 ## Slices
 
