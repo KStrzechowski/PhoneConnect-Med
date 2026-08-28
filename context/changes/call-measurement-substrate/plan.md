@@ -402,22 +402,22 @@ keeping — nothing has been deployed — so it is dropped rather than migrated.
 
 #### Manual
 
-- [ ] 2.6 `cdk deploy` completes and the function reaches Active
-- [ ] 2.7 Invoking with the sample event returns the same payload as before
-- [ ] 2.8 A record appears in the shared log group carrying the sample event's contact id
-- [ ] 2.9 `downstreamMs` is present and less than `durationMs`
-- [ ] 2.10 Stopping the mock produces a record with a failure outcome, not a missing record
+- [x] 2.6 `cdk deploy` completes and the function reaches Active
+- [x] 2.7 Invoking with the sample event returns the same payload as before
+- [x] 2.8 A record appears in the shared log group carrying the sample event's contact id
+- [x] 2.9 `downstreamMs` is present and less than `durationMs`
+- [x] 2.10 Stopping the mock produces a record with a failure outcome, not a missing record
 
 ### Phase 3: Query and end-to-end verification
 
 #### Automated
 
-- [ ] 3.1 Both queries are syntactically valid Logs Insights
+- [x] 3.1 Both queries are syntactically valid Logs Insights
 
 #### Manual
 
-- [ ] 3.2 The reconstruct query returns the Phase 2 invocation by contact id
-- [ ] 3.3 The p95 query returns a row with a non-zero count
-- [ ] 3.4 Invoking without a `variant` parameter shows up as its own row with no `variant` value, whose `n` is the missing count
-- [ ] 3.5 The export command produces a file containing the queried records
-- [ ] 3.6 Path, outcome and duration are reconstructable from one call's records, per FR-008
+- [x] 3.2 The reconstruct query returns the Phase 2 invocation by contact id
+- [x] 3.3 The p95 query returns a row with a non-zero count
+- [x] 3.4 Invoking without a `variant` parameter shows up as its own row with no `variant` value, whose `n` is the missing count
+- [x] 3.5 The export command produces a file containing the queried records
+- [x] 3.6 Path, outcome and duration are reconstructable from one call's records, per FR-008
