@@ -1,6 +1,10 @@
 /.agents
 /.claude
 
+# Scratch output from manual runbook testing (aws lambda invoke, sample events)
+/event.keypad.json
+/out.json
+
 # Logs
 logs
 *.log
