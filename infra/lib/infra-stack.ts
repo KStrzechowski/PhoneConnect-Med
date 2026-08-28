@@ -102,28 +102,27 @@ export class InfraStack extends cdk.Stack {
       integrationArn: connectHealth.functionArn,
     });
 
-    const deployRole = new iam.Role(this, 'DeployRole', {
-      assumedBy: new iam.OpenIdConnectPrincipal(
-        iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
-          this,
-          'GithubOidc',
-          cdk.Arn.format(
-            {
-              service: 'iam',
-              region: '',
-              resource: 'oidc-provider',
-              resourceName: 'token.actions.githubusercontent.com',
-            },
-            this,
-          ),
-        ),
+    const githubOidcProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+      this,
+      'GithubOidc',
+      cdk.Arn.format(
         {
-          StringEquals: {
-            'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-            'token.actions.githubusercontent.com:sub': `repo:${githubRepository}:ref:refs/heads/main`,
-          },
+          service: 'iam',
+          region: '',
+          resource: 'oidc-provider',
+          resourceName: 'token.actions.githubusercontent.com',
         },
+        this,
       ),
+    );
+
+    const deployRole = new iam.Role(this, 'DeployRole', {
+      assumedBy: new iam.OpenIdConnectPrincipal(githubOidcProvider, {
+        StringEquals: {
+          'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+          'token.actions.githubusercontent.com:sub': `repo:${githubRepository}:ref:refs/heads/main`,
+        },
+      }),
     });
     images.grantPullPush(deployRole);
 
