@@ -1,9 +1,9 @@
 ---
 change_id: aws-deployment-baseline
 title: AWS deployment baseline
-status: implementing
+status: implemented
 created: 2026-08-23
-updated: 2026-08-23
+updated: 2026-08-29
 archived_at: null
 ---
 
