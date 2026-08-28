@@ -445,11 +445,11 @@ the matrix is five calls rather than open-ended experimentation.
 
 #### Automated
 
-- [x] 1.1 CDK synthesises with the spike stack present
-- [x] 1.2 Template pins the bot locale to the confirmed Polish locale
-- [x] 1.3 Template sets DTMF input on every prompt attempt of the `pesel` slot
-- [x] 1.4 Template gives the alias text conversation logs and no audio log settings
-- [x] 1.5 Infra tests pass
+- [x] 1.1 CDK synthesises with the spike stack present — 3265797
+- [x] 1.2 Template pins the bot locale to the confirmed Polish locale — 3265797
+- [x] 1.3 Template sets DTMF input on every prompt attempt of the `pesel` slot — 3265797
+- [x] 1.4 Template gives the alias text conversation logs and no audio log settings — 3265797
+- [x] 1.5 Infra tests pass — 3265797
 
 #### Manual
 
@@ -462,7 +462,7 @@ the matrix is five calls rather than open-ended experimentation.
 
 #### Automated
 
-- [x] 2.1 The flow JSON parses and names the spike bot alias
+- [x] 2.1 The flow JSON parses and names the spike bot alias — 3265797
 
 #### Manual
 
