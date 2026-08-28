@@ -48,7 +48,7 @@ that produces evidence rather than infrastructure.
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
 | F-01 | `aws-deployment-baseline` | (foundation) a deployed, callable path from telephony to the mock exists | — | NFR (p95 < 2s), §Non-Goals | done |
-| F-02 | `call-measurement-substrate` | (foundation) every call and request emits a durable record | F-01 | FR-008, NFR (p95 < 2s), NFR (per-call record) | in-progress |
+| F-02 | `call-measurement-substrate` | (foundation) every call and request emits a durable record | F-01 | FR-008, NFR (p95 < 2s), NFR (per-call record) | done |
 | F-03 | `lex-keypad-capture-spike` | (foundation) in-conversation keypad capture is confirmed or refuted | F-01 | FR-005, §Access Control L2 | in-progress |
 | S-01 | `facility-info-keypad` | get address and opening hours by pressing a key, and always reach a human | F-01, F-02 | FR-009, US-02, FR-001, FR-002, FR-003, FR-006, FR-007, FR-008 | proposed |
 | S-02 | `facility-info-speech` | get the same answer by saying what they want, no menu | S-01 | FR-009, US-01, FR-001, FR-003, FR-006, FR-008 | proposed |
@@ -157,7 +157,7 @@ the number**: no bot, no contact flow, no deployed function.
   measurement after the fact is the specific failure this ordering prevents — data from before
   the retrofit would not be comparable. Scope cap: an emission contract and a destination, not a
   dashboard and not a reporting layer.
-- **Status:** in-progress
+- **Status:** done
 
 ### F-03: In-conversation keypad capture confirmed
 
@@ -550,3 +550,4 @@ the number**: no bot, no contact flow, no deployed function.
 roadmap item is archived.)
 
 - **F-01: (foundation) a call can reach a deployed function that reaches the deployed mock medical system, and the whole path is described by infrastructure-as-code that can be torn down and recreated.** — Archived 2026-08-29 → `context/archive/2026-08-23-aws-deployment-baseline/`. Lesson: —.
+- **F-02: (foundation) every call emits a record from which the path taken, the outcome and the duration can be reconstructed, and every request through the shared logic emits its latency — to a destination that can be queried later.** — Archived 2026-08-29 → `context/archive/2026-08-23-call-measurement-substrate/`. Lesson: —.
