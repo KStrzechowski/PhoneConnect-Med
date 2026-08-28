@@ -1,0 +1,38 @@
+name: infra-pr-diff
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ['infra/**', 'lambdas/**']
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm ci
+      - run: npm ci
+        working-directory: infra
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_CDK_DIFF_ROLE_ARN }}
+          aws-region: eu-central-1
+
+      - name: Diff
+        working-directory: infra
+        run: |
+          echo '## CDK diff' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          npx cdk diff PhoneConnect-Med-InfraStack PhoneConnect-Med-SpikeStack \
+            -c connectInstanceArn=${{ vars.CONNECT_INSTANCE_ARN }} >> "$GITHUB_STEP_SUMMARY" 2>&1 || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

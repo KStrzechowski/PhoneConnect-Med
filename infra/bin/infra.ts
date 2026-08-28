@@ -3,6 +3,7 @@ import 'dotenv/config';
 import * as cdk from 'aws-cdk-lib/core';
 import { InfraStack } from '../lib/infra-stack';
 import { SpikeStack } from '../lib/spike-stack';
+import { GithubOidcStack } from '../lib/github-oidc-stack';
 
 const app = new cdk.App();
 
@@ -16,8 +17,15 @@ new InfraStack(app, 'PhoneConnect-Med-InfraStack', {
   env,
   tags: { Project: 'PhoneConnect-Med' },
 });
+
 new SpikeStack(app, 'PhoneConnect-Med-SpikeStack', {
   env,
   tags: { Project: 'PhoneConnect-Med' },
 });
+
+new GithubOidcStack(app, 'PhoneConnect-Med-GithubOidcStack', {
+  env,
+  tags: { Project: 'PhoneConnect-Med' },
+});
+
 cdk.Tags.of(app).add('Project', 'PhoneConnect-Med');

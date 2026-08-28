@@ -1,0 +1,67 @@
+name: infra-deploy
+
+on:
+  push:
+    branches: [main]
+    paths: ['infra/**', 'lambdas/**']
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  CONNECT_INSTANCE_ARN: ${{ vars.CONNECT_INSTANCE_ARN }}
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm ci
+      - run: npm ci
+        working-directory: infra
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_CDK_DIFF_ROLE_ARN }}
+          aws-region: eu-central-1
+
+      - name: Diff
+        working-directory: infra
+        run: |
+          echo '## CDK diff — review before approving the deploy job below' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          npx cdk diff PhoneConnect-Med-InfraStack PhoneConnect-Med-SpikeStack \
+            -c connectInstanceArn=$CONNECT_INSTANCE_ARN >> "$GITHUB_STEP_SUMMARY" 2>&1 || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    needs: diff
+    runs-on: ubuntu-latest
+    environment: infra-deploy
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm ci
+      - run: npm ci
+        working-directory: infra
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_CDK_DEPLOY_ROLE_ARN }}
+          aws-region: eu-central-1
+
+      - name: Deploy
+        working-directory: infra
+        run: |
+          npx cdk deploy PhoneConnect-Med-InfraStack PhoneConnect-Med-SpikeStack \
+            -c connectInstanceArn=$CONNECT_INSTANCE_ARN --require-approval never
