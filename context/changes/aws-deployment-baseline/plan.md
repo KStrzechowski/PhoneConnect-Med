@@ -431,11 +431,11 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Manual
 
-- [ ] 1.6 `cdk deploy` completes without error
-- [ ] 1.7 Session Manager connects with no key pair
-- [ ] 1.8 Mock's health endpoint responds from the instance
-- [ ] 1.9 Mock's port is not reachable from the public internet
-- [ ] 1.10 Stop/start leaves the private IP unchanged
+- [x] 1.6 `cdk deploy` completes without error
+- [x] 1.7 Session Manager connects with no key pair
+- [x] 1.8 Mock's health endpoint responds from the instance
+- [x] 1.9 Mock's port is not reachable from the public internet
+- [x] 1.10 Stop/start leaves the private IP unchanged
 
 ### Phase 2: Function and the round trip
 
@@ -447,11 +447,11 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Manual
 
-- [ ] 2.4 `cdk deploy` completes and the function reaches Active
-- [ ] 2.5 Invoking with the sample event returns the mock's service identifier
-- [ ] 2.6 Response contains only string values at the top level
-- [ ] 2.7 Log group shows the invocation with no NAT or endpoint
-- [ ] 2.8 Stopped instance produces a handled error, not a timeout
+- [x] 2.4 `cdk deploy` completes and the function reaches Active
+- [x] 2.5 Invoking with the sample event returns the mock's service identifier
+- [x] 2.6 Response contains only string values at the top level
+- [x] 2.7 Log group shows the invocation with no NAT or endpoint
+- [x] 2.8 Stopped instance produces a handled error, not a timeout
 
 ### Phase 3: Build and deploy pipeline
 
@@ -463,11 +463,11 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Manual
 
-- [ ] 3.4 Commit touching `his/` triggers a green workflow
-- [ ] 3.5 Image tagged with the commit SHA appears in the registry
-- [ ] 3.6 Change is live on the instance, confirmed through the function
-- [ ] 3.7 Push while stopped starts the instance first and succeeds
-- [ ] 3.8 A deliberately broken build fails the workflow
+- [x] 3.4 Commit touching `his/` triggers a green workflow
+- [x] 3.5 Image tagged with the commit SHA appears in the registry
+- [x] 3.6 Change is live on the instance, confirmed through the function
+- [x] 3.7 Push while stopped starts the instance first and succeeds
+- [x] 3.8 A deliberately broken build fails the workflow
 
 ### Phase 4: Telephony invoke permission
 
@@ -478,7 +478,7 @@ amending so the write-up does not claim something the repository disproves:
 
 #### Manual
 
-- [ ] 4.3 Function appears in the telephony console's function list
-- [ ] 4.4 A contact flow's invoke block can select the function
-- [ ] 4.5 Test invocation from a flow returns the mock's payload
-- [ ] 4.6 Missing context value fails synth with a clear message
+- [x] 4.3 Function appears in the telephony console's function list
+- [x] 4.4 A contact flow's invoke block can select the function
+- [x] 4.5 Test invocation from a flow returns the mock's payload
+- [x] 4.6 Missing context value fails synth with a clear message
