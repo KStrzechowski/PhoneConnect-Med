@@ -447,27 +447,27 @@ migration ever; keep it minimal (one table, one seed row) so later slices' own m
 
 #### Automated
 
-- [x] 1.1 Mock builds
-- [x] 1.2 Mock lints
-- [x] 1.3 Migration runs cleanly against a fresh database
-- [x] 1.4 Mock's tests pass against the real dockerized Postgres
+- [x] 1.1 Mock builds — 4d1e756
+- [x] 1.2 Mock lints — 4d1e756
+- [x] 1.3 Migration runs cleanly against a fresh database — 4d1e756
+- [x] 1.4 Mock's tests pass against the real dockerized Postgres — 4d1e756
 
 #### Manual
 
-- [x] 1.5 `GET /facility` returns the seeded name, address, and structured hours
-- [x] 1.6 Migration is idempotent across a Postgres restart
+- [x] 1.5 `GET /facility` returns the seeded name, address, and structured hours — 4d1e756
+- [x] 1.6 Migration is idempotent across a Postgres restart — 4d1e756
 
 ### Phase 2: `lambdas/facility-info/`
 
 #### Automated
 
-- [ ] 2.1 Function code typechecks
-- [ ] 2.2 Handler tests pass
-- [ ] 2.3 Handler returns only string values at the top level, on both paths
+- [x] 2.1 Function code typechecks
+- [x] 2.2 Handler tests pass
+- [x] 2.3 Handler returns only string values at the top level, on both paths
 
 #### Manual
 
-- [ ] 2.4 Handler invoked locally against the deployed mock returns the seeded data
+- [x] 2.4 Handler invoked locally against the deployed mock returns the seeded data
 
 ### Phase 3: Infrastructure — Postgres, the new function, and the deploy pipeline
 
