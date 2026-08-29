@@ -461,21 +461,21 @@ migration ever; keep it minimal (one table, one seed row) so later slices' own m
 
 #### Automated
 
-- [x] 2.1 Function code typechecks
-- [x] 2.2 Handler tests pass
-- [x] 2.3 Handler returns only string values at the top level, on both paths
+- [x] 2.1 Function code typechecks — 3a906f8
+- [x] 2.2 Handler tests pass — 3a906f8
+- [x] 2.3 Handler returns only string values at the top level, on both paths — 3a906f8
 
 #### Manual
 
-- [x] 2.4 Handler invoked locally against the deployed mock returns the seeded data
+- [x] 2.4 Handler invoked locally against the deployed mock returns the seeded data — 3a906f8
 
 ### Phase 3: Infrastructure — Postgres, the new function, and the deploy pipeline
 
 #### Automated
 
-- [ ] 3.1 CDK synthesises
-- [ ] 3.2 Template grants Connect invoke permission for both functions
-- [ ] 3.3 Infra tests pass
+- [x] 3.1 CDK synthesises
+- [x] 3.2 Template grants Connect invoke permission for both functions
+- [x] 3.3 Infra tests pass
 
 #### Manual
 

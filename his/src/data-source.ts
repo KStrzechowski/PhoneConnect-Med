@@ -1,3 +1,4 @@
+import * as path from 'node:path';
 import { DataSource } from 'typeorm';
 import { Facility } from './facility/facility.entity';
 
@@ -14,5 +15,5 @@ export const dataSourceOptions = {
 
 export default new DataSource({
   ...dataSourceOptions,
-  migrations: ['src/migrations/*.ts'],
+  migrations: [path.join(__dirname, 'migrations', '*.{js,ts}')],
 });
