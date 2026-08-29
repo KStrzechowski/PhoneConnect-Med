@@ -42,7 +42,7 @@
         "Text": "Słucham.",
         "TextToSpeechType": "text",
         "LexV2Bot": {
-          "AliasArn": "arn:aws:lex:eu-central-1:ACCOUNT_ID:bot-alias/BOT_ID/BOT_ALIAS_ID"
+          "AliasArn": "arn:aws:lex:eu-central-1:888054366039:bot-alias/SKOSDIVCG0/4CSIN554QR"
         }
       },
       "Transitions": {
