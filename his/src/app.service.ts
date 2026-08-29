@@ -7,6 +7,6 @@ export class AppService {
   }
 
   getHealth() {
-    return { service: 'his-probe', status: 'ok' };
+    return { service: 'his', status: 'ok' };
   }
 }
