@@ -77,6 +77,33 @@ test('the telephony instance may invoke the function', () => {
   });
 });
 
+test('both functions may be invoked by the telephony instance', () => {
+  const permissions = template.findResources('AWS::Lambda::Permission', {
+    Properties: { Principal: 'connect.amazonaws.com' },
+  });
+  expect(Object.keys(permissions)).toHaveLength(2);
+});
+
+test('both functions are associated with the telephony instance', () => {
+  const associations = template.findResources('AWS::Connect::IntegrationAssociation');
+  const targets = Object.values(associations).map(
+    (assoc) => (assoc.Properties.IntegrationArn as { 'Fn::GetAtt': [string, string] })['Fn::GetAtt'][0],
+  );
+  expect(targets).toHaveLength(2);
+  expect(targets.some((t) => t.startsWith('ConnectHealth'))).toBe(true);
+  expect(targets.some((t) => t.startsWith('FacilityInfo'))).toBe(true);
+});
+
+test('the instance user data still installs docker', () => {
+  const instances = template.findResources('AWS::EC2::Instance');
+  const [instance] = Object.values(instances);
+  const joinParts = (
+    instance.Properties.UserData as { 'Fn::Base64': { 'Fn::Join': [string, unknown[]] } }
+  )['Fn::Base64']['Fn::Join'][1];
+  const script = joinParts.filter((part): part is string => typeof part === 'string').join('');
+  expect(script).toContain('install -y docker');
+});
+
 test('synth fails without the telephony instance ARN', () => {
   expect(() => new InfraStack(new cdk.App(), 'NoContext')).toThrow(/connectInstanceArn/);
 });
