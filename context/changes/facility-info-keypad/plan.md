@@ -473,9 +473,9 @@ migration ever; keep it minimal (one table, one seed row) so later slices' own m
 
 #### Automated
 
-- [x] 3.1 CDK synthesises
-- [x] 3.2 Template grants Connect invoke permission for both functions
-- [x] 3.3 Infra tests pass
+- [x] 3.1 CDK synthesises — c296e8a
+- [x] 3.2 Template grants Connect invoke permission for both functions — c296e8a
+- [x] 3.3 Infra tests pass — c296e8a
 
 #### Manual
 

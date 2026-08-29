@@ -12,8 +12,6 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      INSTANCE_ID: ${{ vars.MOCK_INSTANCE_ID }}
     steps:
       - uses: actions/checkout@v4
 
@@ -21,6 +19,14 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: eu-central-1
+
+      - name: Look up the mock instance
+        run: |
+          id=$(aws ec2 describe-instances \
+            --filters "Name=tag:aws:cloudformation:stack-name,Values=PhoneConnect-Med-InfraStack" \
+                      "Name=instance-state-name,Values=pending,running,stopping,stopped" \
+            --query 'Reservations[0].Instances[0].InstanceId' --output text)
+          echo "INSTANCE_ID=$id" >> "$GITHUB_ENV"
 
       - uses: aws-actions/amazon-ecr-login@v2
         id: ecr
