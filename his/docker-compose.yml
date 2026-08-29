@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: his
+      POSTGRES_PASSWORD: his
+      POSTGRES_DB: his
+    ports:
+      - '5433:5432'
+    volumes:
+      - his-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  his-postgres-data:
