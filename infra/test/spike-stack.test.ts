@@ -19,14 +19,14 @@ beforeAll(() => {
 
 function peselSlot() {
   const [bot] = Object.values<any>(template.findResources('AWS::Lex::Bot'));
-  const locale = bot.Properties.BotLocales.find((l: any) => l.LocaleId === 'pl-PL');
+  const locale = bot.Properties.BotLocales.find((l: any) => l.LocaleId === 'pl_PL');
   const intent = locale.Intents.find((i: any) => i.Name === 'AuthIntent');
   return intent.Slots.find((s: any) => s.Name === 'pesel');
 }
 
 test('the bot speaks Polish', () => {
   template.hasResourceProperties('AWS::Lex::Bot', {
-    BotLocales: Match.arrayWith([Match.objectLike({ LocaleId: 'pl-PL' })]),
+    BotLocales: Match.arrayWith([Match.objectLike({ LocaleId: 'pl_PL' })]),
   });
 });
 
@@ -54,12 +54,11 @@ test('the retry count matches the number of configured attempts', () => {
 
 test('the spoken confirmation does not fall back to the keypad', () => {
   const [bot] = Object.values<any>(template.findResources('AWS::Lex::Bot'));
-  const locale = bot.Properties.BotLocales.find((l: any) => l.LocaleId === 'pl-PL');
+  const locale = bot.Properties.BotLocales.find((l: any) => l.LocaleId === 'pl_PL');
   const intent = locale.Intents.find((i: any) => i.Name === 'AuthIntent');
-  const slot = intent.Slots.find((s: any) => s.Name === 'confirmation');
 
   for (const attempt of Object.values<any>(
-    slot.ValueElicitationSetting.PromptSpecification.PromptAttemptsSpecification,
+    intent.IntentConfirmationSetting.PromptSpecification.PromptAttemptsSpecification,
   )) {
     expect(attempt.AllowedInputTypes.AllowDTMFInput).toBe(false);
   }

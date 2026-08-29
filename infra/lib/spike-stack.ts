@@ -5,7 +5,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 
-const locale = 'pl-PL';
+const locale = 'pl_PL';
 const peselLength = 11;
 
 const keypadAttempt: lex.CfnBot.PromptAttemptSpecificationProperty = {
@@ -89,10 +89,7 @@ export class SpikeStack extends cdk.Stack {
                 { utterance: 'mam podać numer PESEL' },
                 { utterance: 'jak się zalogować' },
               ],
-              slotPriorities: [
-                { slotName: 'pesel', priority: 1 },
-                { slotName: 'confirmation', priority: 2 },
-              ],
+              slotPriorities: [{ slotName: 'pesel', priority: 1 }],
               slots: [
                 {
                   name: 'pesel',
@@ -115,23 +112,18 @@ export class SpikeStack extends cdk.Stack {
                     },
                   },
                 },
-                {
-                  name: 'confirmation',
-                  slotTypeName: 'AMAZON.Confirmation',
-                  valueElicitationSetting: {
-                    slotConstraint: 'Required',
-                    promptSpecification: {
-                      maxRetries: 2,
-                      messageGroupsList: [say('Czy numer jest poprawny? Powiedz tak albo nie.')],
-                      promptAttemptsSpecification: {
-                        Initial: spokenAttempt,
-                        Retry1: spokenAttempt,
-                        Retry2: spokenAttempt,
-                      },
-                    },
+              ],
+              intentConfirmationSetting: {
+                promptSpecification: {
+                  maxRetries: 2,
+                  messageGroupsList: [say('Czy numer jest poprawny? Powiedz tak albo nie.')],
+                  promptAttemptsSpecification: {
+                    Initial: spokenAttempt,
+                    Retry1: spokenAttempt,
+                    Retry2: spokenAttempt,
                   },
                 },
-              ],
+              },
               intentClosingSetting: {
                 closingResponse: { messageGroupsList: [say('Dziękuję.')] },
               },
