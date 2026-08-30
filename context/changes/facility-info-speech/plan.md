@@ -530,14 +530,14 @@ extraction in Phase 1 is a pure refactor with no migration concern.
 
 #### Automated
 
-- [x] 2.1 Function code typechecks
-- [x] 2.2 Handler tests pass
-- [x] 2.3 `InfoIntent` returns the exact byte-identical sentence template
+- [x] 2.1 Function code typechecks — b677fd2
+- [x] 2.2 Handler tests pass — b677fd2
+- [x] 2.3 `InfoIntent` returns the exact byte-identical sentence template — b677fd2
 - [x] 2.4 Three sequential `FallbackIntent` invocations produce three distinct messages and an
-      incrementing counter
-- [x] 2.5 A non-`FallbackIntent` invocation resets the counter to `'0'`
+      incrementing counter — b677fd2
+- [x] 2.5 A non-`FallbackIntent` invocation resets the counter to `'0'` — b677fd2
 - [x] 2.6 Exactly one measurement record per invocation, carrying `variant: 'speech'` and
-      `contactId`
+      `contactId` — b677fd2
 
 #### Manual
 
@@ -548,9 +548,9 @@ extraction in Phase 1 is a pure refactor with no migration concern.
 
 #### Automated
 
-- [ ] 3.1 CDK synthesises
-- [ ] 3.2 Existing Connect-permission-count test still passes unchanged
-- [ ] 3.3 New Lex-bot and Lex-permission assertions pass
+- [x] 3.1 CDK synthesises
+- [x] 3.2 Existing Connect-permission-count test still passes unchanged
+- [x] 3.3 New Lex-bot and Lex-permission assertions pass
 
 #### Manual
 

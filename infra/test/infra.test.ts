@@ -84,6 +84,43 @@ test('both functions may be invoked by the telephony instance', () => {
   expect(Object.keys(permissions)).toHaveLength(2);
 });
 
+test('the speech bot has all 5 global-layer intents under pl_PL', () => {
+  template.hasResourceProperties('AWS::Lex::Bot', {
+    DataPrivacy: { ChildDirected: false },
+    BotLocales: Match.arrayWith([
+      Match.objectLike({
+        LocaleId: 'pl_PL',
+        Intents: Match.arrayWith([
+          Match.objectLike({ Name: 'MainMenuIntent' }),
+          Match.objectLike({ Name: 'InfoIntent' }),
+          Match.objectLike({ Name: 'RepeatIntent' }),
+          Match.objectLike({ Name: 'AgentTransferIntent' }),
+          Match.objectLike({ Name: 'FallbackIntent' }),
+        ]),
+      }),
+    ]),
+  });
+});
+
+test('only the speech function may be invoked by Lex', () => {
+  const permissions = template.findResources('AWS::Lambda::Permission', {
+    Properties: { Principal: 'lexv2.amazonaws.com' },
+  });
+  expect(Object.keys(permissions)).toHaveLength(1);
+});
+
+test('the bot association custom resource may associate and disassociate the bot', () => {
+  template.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: Match.arrayWith(['connect:AssociateBot', 'connect:DisassociateBot']),
+        }),
+      ]),
+    },
+  });
+});
+
 test('both functions are associated with the telephony instance', () => {
   const associations = template.findResources('AWS::Connect::IntegrationAssociation');
   const targets = Object.values(associations).map(

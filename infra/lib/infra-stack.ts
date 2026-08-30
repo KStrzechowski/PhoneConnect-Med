@@ -4,13 +4,91 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as lex from 'aws-cdk-lib/aws-lex';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as connect from 'aws-cdk-lib/aws-connect';
+import * as cr from 'aws-cdk-lib/custom-resources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
 const mockPort = 3000;
 const githubRepository = 'KStrzechowski@57865141/PhoneConnect-Med@1339987698';
+const speechLocale = 'pl_PL';
+
+function globalIntent(name: string, utterances: string[]): lex.CfnBot.IntentProperty {
+  return {
+    name,
+    sampleUtterances: utterances.map((utterance) => ({ utterance })),
+    fulfillmentCodeHook: { enabled: true },
+  };
+}
+
+const mainMenuUtterances = [
+  'dzień dobry',
+  'halo',
+  'dzień dobry, dzwonię do przychodni',
+  'co mogę tutaj załatwić',
+  'co można u was załatwić',
+  'jakie są opcje',
+  'menu',
+  'menu główne',
+  'wróć do menu',
+  'zacznijmy od nowa',
+  'od początku',
+  'w czym możecie pomóc',
+  'nie wiem co wybrać',
+  'co dalej',
+];
+
+const infoUtterances = [
+  'jakie są godziny otwarcia',
+  'do której jesteście otwarci',
+  'od której pracujecie',
+  'w jakich godzinach przyjmujecie',
+  'kiedy przychodnia jest czynna',
+  'czy dziś jest otwarte',
+  'czy jesteście otwarci w sobotę',
+  'gdzie się znajdujecie',
+  'jaki jest adres',
+  'podaj adres',
+  'gdzie was znaleźć',
+  'na jakiej ulicy jest przychodnia',
+  'jak do was dojechać',
+  'informacje o przychodni',
+  'chcę się dowiedzieć o placówce',
+];
+
+const repeatUtterances = [
+  'powtórz',
+  'powtórz proszę',
+  'powtórz to jeszcze raz',
+  'jeszcze raz',
+  'słucham?',
+  'nie dosłyszałem',
+  'nie usłyszałam',
+  'nie zrozumiałem',
+  'możesz powtórzyć',
+  'mógłbyś powtórzyć',
+  'co powiedziałeś',
+  'przepraszam, nie usłyszałem',
+];
+
+const agentTransferUtterances = [
+  'połącz z agentem',
+  'połącz mnie z rejestracją',
+  'przełącz mnie do rejestracji',
+  'chcę rozmawiać z człowiekiem',
+  'chcę rozmawiać z osobą',
+  'chcę z kimś porozmawiać',
+  'nie chcę rozmawiać z automatem',
+  'człowiek proszę',
+  'poproszę o konsultanta',
+  'daj mi kogoś z obsługi',
+  'potrzebuję pomocy pracownika',
+  'operator',
+  'konsultant',
+  'pomoc',
+];
 
 export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -169,6 +247,145 @@ volumes:
       integrationArn: facilityInfo.functionArn,
     });
 
+    const facilityInfoSpeech = new NodejsFunction(this, 'FacilityInfoSpeech', {
+      entry: path.join(repoRoot, 'lambdas/facility-info-speech/index.ts'),
+      projectRoot: repoRoot,
+      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
+      runtime: lambda.Runtime.NODEJS_24_X,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      securityGroups: [functionSecurityGroup],
+      allowPublicSubnet: true,
+      environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
+      timeout: cdk.Duration.seconds(2),
+      logGroup: measurements,
+      loggingFormat: lambda.LoggingFormat.JSON,
+    });
+
+    const speechConversations = new logs.LogGroup(this, 'SpeechConversations', {
+      retention: logs.RetentionDays.THREE_MONTHS,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const speechBotRole = new iam.Role(this, 'SpeechBotRole', {
+      assumedBy: new iam.ServicePrincipal('lexv2.amazonaws.com'),
+    });
+    speechBotRole.addToPolicy(
+      new iam.PolicyStatement({ actions: ['polly:SynthesizeSpeech'], resources: ['*'] }),
+    );
+    speechConversations.grantWrite(speechBotRole);
+
+    const speechBot = new lex.CfnBot(this, 'SpeechBot', {
+      name: 'PhoneConnect-Med-FacilityInfoSpeech',
+      roleArn: speechBotRole.roleArn,
+      dataPrivacy: { ChildDirected: false },
+      idleSessionTtlInSeconds: 300,
+      autoBuildBotLocales: true,
+      botLocales: [
+        {
+          localeId: speechLocale,
+          nluConfidenceThreshold: 0.4,
+          voiceSettings: { voiceId: 'Ola', engine: 'neural' },
+          intents: [
+            globalIntent('MainMenuIntent', mainMenuUtterances),
+            globalIntent('InfoIntent', infoUtterances),
+            globalIntent('RepeatIntent', repeatUtterances),
+            globalIntent('AgentTransferIntent', agentTransferUtterances),
+            {
+              name: 'FallbackIntent',
+              parentIntentSignature: 'AMAZON.FallbackIntent',
+              fulfillmentCodeHook: { enabled: true },
+            },
+          ],
+        },
+      ],
+    });
+
+    const speechBotVersion = new lex.CfnBotVersion(this, 'SpeechBotVersion', {
+      botId: speechBot.attrId,
+      botVersionLocaleSpecification: [
+        { localeId: speechLocale, botVersionLocaleDetails: { sourceBotVersion: 'DRAFT' } },
+      ],
+    });
+
+    const speechBotAlias = new lex.CfnBotAlias(this, 'SpeechBotAlias', {
+      botId: speechBot.attrId,
+      botVersion: speechBotVersion.attrBotVersion,
+      botAliasName: 'live',
+      botAliasLocaleSettings: [
+        {
+          localeId: speechLocale,
+          botAliasLocaleSetting: {
+            enabled: true,
+            codeHookSpecification: {
+              lambdaCodeHook: {
+                lambdaArn: facilityInfoSpeech.functionArn,
+                codeHookInterfaceVersion: '1.0',
+              },
+            },
+          },
+        },
+      ],
+      conversationLogSettings: {
+        textLogSettings: [
+          {
+            enabled: true,
+            destination: {
+              cloudWatch: {
+                cloudWatchLogGroupArn: speechConversations.logGroupArn,
+                logPrefix: 'facility-info-speech/',
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    facilityInfoSpeech.addPermission('LexInvoke', {
+      principal: new iam.ServicePrincipal('lexv2.amazonaws.com'),
+      sourceArn: speechBotAlias.attrArn,
+    });
+
+    const speechBotConnectInstanceId = cdk.Arn.split(
+      connectInstanceArn,
+      cdk.ArnFormat.SLASH_RESOURCE_NAME,
+    ).resourceName;
+
+    const speechBotAssociation = {
+      InstanceId: speechBotConnectInstanceId,
+      LexV2Bot: { AliasArn: speechBotAlias.attrArn },
+    };
+
+    new cr.AwsCustomResource(this, 'SpeechBotConnectAssociation', {
+      onCreate: {
+        service: 'connect',
+        action: 'AssociateBot',
+        parameters: speechBotAssociation,
+        physicalResourceId: cr.PhysicalResourceId.of(`${speechBotConnectInstanceId}-facility-info-speech-bot`),
+      },
+      onDelete: {
+        service: 'connect',
+        action: 'DisassociateBot',
+        parameters: speechBotAssociation,
+      },
+      policy: cr.AwsCustomResourcePolicy.fromStatements([
+        new iam.PolicyStatement({
+          actions: ['connect:AssociateBot', 'connect:DisassociateBot'],
+          resources: [connectInstanceArn, `${connectInstanceArn}/*`],
+        }),
+        new iam.PolicyStatement({
+          actions: [
+            'lex:DescribeBotAlias',
+            'lex:CreateResourcePolicy',
+            'lex:UpdateResourcePolicy',
+            'lex:DeleteResourcePolicy',
+          ],
+          resources: [speechBotAlias.attrArn],
+        }),
+      ]),
+      installLatestAwsSdk: false,
+    });
+
     const githubOidcProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
       this,
       'GithubOidc',
@@ -233,6 +450,8 @@ volumes:
     new cdk.CfnOutput(this, 'MockPrivateIp', { value: instance.instancePrivateIp });
     new cdk.CfnOutput(this, 'ConnectHealthFunctionName', { value: connectHealth.functionName });
     new cdk.CfnOutput(this, 'FacilityInfoFunctionName', { value: facilityInfo.functionName });
+    new cdk.CfnOutput(this, 'FacilityInfoSpeechFunctionName', { value: facilityInfoSpeech.functionName });
+    new cdk.CfnOutput(this, 'SpeechBotAliasArn', { value: speechBotAlias.attrArn });
     new cdk.CfnOutput(this, 'DeployRoleArn', { value: deployRole.roleArn });
     new cdk.CfnOutput(this, 'MeasurementLogGroup', { value: measurements.logGroupName });
   }
