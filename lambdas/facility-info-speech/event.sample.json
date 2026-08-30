@@ -1,0 +1,39 @@
+{
+  "messageVersion": "1.0",
+  "invocationSource": "FulfillmentCodeHook",
+  "inputTranscript": "jakie są godziny otwarcia",
+  "responseContentType": "PlainText;charset=utf-8",
+  "sessionId": "session-1",
+  "inputMode": "Speech",
+  "bot": {
+    "id": "BOTID",
+    "name": "facility-info-speech",
+    "aliasId": "ALIASID",
+    "aliasName": "prod",
+    "localeId": "pl_PL",
+    "version": "1"
+  },
+  "interpretations": [
+    {
+      "intent": {
+        "name": "InfoIntent",
+        "slots": {},
+        "state": "ReadyForFulfillment",
+        "confirmationState": "None"
+      },
+      "nluConfidence": 0.95
+    }
+  ],
+  "sessionState": {
+    "sessionAttributes": {
+      "contactId": "contact-1"
+    },
+    "intent": {
+      "name": "InfoIntent",
+      "slots": {},
+      "state": "ReadyForFulfillment",
+      "confirmationState": "None"
+    },
+    "originatingRequestId": "req-1"
+  }
+}

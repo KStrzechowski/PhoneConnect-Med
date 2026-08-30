@@ -517,10 +517,10 @@ extraction in Phase 1 is a pure refactor with no migration concern.
 
 #### Automated
 
-- [x] 1.1 New package typechecks
-- [x] 1.2 New package's own test passes
-- [x] 1.3 `facility-info` still typechecks
-- [x] 1.4 `facility-info`'s existing test suite passes unmodified
+- [x] 1.1 New package typechecks — b3d8882
+- [x] 1.2 New package's own test passes — b3d8882
+- [x] 1.3 `facility-info` still typechecks — b3d8882
+- [x] 1.4 `facility-info`'s existing test suite passes unmodified — b3d8882
 
 #### Manual
 
@@ -530,13 +530,13 @@ extraction in Phase 1 is a pure refactor with no migration concern.
 
 #### Automated
 
-- [ ] 2.1 Function code typechecks
-- [ ] 2.2 Handler tests pass
-- [ ] 2.3 `InfoIntent` returns the exact byte-identical sentence template
-- [ ] 2.4 Three sequential `FallbackIntent` invocations produce three distinct messages and an
+- [x] 2.1 Function code typechecks
+- [x] 2.2 Handler tests pass
+- [x] 2.3 `InfoIntent` returns the exact byte-identical sentence template
+- [x] 2.4 Three sequential `FallbackIntent` invocations produce three distinct messages and an
       incrementing counter
-- [ ] 2.5 A non-`FallbackIntent` invocation resets the counter to `'0'`
-- [ ] 2.6 Exactly one measurement record per invocation, carrying `variant: 'speech'` and
+- [x] 2.5 A non-`FallbackIntent` invocation resets the counter to `'0'`
+- [x] 2.6 Exactly one measurement record per invocation, carrying `variant: 'speech'` and
       `contactId`
 
 #### Manual
