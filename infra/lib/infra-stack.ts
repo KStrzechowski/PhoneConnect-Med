@@ -87,7 +87,8 @@ volumes:
       `cat > /opt/his/docker-compose.yml <<'EOF'\n${composeFile}EOF`,
       `echo "HIS_IMAGE=${image}" > /opt/his/.env`,
       'docker compose -f /opt/his/docker-compose.yml --env-file /opt/his/.env up -d postgres',
-      'docker compose -f /opt/his/docker-compose.yml --env-file /opt/his/.env up -d his || true',
+      'docker compose -f /opt/his/docker-compose.yml --env-file /opt/his/.env up -d his || ' +
+        'echo "his did not start on first boot (image likely missing from ECR yet) - the deploy pipeline starts it on first push"',
     );
 
     const instance = new ec2.Instance(this, 'MockInstance', {
