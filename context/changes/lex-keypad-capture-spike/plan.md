@@ -453,10 +453,10 @@ the matrix is five calls rather than open-ended experimentation.
 
 #### Manual
 
-- [ ] 1.6 Polish is listed as an available Lex V2 locale in `eu-central-1`, and the identifier is recorded in `findings.md`
-- [ ] 1.7 `cdk deploy` completes and the bot locale reaches Built
-- [ ] 1.8 The alias appears in the Connect instance's associated bots
-- [ ] 1.9 The Lex console test window elicits the intent from a Polish utterance
+- [x] 1.6 Polish is listed as an available Lex V2 locale in `eu-central-1`, and the identifier is recorded in `findings.md`
+- [x] 1.7 `cdk deploy` completes and the bot locale reaches Built
+- [x] 1.8 The alias appears in the Connect instance's associated bots
+- [x] 1.9 The Lex console test window elicits the intent from a Polish utterance
 
 ### Phase 2: The flow, and the first successful call
 
@@ -466,38 +466,38 @@ the matrix is five calls rather than open-ended experimentation.
 
 #### Manual
 
-- [ ] 2.2 The flow imports into the Connect console without validation errors
-- [ ] 2.3 Calling the test number reaches the flow and the bot greets in Polish
-- [ ] 2.4 Eleven keyed digits are captured into the `pesel` slot
-- [ ] 2.5 The readback speaks back exactly the digits keyed
-- [ ] 2.6 The session continues to the spoken confirmation slot without leaving the bot
-- [ ] 2.7 The text conversation log shows the DTMF capture and the following speech turn within one session id
+- [x] 2.2 The flow imports into the Connect console without validation errors
+- [x] 2.3 Calling the test number reaches the flow and the bot greets in Polish
+- [x] 2.4 Eleven keyed digits are captured into the `pesel` slot
+- [x] 2.5 The readback speaks back exactly the digits keyed
+- [x] 2.6 The session continues to the spoken confirmation slot without leaving the bot
+- [x] 2.7 The text conversation log shows the DTMF capture and the following speech turn within one session id
 
 ### Phase 3: The behaviours that decide usability
 
 #### Manual
 
-- [ ] 3.1 Pressing `#` ends input before `maxLength` is reached, and the captured value is correct
-- [ ] 3.2 Pressing `*` corrects a mis-keyed digit within the same capture, and the captured value is correct
-- [ ] 3.3 Not pressing `#` ends input by timeout, and the observed timeout length is recorded
-- [ ] 3.4 Fewer than eleven digits produces a re-ask, and the re-ask still accepts keypad input
-- [ ] 3.5 Speaking digits instead of pressing them produces a recorded, non-crashing outcome
+- [x] 3.1 Pressing `#` ends input before `maxLength` is reached, and the captured value is correct
+- [x] 3.2 Pressing `*` corrects a mis-keyed digit within the same capture, and the captured value is correct
+- [x] 3.3 Not pressing `#` ends input by timeout, and the observed timeout length is recorded
+- [x] 3.4 Fewer than eleven digits produces a re-ask, and the re-ask still accepts keypad input
+- [x] 3.5 Speaking digits instead of pressing them produces a recorded, non-crashing outcome
 - [ ] 3.6 Every row's behaviour is reconstructable from the text conversation log
 
 ### Phase 4: Verdict, hand-off, teardown
 
 #### Automated
 
-- [ ] 4.1 `findings.md` carries exactly one `Verdict:` line with one of the three values
-- [ ] 4.2 The roadmap's F-03 status is no longer `proposed`
+- [x] 4.1 `findings.md` carries exactly one `Verdict:` line with one of the three values
+- [x] 4.2 The roadmap's F-03 status is no longer `proposed`
 - [ ] 4.3 After teardown, CDK synthesises with no spike stack
 - [ ] 4.4 Infra tests pass after the spike test file is removed
 
 #### Manual
 
-- [ ] 4.5 `findings.md` carries the working `CfnBot` DTMF fragment and the flow JSON
-- [ ] 4.6 Where the verdict is not a clean confirmation, the fallback options are costed against the confound
-- [ ] 4.7 `contract-surfaces.md` carries an entry, or `findings.md` records why none was earned
+- [x] 4.5 `findings.md` carries the working `CfnBot` DTMF fragment and the flow JSON
+- [x] 4.6 Where the verdict is not a clean confirmation, the fallback options are costed against the confound
+- [x] 4.7 `contract-surfaces.md` carries an entry, or `findings.md` records why none was earned
 - [ ] 4.8 Findings are committed before anything is destroyed
 - [ ] 4.9 `cdk destroy` completes and the bot no longer appears in the Connect instance's associated bots
 - [ ] 4.10 The console flow is deleted and the test number points where it did before
