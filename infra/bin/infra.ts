@@ -2,7 +2,6 @@
 import 'dotenv/config';
 import * as cdk from 'aws-cdk-lib/core';
 import { InfraStack } from '../lib/infra-stack';
-import { SpikeStack } from '../lib/spike-stack';
 import { GithubOidcStack } from '../lib/github-oidc-stack';
 
 const app = new cdk.App();
@@ -14,11 +13,6 @@ if (connectInstanceArn && !app.node.tryGetContext('connectInstanceArn')) {
 
 const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'eu-central-1' };
 new InfraStack(app, 'PhoneConnect-Med-InfraStack', {
-  env,
-  tags: { Project: 'PhoneConnect-Med' },
-});
-
-new SpikeStack(app, 'PhoneConnect-Med-SpikeStack', {
   env,
   tags: { Project: 'PhoneConnect-Med' },
 });
