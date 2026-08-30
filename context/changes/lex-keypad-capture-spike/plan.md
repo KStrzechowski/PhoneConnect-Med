@@ -488,16 +488,16 @@ the matrix is five calls rather than open-ended experimentation.
 
 #### Automated
 
-- [x] 4.1 `findings.md` carries exactly one `Verdict:` line with one of the three values
-- [x] 4.2 The roadmap's F-03 status is no longer `proposed`
-- [x] 4.3 After teardown, CDK synthesises with no spike stack
-- [x] 4.4 Infra tests pass after the spike test file is removed
+- [x] 4.1 `findings.md` carries exactly one `Verdict:` line with one of the three values — 20710b4
+- [x] 4.2 The roadmap's F-03 status is no longer `proposed` — 20710b4
+- [x] 4.3 After teardown, CDK synthesises with no spike stack — a4b4508
+- [x] 4.4 Infra tests pass after the spike test file is removed — a4b4508
 
 #### Manual
 
-- [x] 4.5 `findings.md` carries the working `CfnBot` DTMF fragment and the flow JSON
-- [x] 4.6 Where the verdict is not a clean confirmation, the fallback options are costed against the confound
-- [x] 4.7 `contract-surfaces.md` carries an entry, or `findings.md` records why none was earned
+- [x] 4.5 `findings.md` carries the working `CfnBot` DTMF fragment and the flow JSON — 20710b4
+- [x] 4.6 Where the verdict is not a clean confirmation, the fallback options are costed against the confound — 20710b4
+- [x] 4.7 `contract-surfaces.md` carries an entry, or `findings.md` records why none was earned — 20710b4
 - [x] 4.8 Findings are committed before anything is destroyed — 20710b4
 - [x] 4.9 `cdk destroy` completes and the bot no longer appears in the Connect instance's associated bots
 - [ ] 4.10 The console flow is deleted and the test number points where it did before — left to the operator, not tracked (see findings.md §Console state)

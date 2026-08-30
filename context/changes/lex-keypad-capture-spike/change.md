@@ -1,9 +1,9 @@
 ---
 change_id: lex-keypad-capture-spike
 title: Lex keypad capture spike
-status: implementing
+status: implemented
 created: 2026-08-26
-updated: 2026-08-27
+updated: 2026-08-30
 archived_at: null
 ---
 
