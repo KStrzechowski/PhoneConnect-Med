@@ -3,7 +3,7 @@ project: "PhoneConnect Med"
 version: 1
 status: draft
 created: 2026-08-23
-updated: 2026-08-29
+updated: 2026-08-30
 prd_version: 1
 main_goal: market-feedback
 top_blocker: time
@@ -49,8 +49,8 @@ that produces evidence rather than infrastructure.
 | --- | --- | --- | --- | --- | --- |
 | F-01 | `aws-deployment-baseline` | (foundation) a deployed, callable path from telephony to the mock exists | — | NFR (p95 < 2s), §Non-Goals | done |
 | F-02 | `call-measurement-substrate` | (foundation) every call and request emits a durable record | F-01 | FR-008, NFR (p95 < 2s), NFR (per-call record) | done |
-| F-03 | `lex-keypad-capture-spike` | (foundation) in-conversation keypad capture is confirmed or refuted | F-01 | FR-005, §Access Control L2 | in-progress |
-| S-01 | `facility-info-keypad` | get address and opening hours by pressing a key, and always reach a human | F-01, F-02 | FR-009, US-02, FR-001, FR-002, FR-003, FR-006, FR-007, FR-008 | proposed |
+| F-03 | `lex-keypad-capture-spike` | (foundation) in-conversation keypad capture is confirmed or refuted | F-01 | FR-005, §Access Control L2 | done |
+| S-01 | `facility-info-keypad` | get address and opening hours by pressing a key, and always reach a human | F-01, F-02 | FR-009, US-02, FR-001, FR-002, FR-003, FR-006, FR-007, FR-008 | in-progress |
 | S-02 | `facility-info-speech` | get the same answer by saying what they want, no menu | S-01 | FR-009, US-01, FR-001, FR-003, FR-006, FR-008 | proposed |
 | S-03 | `caller-id-authentication` | prove identity by PESEL + phone when calling from their own number | S-02, F-03 | FR-005, §Access Control L2 | proposed |
 | S-04 | `otp-authentication-fallback` | prove identity by PESEL + phone plus a texted code, from any number | S-03 | FR-005, §Access Control L2 | proposed |
@@ -176,14 +176,18 @@ the number**: no bot, no contact flow, no deployed function.
 - **Prerequisites:** F-01
 - **Parallel with:** F-02, S-01, S-02
 - **Blockers:** —
-- **Unknowns:**
-  - If in-conversation keypad capture does not work, is a separate input step acceptable, or
-    does the authenticated comparison get re-framed instead? — Owner: user. Block: no (the spike
-    answers the first half; the fallback decision is only needed if it fails).
+- **Unknowns:** — closed. In-conversation keypad capture works: the throwaway bot keys eleven
+  DTMF digits into a slot, reads them back, and continues into a spoken confirmation slot within
+  one session id, on a real call. The fallback question (separate input step vs. re-framed
+  comparison) does not arise. Four usability constraints S-03 must design around — confirmation
+  decline currently disconnects instead of re-eliciting, silent identical re-asks, unexplained
+  inconsistency on short DTMF entries, spoken digits not filling the slot — are recorded in
+  `context/changes/lex-keypad-capture-spike/findings.md` §Constraints.
 - **Risk:** A throwaway spike rather than part of S-03 because finding this out late means
   rebuilding the identity flow with the week already spent. Kept to a spike deliberately — it
   confirms a mechanism, it does not build authentication. Discard the artefact afterwards.
-- **Status:** in-progress
+- **Status:** done — verdict confirmed-with-constraints, see `findings.md`. Teardown
+  (`cdk destroy PhoneConnect-Med-SpikeStack`, code removal) is still pending.
 
 ## Slices
 
@@ -204,7 +208,7 @@ the number**: no bot, no contact flow, no deployed function.
   it and because every later slice reuses it rather than rebuilding it. The keypad variant is
   sequenced before the speech variant so that when the speech variant misbehaves, the rig is
   already known-good and the fault is isolated to language understanding.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-02: Facility information by speech
 
