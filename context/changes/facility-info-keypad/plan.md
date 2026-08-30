@@ -479,18 +479,18 @@ migration ever; keep it minimal (one table, one seed row) so later slices' own m
 
 #### Manual
 
-- [ ] 3.4 `cdk deploy` completes; both containers running on the instance
-- [ ] 3.5 Migration has run; `GET /facility` on the instance returns the seeded row
-- [ ] 3.6 Stop/start brings both containers back with the same data
-- [ ] 3.7 The new function appears in the telephony console's function list
+- [x] 3.4 `cdk deploy` completes; both containers running on the instance
+- [x] 3.5 Migration has run; `GET /facility` on the instance returns the seeded row
+- [x] 3.6 Stop/start brings both containers back with the same data
+- [x] 3.7 The new function appears in the telephony console's function list
 
 ### Phase 4: Contact flow, hand-off, and roadmap sync
 
 #### Manual
 
-- [ ] 4.1 Facility digit reads back the seeded address and hours correctly
-- [ ] 4.2 Repeat digit replays exactly what was last said
-- [ ] 4.3 Agent digit, 3 failed attempts, and a broken Lambda invocation all reach the queue without dropping the call
-- [ ] 4.4 Measurement log shows one `facility-info` record per call, carrying `variant: "keypad"`
-- [ ] 4.5 `contract-surfaces.md` carries the two new entries
-- [ ] 4.6 Roadmap status reflects the shipped slice
+- [x] 4.1 Facility digit reads back the seeded address and hours correctly
+- [x] 4.2 Repeat digit replays exactly what was last said
+- [x] 4.3 Agent digit, 3 failed attempts, and a broken Lambda invocation all reach the queue without dropping the call
+- [x] 4.4 Measurement log shows one `facility-info` record per call, carrying `variant: "keypad"`
+- [x] 4.5 `contract-surfaces.md` carries the two new entries
+- [x] 4.6 Roadmap status reflects the shipped slice
