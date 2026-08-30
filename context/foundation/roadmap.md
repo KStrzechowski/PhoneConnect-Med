@@ -186,8 +186,8 @@ the number**: no bot, no contact flow, no deployed function.
 - **Risk:** A throwaway spike rather than part of S-03 because finding this out late means
   rebuilding the identity flow with the week already spent. Kept to a spike deliberately — it
   confirms a mechanism, it does not build authentication. Discard the artefact afterwards.
-- **Status:** done — verdict confirmed-with-constraints, see `findings.md`. Teardown
-  (`cdk destroy PhoneConnect-Med-SpikeStack`, code removal) is still pending.
+- **Status:** done — verdict confirmed-with-constraints, teardown complete. Archived to
+  `context/archive/2026-08-26-lex-keypad-capture-spike/`, findings there.
 
 ## Slices
 
@@ -556,3 +556,4 @@ roadmap item is archived.)
 - **F-01: (foundation) a call can reach a deployed function that reaches the deployed mock medical system, and the whole path is described by infrastructure-as-code that can be torn down and recreated.** — Archived 2026-08-29 → `context/archive/2026-08-23-aws-deployment-baseline/`. Lesson: —.
 - **F-02: (foundation) every call emits a record from which the path taken, the outcome and the duration can be reconstructed, and every request through the shared logic emits its latency — to a destination that can be queried later.** — Archived 2026-08-29 → `context/archive/2026-08-23-call-measurement-substrate/`. Lesson: —.
 - **S-01: A caller presses a key on the main menu, hears the facility's address and opening hours, and can reach a human at any point.** — Archived 2026-08-30 → `context/archive/2026-08-29-facility-info-keypad/`. Lesson: —.
+- **F-03: (foundation) it is known, by trying it on a throwaway bot, whether the natural-language variant can collect keypad digits inside a conversational turn — and if it cannot, the fallback shape for identity capture is decided.** — Archived 2026-08-30 → `context/archive/2026-08-26-lex-keypad-capture-spike/`. Lesson: —.
