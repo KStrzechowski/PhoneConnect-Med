@@ -488,9 +488,9 @@ migration ever; keep it minimal (one table, one seed row) so later slices' own m
 
 #### Manual
 
-- [x] 4.1 Facility digit reads back the seeded address and hours correctly
-- [x] 4.2 Repeat digit replays exactly what was last said
-- [x] 4.3 Agent digit, 3 failed attempts, and a broken Lambda invocation all reach the queue without dropping the call
-- [x] 4.4 Measurement log shows one `facility-info` record per call, carrying `variant: "keypad"`
-- [x] 4.5 `contract-surfaces.md` carries the two new entries
-- [x] 4.6 Roadmap status reflects the shipped slice
+- [x] 4.1 Facility digit reads back the seeded address and hours correctly — 61b8d8e
+- [x] 4.2 Repeat digit replays exactly what was last said — 61b8d8e
+- [x] 4.3 Agent digit, 3 failed attempts, and a broken Lambda invocation all reach the queue without dropping the call — 61b8d8e
+- [x] 4.4 Measurement log shows one `facility-info` record per call, carrying `variant: "keypad"` — 61b8d8e
+- [x] 4.5 `contract-surfaces.md` carries the two new entries — 61b8d8e
+- [x] 4.6 Roadmap status reflects the shipped slice — 61b8d8e
