@@ -12,6 +12,7 @@
     "typescript": "~5.9.3"
   },
   "dependencies": {
-    "@pcm/measure": "*"
+    "@pcm/measure": "*",
+    "@pcm/facility": "*"
   }
 }

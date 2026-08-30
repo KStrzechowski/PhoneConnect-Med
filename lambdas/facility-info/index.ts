@@ -1,20 +1,12 @@
 import { measured, downstream } from '@pcm/measure';
+import { fetchFacility } from '@pcm/facility';
 
 export const handler = measured(
   'facility-info',
   async (_event, record): Promise<Record<string, string>> => {
     const abort = AbortSignal.timeout(1000);
     try {
-      const response = await downstream(record, () =>
-        fetch(`${process.env.MOCK_BASE_URL}/facility`, { signal: abort }),
-      );
-      const facility = (await response.json()) as {
-        name: string;
-        address: string;
-        opensAt: string;
-        closesAt: string;
-        openDays: string;
-      };
+      const facility = await downstream(record, () => fetchFacility(abort));
       return {
         reachable: 'true',
         name: facility.name,
