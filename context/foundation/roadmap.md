@@ -50,7 +50,7 @@ that produces evidence rather than infrastructure.
 | F-01 | `aws-deployment-baseline` | (foundation) a deployed, callable path from telephony to the mock exists | — | NFR (p95 < 2s), §Non-Goals | done |
 | F-02 | `call-measurement-substrate` | (foundation) every call and request emits a durable record | F-01 | FR-008, NFR (p95 < 2s), NFR (per-call record) | done |
 | F-03 | `lex-keypad-capture-spike` | (foundation) in-conversation keypad capture is confirmed or refuted | F-01 | FR-005, §Access Control L2 | done |
-| S-01 | `facility-info-keypad` | get address and opening hours by pressing a key, and always reach a human | F-01, F-02 | FR-009, US-02, FR-001, FR-002, FR-003, FR-006, FR-007, FR-008 | in-progress |
+| S-01 | `facility-info-keypad` | get address and opening hours by pressing a key, and always reach a human | F-01, F-02 | FR-009, US-02, FR-001, FR-002, FR-003, FR-006, FR-007, FR-008 | done |
 | S-02 | `facility-info-speech` | get the same answer by saying what they want, no menu | S-01 | FR-009, US-01, FR-001, FR-003, FR-006, FR-008 | proposed |
 | S-03 | `caller-id-authentication` | prove identity by PESEL + phone when calling from their own number | S-02, F-03 | FR-005, §Access Control L2 | proposed |
 | S-04 | `otp-authentication-fallback` | prove identity by PESEL + phone plus a texted code, from any number | S-03 | FR-005, §Access Control L2 | proposed |
@@ -208,7 +208,7 @@ the number**: no bot, no contact flow, no deployed function.
   it and because every later slice reuses it rather than rebuilding it. The keypad variant is
   sequenced before the speech variant so that when the speech variant misbehaves, the rig is
   already known-good and the fault is isolated to language understanding.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-02: Facility information by speech
 
@@ -555,3 +555,4 @@ roadmap item is archived.)
 
 - **F-01: (foundation) a call can reach a deployed function that reaches the deployed mock medical system, and the whole path is described by infrastructure-as-code that can be torn down and recreated.** — Archived 2026-08-29 → `context/archive/2026-08-23-aws-deployment-baseline/`. Lesson: —.
 - **F-02: (foundation) every call emits a record from which the path taken, the outcome and the duration can be reconstructed, and every request through the shared logic emits its latency — to a destination that can be queried later.** — Archived 2026-08-29 → `context/archive/2026-08-23-call-measurement-substrate/`. Lesson: —.
+- **S-01: A caller presses a key on the main menu, hears the facility's address and opening hours, and can reach a human at any point.** — Archived 2026-08-30 → `context/archive/2026-08-29-facility-info-keypad/`. Lesson: —.
