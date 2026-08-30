@@ -5,6 +5,9 @@
 /event.keypad.json
 /out.json
 
+# Local Connect flow import templates — never committed, flows are hand-built per convention
+/connect-flow-templates/
+
 # Logs
 logs
 *.log
