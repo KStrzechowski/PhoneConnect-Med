@@ -15,9 +15,14 @@ const mockPort = 3000;
 const githubRepository = 'KStrzechowski@57865141/PhoneConnect-Med@1339987698';
 const speechLocale = 'pl_PL';
 
-function globalIntent(name: string, utterances: string[]): lex.CfnBot.IntentProperty {
+function globalIntent(
+  name: string,
+  utterances: string[],
+  parentIntentSignature?: string,
+): lex.CfnBot.IntentProperty {
   return {
     name,
+    parentIntentSignature,
     sampleUtterances: utterances.map((utterance) => ({ utterance })),
     fulfillmentCodeHook: { enabled: true },
   };
@@ -289,7 +294,7 @@ volumes:
           intents: [
             globalIntent('MainMenuIntent', mainMenuUtterances),
             globalIntent('InfoIntent', infoUtterances),
-            globalIntent('RepeatIntent', repeatUtterances),
+            globalIntent('RepeatIntent', repeatUtterances, 'AMAZON.RepeatIntent'),
             globalIntent('AgentTransferIntent', agentTransferUtterances),
             {
               name: 'FallbackIntent',
