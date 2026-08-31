@@ -57,7 +57,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexC
     return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
   }
 
-  if (intentName === 'RepeatIntent') {
+  if (intentName === 'RepeatLastMessageIntent') {
     const message = incoming.lastMessageText ?? 'Nie mam jeszcze nic do powtórzenia.';
     return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
   }

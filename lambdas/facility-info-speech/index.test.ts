@@ -43,8 +43,8 @@ test('InfoIntent returns the byte-identical facility sentence', async () => {
   assert.equal(result.sessionState.sessionAttributes.fallbackCount, '0');
 });
 
-test('RepeatIntent echoes the last spoken message', async () => {
-  const result = await handler(eventFor('RepeatIntent', { lastMessageText: 'poprzednia wiadomość' }));
+test('RepeatLastMessageIntent echoes the last spoken message', async () => {
+  const result = await handler(eventFor('RepeatLastMessageIntent', { lastMessageText: 'poprzednia wiadomość' }));
 
   assert.equal(result.messages[0].content, 'poprzednia wiadomość');
 });

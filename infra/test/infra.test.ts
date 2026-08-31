@@ -93,7 +93,7 @@ test('the speech bot has all 5 global-layer intents under pl_PL', () => {
         Intents: Match.arrayWith([
           Match.objectLike({ Name: 'MainMenuIntent' }),
           Match.objectLike({ Name: 'InfoIntent' }),
-          Match.objectLike({ Name: 'RepeatIntent' }),
+          Match.objectLike({ Name: 'RepeatLastMessageIntent' }),
           Match.objectLike({ Name: 'AgentTransferIntent' }),
           Match.objectLike({ Name: 'FallbackIntent' }),
         ]),

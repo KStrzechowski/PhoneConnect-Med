@@ -29,6 +29,28 @@ something that no test will catch.
   this attribute first, repeat silently plays stale (or no) text at that point in the flow.
   Nothing in the repo enforces this — flows are hand-built and outside IaC.
 
+## Lex session attributes (facility-info-speech bot)
+
+- **`contactId`**
+  - **Set by:** the contact flow's Get Customer Input (Lex) block, from `$.ContactId`, passed as
+    a Lex session attribute when the block invokes the bot.
+  - **Read by:** `lambdas/facility-info-speech/index.ts`, to stamp the synthetic `ConnectEvent` it
+    builds for `measured()`'s `contactId` field — a Lex fulfillment event carries no contact ID of
+    its own.
+- **`lastMessageText`**
+  - **Set by:** every intent response in `lambdas/facility-info-speech/index.ts`, to whatever it
+    just said.
+  - **Read by:** `RepeatLastMessageIntent`'s handler, echoed back verbatim. The Lex-session-scoped analogue
+    of the `lastMessageText` contact attribute above.
+- **`fallbackCount`**
+  - **Set by:** `lambdas/facility-info-speech/index.ts` — incremented on `FallbackIntent`, reset
+    to `'0'` on every other intent.
+  - **Read by:** the contact flow, via `$.Lex.SessionAttributes.fallbackCount`, to decide
+    loop-back vs. transfer to the agent queue after each turn.
+- **Why it matters:** this is the speech variant's counterpart to the keypad variant's contact
+  attributes and reserved digits — repeat and fallback/transfer state, carried in Lex session
+  state instead. Nothing in the repo enforces this; flows are hand-built and outside IaC.
+
 ## Reserved global digits
 
 - **`0`** — always transfers to the agent queue (FR-006), from any Get Customer Input block.
