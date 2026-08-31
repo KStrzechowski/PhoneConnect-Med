@@ -12,7 +12,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
 const mockPort = 3000;
-const githubRepository = 'KStrzechowski/PhoneConnect-Med';
+const githubRepository = 'KStrzechowski@57865141/PhoneConnect-Med@1339987698';
 const speechLocale = 'pl_PL';
 
 function globalIntent(name: string, utterances: string[]): lex.CfnBot.IntentProperty {
