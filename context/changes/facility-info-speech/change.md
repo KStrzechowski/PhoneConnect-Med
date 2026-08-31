@@ -1,9 +1,9 @@
 ---
 change_id: facility-info-speech
 title: Facility info speech
-status: implementing
+status: implemented
 created: 2026-08-30
-updated: 2026-08-30
+updated: 2026-09-01
 archived_at: null
 ---
 
