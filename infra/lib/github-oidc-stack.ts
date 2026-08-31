@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
-const githubRepository = 'KStrzechowski/PhoneConnect-Med';
+const githubRepository = 'KStrzechowski@57865141/PhoneConnect-Med@1339987698';
 const cdkBootstrapQualifier = 'hnb659fds';
 
 // No dependency on InfraStack/SpikeStack — these roles only need to run `cdk diff`/`cdk deploy`

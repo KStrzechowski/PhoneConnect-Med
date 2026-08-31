@@ -21,8 +21,8 @@ test('the diff role trusts PRs and pushes to main, but can only assume the read-
           Condition: {
             StringLike: {
               'token.actions.githubusercontent.com:sub': [
-                'repo:KStrzechowski/PhoneConnect-Med:pull_request',
-                'repo:KStrzechowski/PhoneConnect-Med:ref:refs/heads/main',
+                'repo:KStrzechowski@57865141/PhoneConnect-Med@1339987698:pull_request',
+                'repo:KStrzechowski@57865141/PhoneConnect-Med@1339987698:ref:refs/heads/main',
               ],
             },
           },
@@ -53,7 +53,7 @@ test('the deploy role is reachable only through the infra-deploy environment', (
           Condition: {
             StringEquals: {
               'token.actions.githubusercontent.com:sub':
-                'repo:KStrzechowski/PhoneConnect-Med:environment:infra-deploy',
+                'repo:KStrzechowski@57865141/PhoneConnect-Med@1339987698:environment:infra-deploy',
             },
           },
         }),
