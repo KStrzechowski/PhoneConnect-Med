@@ -524,7 +524,7 @@ extraction in Phase 1 is a pure refactor with no migration concern.
 
 #### Manual
 
-- [ ] 1.5 `facility-info`'s handler still returns the seeded facility data locally
+- [x] 1.5 `facility-info`'s handler still returns the seeded facility data locally
 
 ### Phase 2: `lambdas/facility-info-speech/`
 
@@ -541,7 +541,7 @@ extraction in Phase 1 is a pure refactor with no migration concern.
 
 #### Manual
 
-- [ ] 2.7 Handler invoked locally with a crafted `InfoIntent` event returns the seeded data
+- [x] 2.7 Handler invoked locally with a crafted `InfoIntent` event returns the seeded data
       composed into the exact template
 
 ### Phase 3: Infrastructure — the Lex bot and the new function
@@ -554,21 +554,21 @@ extraction in Phase 1 is a pure refactor with no migration concern.
 
 #### Manual
 
-- [ ] 3.4 `cdk deploy` completes; the bot appears in the Lex console with all 5 intents built
-- [ ] 3.5 The new function's logs show it receiving Lex fulfillment invocations from a test
+- [x] 3.4 `cdk deploy` completes; the bot appears in the Lex console with all 5 intents built
+- [x] 3.5 The new function's logs show it receiving Lex fulfillment invocations from a test
       utterance
-- [ ] 3.6 The bot alias is associated with the Connect instance
+- [x] 3.6 The bot alias is associated with the Connect instance
 
 ### Phase 4: Contact flow, hand-off, contract surfaces, and roadmap sync
 
 #### Manual
 
-- [ ] 4.1 Spoken facility answer matches S-01's exactly, word-for-word
-- [ ] 4.2 Repeat replays exactly what was last said
-- [ ] 4.3 Agent request, and 3 unrecognized utterances, both reach the queue without dropping the
+- [x] 4.1 Spoken facility answer matches S-01's exactly, word-for-word
+- [x] 4.2 Repeat replays exactly what was last said
+- [x] 4.3 Agent request, and 3 unrecognized utterances, both reach the queue without dropping the
       call
-- [ ] 4.4 The three fallback retries use distinct wording
-- [ ] 4.5 Measurement log shows one `facility-info-speech` record per call, carrying
+- [x] 4.4 The three fallback retries use distinct wording
+- [x] 4.5 Measurement log shows one `facility-info-speech` record per call, carrying
       `variant: "speech"`
-- [ ] 4.6 `contract-surfaces.md` carries the new Lex session attribute entry
+- [x] 4.6 `contract-surfaces.md` carries the new Lex session attribute entry
 - [ ] 4.7 Roadmap status reflects the shipped slice
