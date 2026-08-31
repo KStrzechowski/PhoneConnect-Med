@@ -35,7 +35,7 @@ the role S-01 played for the keypad variant's repeat/attempt/transfer mechanism.
   `PromptAttemptSpecificationProperty` fragments don't apply here — every intent in this slice is
   voice-only, unauthenticated, zero-slot.
 - **The bot's utterances are already authored and frozen**, per the measurement protocol's
-  train-before-build rule: `MainMenuIntent`, `InfoIntent`, `RepeatIntent`, `AgentTransferIntent`,
+  train-before-build rule: `MainMenuIntent`, `InfoIntent`, `RepeatLastMessageIntent`, `AgentTransferIntent`,
   and built-in `FallbackIntent` under `## Global layer`
   (`context/foundation/lex-sample-utterances.md:11-93`). None of these five intents carry slots.
 - **`docs/reference/contract-surfaces.md`** documents `Details.Parameters.variant` (already
@@ -139,7 +139,7 @@ fails silently at the type level only if the synthetic event is over-shaped; kee
 
 **Session-attribute state carries repeat text and the fallback counter across turns, mirroring
 `lastMessageText` but scoped to the Lex session, not the Connect contact.** Every intent response
-sets `sessionAttributes.lastMessageText` to whatever it just said; `RepeatIntent`'s handler reads
+sets `sessionAttributes.lastMessageText` to whatever it just said; `RepeatLastMessageIntent`'s handler reads
 it back verbatim. `sessionAttributes.fallbackCount` increments only when the matched intent is
 `FallbackIntent`, and resets to `'0'` on every other intent — so the **flow**, not the Lambda,
 decides whether the third strike transfers: it checks `$.Lex.SessionAttributes.fallbackCount` (the
@@ -233,7 +233,7 @@ state, and emits a `measured()` record carrying `variant: "speech"`.
 dialog action and an updated `sessionAttributes` map. `InfoIntent` calls `fetchFacility()` (via
 `downstream()`) and composes `"Nasz adres to {address}. Jesteśmy czynni od {opensAt} do
 {closesAt}, {openDays}."` verbatim. `MainMenuIntent` returns a short orientation message
-(what the caller can ask for — not a digit menu). `RepeatIntent` echoes
+(what the caller can ask for — not a digit menu). `RepeatLastMessageIntent` echoes
 `sessionAttributes.lastMessageText` from the incoming event. `AgentTransferIntent` returns a
 short "connecting you" message; the contact flow branches on this intent name directly.
 `FallbackIntent` increments `sessionAttributes.fallbackCount` and returns one of three distinct
@@ -416,7 +416,7 @@ Connect-contact-attribute entries.
 keys: `contactId` (set by the contact flow's Get Customer Input (Lex) block from `$.ContactId`,
 read by the fulfillment Lambda to stamp `measured()`'s `contactId` field), `lastMessageText` (the
 Lex-session analogue of the Connect contact attribute of the same name — set by every intent
-response, read by `RepeatIntent`), and `fallbackCount` (incremented on `FallbackIntent`, reset to
+response, read by `RepeatLastMessageIntent`), and `fallbackCount` (incremented on `FallbackIntent`, reset to
 `'0'` otherwise, read by the flow via `$.Lex.SessionAttributes.fallbackCount` to decide
 loop-back vs. transfer).
 
@@ -548,9 +548,9 @@ extraction in Phase 1 is a pure refactor with no migration concern.
 
 #### Automated
 
-- [x] 3.1 CDK synthesises
-- [x] 3.2 Existing Connect-permission-count test still passes unchanged
-- [x] 3.3 New Lex-bot and Lex-permission assertions pass
+- [x] 3.1 CDK synthesises — e863f75
+- [x] 3.2 Existing Connect-permission-count test still passes unchanged — e863f75
+- [x] 3.3 New Lex-bot and Lex-permission assertions pass — e863f75
 
 #### Manual
 

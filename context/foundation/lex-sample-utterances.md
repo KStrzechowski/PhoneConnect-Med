@@ -49,7 +49,10 @@ informacje o przychodni
 chcę się dowiedzieć o placówce
 ```
 
-### RepeatIntent
+### RepeatLastMessageIntent
+
+> Renamed from `RepeatIntent` — Lex V2 reserves that base name for the built-in
+> `AMAZON.RepeatIntent`, which rejects a custom intent import under the same name.
 
 ```
 powtórz
