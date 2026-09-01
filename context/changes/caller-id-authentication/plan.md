@@ -478,7 +478,7 @@ capability additive to the existing system.
 #### Automated
 
 - [x] 3.1 `npm test --workspace lambdas/authenticate` passes, covering authenticated,
-      not-authenticated, and downstream-failure
+      not-authenticated, and downstream-failure — 1091400
 
 #### Manual
 
@@ -489,7 +489,7 @@ capability additive to the existing system.
 
 #### Automated
 
-- [ ] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including `AuthIntent` cases
+- [x] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including `AuthIntent` cases
 
 ### Phase 5: Infrastructure
 

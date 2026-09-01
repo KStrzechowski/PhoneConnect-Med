@@ -10,7 +10,7 @@ export type InvocationRecord = {
   ts: string;
   handler: string;
   durationMs: number;
-  outcome: 'ok' | 'error';
+  outcome: 'ok' | 'error' | 'transferred';
   contactId?: string;
   variant?: 'keypad' | 'speech';
   authPath?: 'caller-id' | 'otp' | 'demo';

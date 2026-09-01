@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@pcm/measure": "*",
-    "@pcm/facility": "*"
+    "@pcm/facility": "*",
+    "@pcm/patient": "*"
   }
 }

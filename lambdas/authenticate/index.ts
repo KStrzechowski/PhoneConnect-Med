@@ -17,6 +17,7 @@ export const handler = measured(
           firstName: result.firstName,
         };
       }
+      record.outcome = 'transferred';
       return { reachable: 'true', authenticated: 'false' };
     } catch (error) {
       const message = String(error);
