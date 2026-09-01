@@ -495,8 +495,8 @@ capability additive to the existing system.
 
 #### Automated
 
-- [x] 5.1 `cdk synth` succeeds
-- [x] 5.2 `Template.fromStack` assertions pass, extended for the new function and bot intent count
+- [x] 5.1 `cdk synth` succeeds — 09b52f9
+- [x] 5.2 `Template.fromStack` assertions pass, extended for the new function and bot intent count — 09b52f9
 
 #### Manual
 
