@@ -23,6 +23,26 @@ const eventFor = (intentName: string, sessionAttributes: Record<string, string> 
   },
 });
 
+const authIntentEvent = (
+  pesel: string,
+  phone: string,
+  sessionAttributes: Record<string, string> = {},
+) => ({
+  ...sampleEvent,
+  sessionState: {
+    ...sampleEvent.sessionState,
+    sessionAttributes: { contactId: 'contact-1', callerNumber: '+48000000000', ...sessionAttributes },
+    intent: {
+      ...sampleEvent.sessionState.intent,
+      name: 'AuthIntent',
+      slots: {
+        pesel: { value: { interpretedValue: pesel } },
+        phone: { value: { interpretedValue: phone } },
+      },
+    },
+  },
+});
+
 const captureRecords = () => {
   const logged: InvocationRecord[] = [];
   mock.method(console, 'log', (record: InvocationRecord) => void logged.push(record));
@@ -72,6 +92,43 @@ test('a non-FallbackIntent invocation resets the fallback counter to 0', async (
   const result = await handler(eventFor('AgentTransferIntent', { fallbackCount: '2' }));
 
   assert.equal(result.sessionState.sessionAttributes.fallbackCount, '0');
+});
+
+test('AuthIntent confirms and sets session attributes when the pair matches from the declared number', async () => {
+  mock.method(
+    globalThis,
+    'fetch',
+    async () => new Response(JSON.stringify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski' })),
+  );
+  const result = await handler(authIntentEvent('90010112345', '+48000000000'));
+  mock.restoreAll();
+
+  assert.equal(result.messages[0].content, 'Dziękuję. Tożsamość została potwierdzona.');
+  assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
+  assert.equal(result.sessionState.sessionAttributes.patientId, '1');
+});
+
+test('AuthIntent speaks the neutral message and signals a transfer when the pair matches no record', async () => {
+  mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ matched: false })));
+  const result = await handler(authIntentEvent('00000000000', '+48000000000'));
+  mock.restoreAll();
+
+  assert.equal(result.messages[0].content, 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
+  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
+  assert.equal('authenticated' in result.sessionState.sessionAttributes, false);
+});
+
+test('AuthIntent speaks the byte-identical neutral message when the pair matches but from a different number', async () => {
+  mock.method(
+    globalThis,
+    'fetch',
+    async () => new Response(JSON.stringify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski' })),
+  );
+  const result = await handler(authIntentEvent('90010112345', '+48000000000', { callerNumber: '+48111111111' }));
+  mock.restoreAll();
+
+  assert.equal(result.messages[0].content, 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
+  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
 });
 
 test('emits exactly one measurement record, carrying variant and contactId', async () => {

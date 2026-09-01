@@ -26,12 +26,15 @@ test('returns authenticated true and stamps the caller-id auth path when the pai
   assert.equal(records()[0].authPath, 'caller-id');
 });
 
-test('returns authenticated false when the pair matches no record', async () => {
+test('returns authenticated false and marks the record transferred when the pair matches no record', async () => {
   mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ matched: false })));
+  const records = captureRecords();
   const result = await handler(sampleEvent);
   mock.restoreAll();
 
   assert.deepEqual(result, { reachable: 'true', authenticated: 'false' });
+  assert.equal(records()[0].outcome, 'transferred');
+  assert.equal('authPath' in records()[0], false);
 });
 
 test('returns a handled error when the mock is unreachable', async () => {

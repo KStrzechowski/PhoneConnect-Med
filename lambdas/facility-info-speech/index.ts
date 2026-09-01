@@ -1,11 +1,12 @@
 import { measured, downstream, type ConnectEvent, type InvocationRecord } from '@pcm/measure';
 import { fetchFacility } from '@pcm/facility';
+import { authenticate } from '@pcm/patient';
 
 type LexEvent = {
   invocationSource: 'FulfillmentCodeHook';
   sessionState: {
     sessionAttributes?: Record<string, string>;
-    intent: { name: string };
+    intent: { name: string; slots?: Record<string, { value?: { interpretedValue?: string } } | null> };
   };
 };
 
@@ -47,6 +48,48 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexC
       record.error = String(error);
       const message = 'Przepraszam, mam teraz problem z pobraniem tych informacji. Łączę z konsultantem.';
       return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
+    }
+  }
+
+  if (intentName === 'AuthIntent') {
+    const pesel = event.sessionState.intent.slots?.pesel?.value?.interpretedValue ?? '';
+    const phone = event.sessionState.intent.slots?.phone?.value?.interpretedValue ?? '';
+    const callerNumber = incoming.callerNumber ?? '';
+    try {
+      const result = await downstream(record, () =>
+        authenticate(pesel, phone, callerNumber, AbortSignal.timeout(1000)),
+      );
+      if (result.authenticated) {
+        record.authPath = 'caller-id';
+        const message = 'Dziękuję. Tożsamość została potwierdzona.';
+        return close(
+          intentName,
+          {
+            ...incoming,
+            lastMessageText: message,
+            fallbackCount: '0',
+            authenticated: 'true',
+            patientId: String(result.patientId),
+          },
+          message,
+        );
+      }
+      record.outcome = 'transferred';
+      const message = 'Kod weryfikacyjny został wysłany na podany numer telefonu.';
+      return close(
+        intentName,
+        { ...incoming, lastMessageText: message, fallbackCount: '0', transfer: 'true' },
+        message,
+      );
+    } catch (error) {
+      record.outcome = 'error';
+      record.error = String(error);
+      const message = 'Przepraszam, mam teraz problem z weryfikacją tożsamości. Łączę z konsultantem.';
+      return close(
+        intentName,
+        { ...incoming, lastMessageText: message, fallbackCount: '0', transfer: 'true' },
+        message,
+      );
     }
   }
 
