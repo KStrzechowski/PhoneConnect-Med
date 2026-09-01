@@ -258,7 +258,7 @@ Three access layers.
 |---|---|---|---|
 | `MainMenuIntent` | „dzień dobry", „co mogę zrobić", „menu" | – | Recognise intent, route to the right flow |
 | `InfoIntent` | „jakie są godziny otwarcia", „gdzie się znajdujecie", „podaj adres" | – | Play facility information |
-| `RepeatIntent` | „powtórz", „słucham?", „nie dosłyszałem" | – | Repeat the last system message |
+| `RepeatLastMessageIntent` | „powtórz", „słucham?", „nie dosłyszałem" | – | Repeat the last system message |
 | `AgentTransferIntent` | „połącz z agentem", „chcę rozmawiać z człowiekiem", „pomoc" | – | Transfer to agent |
 | `FallbackIntent` | (intent not recognised) | – | Re-ask, or transfer to agent after the 3rd failure |
 
