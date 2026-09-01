@@ -73,7 +73,7 @@ B2 and B3 are the load-bearing cards: they test whether a participant volunteers
 | ID | Card (read aloud) | Ground truth |
 |---|---|---|
 | E1 | „Nie chcesz rozmawiać z automatem." | `AgentTransferIntent` |
-| E2 | „Automat coś powiedział, ale nie dosłyszałeś." | `RepeatIntent` |
+| E2 | „Automat coś powiedział, ale nie dosłyszałeś." | `RepeatLastMessageIntent` |
 | E3 | „Dzwonisz i słyszysz powitanie. Nie wiesz jeszcze, co można tu załatwić." | `MainMenuIntent` |
 
 ### Out-of-scope (fallback calibration)

@@ -87,7 +87,7 @@ npx cdk deploy --require-approval never
 |----------|------|
 | `MainMenuIntent` | Przywitanie, menu główne |
 | `InfoIntent` | Informacje o placówce |
-| `RepeatIntent` | Powtórzenie komunikatu |
+| `RepeatLastMessageIntent` | Powtórzenie komunikatu |
 | `AgentTransferIntent` | Transfer do agenta |
 | `FallbackIntent` | Nierozpoznane wypowiedzi |
 
