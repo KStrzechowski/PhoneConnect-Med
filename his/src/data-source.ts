@@ -1,6 +1,7 @@
 import * as path from 'node:path';
 import { DataSource } from 'typeorm';
 import { Facility } from './facility/facility.entity';
+import { Patient } from './patient/patient.entity';
 
 export const dataSourceOptions = {
   type: 'postgres' as const,
@@ -9,7 +10,7 @@ export const dataSourceOptions = {
   username: process.env.DB_USERNAME ?? 'his',
   password: process.env.DB_PASSWORD ?? 'his',
   database: process.env.DB_DATABASE ?? 'his',
-  entities: [Facility],
+  entities: [Facility, Patient],
   synchronize: false,
 };
 
