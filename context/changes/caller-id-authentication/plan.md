@@ -459,8 +459,8 @@ capability additive to the existing system.
 
 #### Automated
 
-- [x] 1.1 `npm run test` inside `his/` passes, including the new patient spec
-- [x] 1.2 `npm run migration:run` inside `his/` applies cleanly against a fresh database
+- [x] 1.1 `npm run test` inside `his/` passes, including the new patient spec — cb0a35c
+- [x] 1.2 `npm run migration:run` inside `his/` applies cleanly against a fresh database — cb0a35c
 
 #### Manual
 
@@ -471,7 +471,7 @@ capability additive to the existing system.
 
 #### Automated
 
-- [ ] 2.1 `npm test --workspace lambdas/patient` passes, covering all three branches
+- [x] 2.1 `npm test --workspace lambdas/patient` passes, covering all three branches
 
 ### Phase 3: Keypad-variant Lambda
 
