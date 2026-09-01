@@ -23,6 +23,26 @@ function globalIntent(name: string, utterances: string[]): lex.CfnBot.IntentProp
   };
 }
 
+function say(value: string): lex.CfnBot.MessageGroupProperty {
+  return { message: { plainTextMessage: { value } } };
+}
+
+function keypadOnlyAttempt(maxLength: number): lex.CfnBot.PromptAttemptSpecificationProperty {
+  return {
+    allowedInputTypes: { allowAudioInput: false, allowDtmfInput: true },
+    allowInterrupt: false,
+    audioAndDtmfInputSpecification: {
+      startTimeoutMs: 10000,
+      dtmfSpecification: {
+        deletionCharacter: '*',
+        endCharacter: '#',
+        endTimeoutMs: 5000,
+        maxLength,
+      },
+    },
+  };
+}
+
 const mainMenuUtterances = [
   'dzień dobry',
   'halo',
@@ -71,6 +91,18 @@ const repeatUtterances = [
   'mógłbyś powtórzyć',
   'co powiedziałeś',
   'przepraszam, nie usłyszałem',
+];
+
+const authUtterances = [
+  'chcę się zalogować',
+  'zaloguj mnie',
+  'chcę się zidentyfikować',
+  'chcę potwierdzić tożsamość',
+  'chcę się uwierzytelnić',
+  'podam swoje dane',
+  'mogę podać PESEL',
+  'mam podać numer PESEL',
+  'jak się zalogować',
 ];
 
 const agentTransferUtterances = [
@@ -247,6 +279,32 @@ volumes:
       integrationArn: facilityInfo.functionArn,
     });
 
+    const authenticate = new NodejsFunction(this, 'Authenticate', {
+      entry: path.join(repoRoot, 'lambdas/authenticate/index.ts'),
+      projectRoot: repoRoot,
+      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
+      runtime: lambda.Runtime.NODEJS_24_X,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      securityGroups: [functionSecurityGroup],
+      allowPublicSubnet: true,
+      environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
+      timeout: cdk.Duration.seconds(2),
+      logGroup: measurements,
+      loggingFormat: lambda.LoggingFormat.JSON,
+    });
+
+    authenticate.addPermission('ConnectInvoke', {
+      principal: new iam.ServicePrincipal('connect.amazonaws.com'),
+      sourceArn: connectInstanceArn,
+    });
+
+    new connect.CfnIntegrationAssociation(this, 'AuthenticateFunctionAssociation', {
+      instanceId: connectInstanceArn,
+      integrationType: 'LAMBDA_FUNCTION',
+      integrationArn: authenticate.functionArn,
+    });
+
     const facilityInfoSpeech = new NodejsFunction(this, 'FacilityInfoSpeech', {
       entry: path.join(repoRoot, 'lambdas/facility-info-speech/index.ts'),
       projectRoot: repoRoot,
@@ -286,11 +344,95 @@ volumes:
           localeId: speechLocale,
           nluConfidenceThreshold: 0.4,
           voiceSettings: { voiceId: 'Ola', engine: 'neural' },
+          slotTypes: [
+            {
+              name: 'KeyedPesel',
+              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
+              slotTypeValues: [{ sampleValue: { value: '00000000000' } }],
+            },
+            {
+              name: 'KeyedPhone',
+              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
+              slotTypeValues: [{ sampleValue: { value: '000000000' } }],
+            },
+          ],
           intents: [
             globalIntent('MainMenuIntent', mainMenuUtterances),
             globalIntent('InfoIntent', infoUtterances),
             globalIntent('RepeatLastMessageIntent', repeatUtterances),
             globalIntent('AgentTransferIntent', agentTransferUtterances),
+            {
+              name: 'AuthIntent',
+              sampleUtterances: authUtterances.map((utterance) => ({ utterance })),
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [
+                { slotName: 'pesel', priority: 1 },
+                { slotName: 'phone', priority: 2 },
+              ],
+              slots: [
+                {
+                  name: 'pesel',
+                  slotTypeName: 'KeyedPesel',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say('Wprowadź numer PESEL na klawiaturze telefonu, a następnie naciśnij krzyżyk.'),
+                      ],
+                      promptAttemptsSpecification: {
+                        Initial: keypadOnlyAttempt(11),
+                        Retry1: keypadOnlyAttempt(11),
+                        Retry2: keypadOnlyAttempt(11),
+                      },
+                    },
+                  },
+                },
+                {
+                  name: 'phone',
+                  slotTypeName: 'KeyedPhone',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say('Wprowadź swój numer telefonu na klawiaturze, a następnie naciśnij krzyżyk.'),
+                      ],
+                      promptAttemptsSpecification: {
+                        Initial: keypadOnlyAttempt(15),
+                        Retry1: keypadOnlyAttempt(15),
+                        Retry2: keypadOnlyAttempt(15),
+                      },
+                    },
+                  },
+                },
+              ],
+              intentConfirmationSetting: {
+                promptSpecification: {
+                  maxRetries: 2,
+                  allowInterrupt: false,
+                  messageGroupsList: [
+                    say(
+                      'Podano numer PESEL {pesel} oraz numer telefonu {phone}. Czy dane są poprawne? Powiedz tak albo nie.',
+                    ),
+                  ],
+                },
+                declinationResponse: {
+                  messageGroupsList: [say('Proszę podać dane jeszcze raz.')],
+                },
+                declinationNextStep: {
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'pesel' },
+                  intent: {
+                    slots: [
+                      { slotName: 'pesel', slotValueOverride: {} },
+                      { slotName: 'phone', slotValueOverride: {} },
+                    ],
+                  },
+                },
+              },
+            },
             {
               name: 'FallbackIntent',
               parentIntentSignature: 'AMAZON.FallbackIntent',
@@ -450,6 +592,7 @@ volumes:
     new cdk.CfnOutput(this, 'MockPrivateIp', { value: instance.instancePrivateIp });
     new cdk.CfnOutput(this, 'ConnectHealthFunctionName', { value: connectHealth.functionName });
     new cdk.CfnOutput(this, 'FacilityInfoFunctionName', { value: facilityInfo.functionName });
+    new cdk.CfnOutput(this, 'AuthenticateFunctionName', { value: authenticate.functionName });
     new cdk.CfnOutput(this, 'FacilityInfoSpeechFunctionName', { value: facilityInfoSpeech.functionName });
     new cdk.CfnOutput(this, 'SpeechBotAliasArn', { value: speechBotAlias.attrArn });
     new cdk.CfnOutput(this, 'DeployRoleArn', { value: deployRole.roleArn });

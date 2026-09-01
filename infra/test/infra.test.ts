@@ -77,14 +77,14 @@ test('the telephony instance may invoke the function', () => {
   });
 });
 
-test('both functions may be invoked by the telephony instance', () => {
+test('all three keypad-invoked functions may be invoked by the telephony instance', () => {
   const permissions = template.findResources('AWS::Lambda::Permission', {
     Properties: { Principal: 'connect.amazonaws.com' },
   });
-  expect(Object.keys(permissions)).toHaveLength(2);
+  expect(Object.keys(permissions)).toHaveLength(3);
 });
 
-test('the speech bot has all 5 global-layer intents under pl_PL', () => {
+test('the speech bot has all 5 global-layer intents plus AuthIntent under pl_PL', () => {
   template.hasResourceProperties('AWS::Lex::Bot', {
     DataPrivacy: { ChildDirected: false },
     BotLocales: Match.arrayWith([
@@ -95,11 +95,25 @@ test('the speech bot has all 5 global-layer intents under pl_PL', () => {
           Match.objectLike({ Name: 'InfoIntent' }),
           Match.objectLike({ Name: 'RepeatLastMessageIntent' }),
           Match.objectLike({ Name: 'AgentTransferIntent' }),
+          Match.objectLike({ Name: 'AuthIntent' }),
           Match.objectLike({ Name: 'FallbackIntent' }),
         ]),
       }),
     ]),
   });
+});
+
+test('AuthIntent has an explicit declination path that clears both slots and re-elicits pesel', () => {
+  const bots = template.findResources('AWS::Lex::Bot');
+  const [bot] = Object.values(bots);
+  const locale = (bot.Properties.BotLocales as Array<{ LocaleId: string; Intents: Array<{ Name: string }> }>).find(
+    (candidate) => candidate.LocaleId === 'pl_PL',
+  );
+  const authIntent = locale?.Intents.find((intent) => intent.Name === 'AuthIntent') as
+    | { IntentConfirmationSetting?: { DeclinationNextStep?: { DialogAction?: { SlotToElicit?: string } } } }
+    | undefined;
+
+  expect(authIntent?.IntentConfirmationSetting?.DeclinationNextStep?.DialogAction?.SlotToElicit).toBe('pesel');
 });
 
 test('only the speech function may be invoked by Lex', () => {
@@ -121,14 +135,15 @@ test('the bot association custom resource may associate and disassociate the bot
   });
 });
 
-test('both functions are associated with the telephony instance', () => {
+test('all three keypad-invoked functions are associated with the telephony instance', () => {
   const associations = template.findResources('AWS::Connect::IntegrationAssociation');
   const targets = Object.values(associations).map(
     (assoc) => (assoc.Properties.IntegrationArn as { 'Fn::GetAtt': [string, string] })['Fn::GetAtt'][0],
   );
-  expect(targets).toHaveLength(2);
+  expect(targets).toHaveLength(3);
   expect(targets.some((t) => t.startsWith('ConnectHealth'))).toBe(true);
   expect(targets.some((t) => t.startsWith('FacilityInfo'))).toBe(true);
+  expect(targets.some((t) => t.startsWith('Authenticate'))).toBe(true);
 });
 
 test('the instance user data still installs docker', () => {
