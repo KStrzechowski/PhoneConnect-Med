@@ -471,13 +471,13 @@ capability additive to the existing system.
 
 #### Automated
 
-- [x] 2.1 `npm test --workspace lambdas/patient` passes, covering all three branches
+- [x] 2.1 `npm test --workspace lambdas/patient` passes, covering all three branches — d6e92cc
 
 ### Phase 3: Keypad-variant Lambda
 
 #### Automated
 
-- [ ] 3.1 `npm test --workspace lambdas/authenticate` passes, covering authenticated,
+- [x] 3.1 `npm test --workspace lambdas/authenticate` passes, covering authenticated,
       not-authenticated, and downstream-failure
 
 #### Manual
