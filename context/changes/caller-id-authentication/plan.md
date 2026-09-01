@@ -489,14 +489,14 @@ capability additive to the existing system.
 
 #### Automated
 
-- [x] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including `AuthIntent` cases
+- [x] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including `AuthIntent` cases — 910ee5d
 
 ### Phase 5: Infrastructure
 
 #### Automated
 
-- [ ] 5.1 `cdk synth` succeeds
-- [ ] 5.2 `Template.fromStack` assertions pass, extended for the new function and bot intent count
+- [x] 5.1 `cdk synth` succeeds
+- [x] 5.2 `Template.fromStack` assertions pass, extended for the new function and bot intent count
 
 #### Manual
 
