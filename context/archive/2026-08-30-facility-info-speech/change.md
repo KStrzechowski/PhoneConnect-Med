@@ -1,10 +1,10 @@
 ---
 change_id: facility-info-speech
 title: Facility info speech
-status: impl_reviewed
+status: archived
 created: 2026-08-30
 updated: 2026-09-01
-archived_at: null
+archived_at: 2026-09-01T00:08:54Z
 ---
 
 ## Notes
