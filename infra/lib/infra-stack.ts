@@ -145,6 +145,7 @@ export class InfraStack extends cdk.Stack {
     });
 
     const instanceRole = new iam.Role(this, 'MockInstanceRole', {
+      roleName: 'phoneconnect-med-mock-instance',
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')],
     });
@@ -220,6 +221,7 @@ volumes:
 
     const repoRoot = path.join(__dirname, '../..');
     const connectHealth = new NodejsFunction(this, 'ConnectHealth', {
+      functionName: 'phoneconnect-med-connect-health',
       entry: path.join(repoRoot, 'lambdas/connect-health/index.ts'),
       projectRoot: repoRoot,
       depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
@@ -235,6 +237,7 @@ volumes:
     });
 
     const facilityInfo = new NodejsFunction(this, 'FacilityInfo', {
+      functionName: 'phoneconnect-med-facility-info',
       entry: path.join(repoRoot, 'lambdas/facility-info/index.ts'),
       projectRoot: repoRoot,
       depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
@@ -280,6 +283,7 @@ volumes:
     });
 
     const authenticate = new NodejsFunction(this, 'Authenticate', {
+      functionName: 'phoneconnect-med-authenticate',
       entry: path.join(repoRoot, 'lambdas/authenticate/index.ts'),
       projectRoot: repoRoot,
       depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
@@ -306,6 +310,7 @@ volumes:
     });
 
     const facilityInfoSpeech = new NodejsFunction(this, 'FacilityInfoSpeech', {
+      functionName: 'phoneconnect-med-facility-info-speech',
       entry: path.join(repoRoot, 'lambdas/facility-info-speech/index.ts'),
       projectRoot: repoRoot,
       depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
@@ -326,6 +331,7 @@ volumes:
     });
 
     const speechBotRole = new iam.Role(this, 'SpeechBotRole', {
+      roleName: 'phoneconnect-med-speech-bot',
       assumedBy: new iam.ServicePrincipal('lexv2.amazonaws.com'),
     });
     speechBotRole.addToPolicy(
@@ -543,6 +549,7 @@ volumes:
     );
 
     const deployRole = new iam.Role(this, 'DeployRole', {
+      roleName: 'phoneconnect-med-deploy',
       assumedBy: new iam.OpenIdConnectPrincipal(githubOidcProvider, {
         StringEquals: {
           'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
