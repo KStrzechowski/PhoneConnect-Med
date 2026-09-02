@@ -114,3 +114,30 @@ variant requires putting a conditional in the flow, that conditional belongs in 
 shared layer instead. See the roadmap's S-05 Risk note for the concrete case:
 resolving "the caller pressed 2" into an actual date must happen in the shared
 layer, never in the flow.
+
+---
+
+## L-04: Named AWS resources get an explicit name
+
+**Rule.** Every `NodejsFunction` and `iam.Role` in `infra/lib/infra-stack.ts` gets an
+explicit `functionName` / `roleName`, prefixed `phoneconnect-med-`, kebab-case. Do
+not leave CloudFormation to auto-generate the physical name.
+
+**Why.** An auto-generated name (stack name + logical ID + a hash suffix, e.g.
+`PhoneConnect-Med-InfraStack-Authenticate8F3C2A1B-AbCdEfGh123`) is what you have to
+pick out of a dropdown when wiring a hand-built Connect flow to the right Lambda —
+there is no way to tell two functions apart at a glance. User decision, prompted by
+exactly that friction while wiring `connect-flow-templates/flows/keypad-authenticate-flow.json`.
+
+**How to apply.**
+
+- New `NodejsFunction`: `functionName: 'phoneconnect-med-<kebab-case-purpose>'`.
+- New `iam.Role`: `roleName: 'phoneconnect-med-<kebab-case-purpose>'`.
+- Known tradeoff, accepted: some Lambda property changes force a replace rather
+  than an in-place update, and CloudFormation can't fall back to a fresh
+  auto-generated name to dodge the collision when the name is fixed — a redeploy
+  that needs a replacement can fail where an auto-named function would have
+  quietly succeeded. Acceptable here: single-environment stack, not deployed
+  twice in parallel.
+- IAM role names must be unique per **account**, not just per stack — reuse the
+  prefix, but do not reuse the same full name across two different roles.
