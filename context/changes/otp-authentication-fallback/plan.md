@@ -499,8 +499,8 @@ existing table; the existing seeded patient row is unaffected.
 #### Automated
 
 - [x] 1.1 `npm run test` inside `his/` passes, including updated patient spec coverage for the
-      demo row
-- [x] 1.2 `npm run migration:run` inside `his/` applies cleanly against a fresh database
+      demo row — 1f04325
+- [x] 1.2 `npm run migration:run` inside `his/` applies cleanly against a fresh database — 1f04325
 
 #### Manual
 
@@ -510,7 +510,7 @@ existing table; the existing seeded patient row is unaffected.
 
 #### Automated
 
-- [ ] 2.1 `npm test --workspace lambdas/patient` passes, covering all four `beginOtpChallenge`
+- [x] 2.1 `npm test --workspace lambdas/patient` passes, covering all four `beginOtpChallenge`
       branches and `verifyOtpCode`
 
 ### Phase 3: Keypad-variant Lambdas
