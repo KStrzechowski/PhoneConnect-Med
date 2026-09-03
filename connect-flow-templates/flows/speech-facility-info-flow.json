@@ -1,0 +1,143 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "voice",
+  "Metadata": {
+    "entryPointPosition": { "x": 40, "y": 40 },
+    "ActionMetadata": {
+      "voice": { "position": { "x": 200, "y": 40 } },
+      "greet": { "position": { "x": 400, "y": 40 } },
+      "elicit": { "position": { "x": 620, "y": 40 } },
+      "elicitAgain": { "position": { "x": 860, "y": 40 } },
+      "checkFallback": { "position": { "x": 620, "y": 260 } },
+      "setWorkingQueue": { "position": { "x": 860, "y": 260 } },
+      "transferQueue": { "position": { "x": 1080, "y": 260 } },
+      "disconnect": { "position": { "x": 1300, "y": 260 } }
+    },
+    "Annotations": [],
+    "name": "Facility Info Speech (S-02)",
+    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is.",
+    "type": "contactFlow",
+    "status": "published",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Identifier": "voice",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Parameters": {
+        "TextToSpeechEngine": "Neural",
+        "TextToSpeechVoice": "Ola"
+      },
+      "Transitions": { "NextAction": "greet", "Errors": [], "Conditions": [] }
+    },
+    {
+      "Identifier": "greet",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "Text": "Dzień dobry, dodzwonił się Pan/Pani do przychodni Zdrowie. Proszę powiedzieć, o co chodzi — na przykład zapytać o adres i godziny otwarcia, poprosić o powtórzenie, albo o połączenie z konsultantem.",
+        "TextToSpeechType": "text"
+      },
+      "Transitions": {
+        "NextAction": "elicit",
+        "Errors": [{ "NextAction": "elicit", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "elicit",
+      "Type": "GetParticipantInput",
+      "Parameters": {
+        "Text": "Słucham.",
+        "TextToSpeechType": "text",
+        "LexV2Bot": {
+          "AliasArn": "REPLACE_WITH_SPEECH_BOT_ALIAS_ARN"
+        }
+      },
+      "Transitions": {
+        "NextAction": "checkFallback",
+        "Conditions": [
+          {
+            "NextAction": "setWorkingQueue",
+            "Condition": { "Operator": "Equals", "Operands": ["Agenttransferintent"] }
+          }
+        ],
+        "Errors": [
+          { "NextAction": "checkFallback", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "checkFallback", "ErrorType": "NoMatchingError" },
+          { "NextAction": "checkFallback", "ErrorType": "InputTimeLimitExceeded" }
+        ]
+      }
+    },
+    {
+      "Identifier": "elicitAgain",
+      "Type": "GetParticipantInput",
+      "Parameters": {
+        "Text": "Czy mogę jeszcze w czymś pomóc?",
+        "TextToSpeechType": "text",
+        "LexV2Bot": {
+          "AliasArn": "REPLACE_WITH_SPEECH_BOT_ALIAS_ARN"
+        }
+      },
+      "Transitions": {
+        "NextAction": "checkFallback",
+        "Conditions": [
+          {
+            "NextAction": "setWorkingQueue",
+            "Condition": { "Operator": "Equals", "Operands": ["Agenttransferintent"] }
+          }
+        ],
+        "Errors": [
+          { "NextAction": "checkFallback", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "checkFallback", "ErrorType": "NoMatchingError" },
+          { "NextAction": "checkFallback", "ErrorType": "InputTimeLimitExceeded" }
+        ]
+      }
+    },
+    {
+      "Identifier": "checkFallback",
+      "Type": "Compare",
+      "Parameters": {
+        "ComparisonValue": "$.Lex.SessionAttributes.fallbackCount"
+      },
+      "Transitions": {
+        "NextAction": "elicitAgain",
+        "Conditions": [
+          {
+            "NextAction": "setWorkingQueue",
+            "Condition": { "Operator": "NumberGreaterOrEqualTo", "Operands": ["3"] }
+          }
+        ],
+        "Errors": [{ "NextAction": "elicitAgain", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "setWorkingQueue",
+      "Type": "UpdateContactTargetQueue",
+      "Parameters": {
+        "QueueId": "REPLACE_WITH_QUEUE_ARN"
+      },
+      "Transitions": {
+        "NextAction": "transferQueue",
+        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "transferQueue",
+      "Type": "TransferContactToQueue",
+      "Parameters": {},
+      "Transitions": {
+        "NextAction": "disconnect",
+        "Errors": [
+          { "NextAction": "disconnect", "ErrorType": "QueueAtCapacity" },
+          { "NextAction": "disconnect", "ErrorType": "NoMatchingError" }
+        ]
+      }
+    },
+    {
+      "Identifier": "disconnect",
+      "Type": "DisconnectParticipant",
+      "Parameters": {},
+      "Transitions": {}
+    }
+  ]
+}

@@ -1,0 +1,413 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "initAttempts",
+  "Metadata": {
+    "entryPointPosition": { "x": 40, "y": 40 },
+    "ActionMetadata": {
+      "initAttempts": { "position": { "x": 40, "y": 40 } },
+      "setMsgPesel": { "position": { "x": 240, "y": 40 } },
+      "peselPrompt": { "position": { "x": 440, "y": 40 } },
+      "savePesel": { "position": { "x": 640, "y": 40 } },
+      "checkPeselEmpty": { "position": { "x": 840, "y": 40 } },
+      "setMsgPhone": { "position": { "x": 1040, "y": 40 } },
+      "phonePrompt": { "position": { "x": 1240, "y": 40 } },
+      "savePhoneRaw": { "position": { "x": 1440, "y": 40 } },
+      "checkPhoneEmpty": { "position": { "x": 1640, "y": 40 } },
+      "savePhone": { "position": { "x": 1840, "y": 40 } },
+      "setMsgConfirm": { "position": { "x": 2040, "y": 40 } },
+      "confirmPrompt": { "position": { "x": 2240, "y": 40 } },
+      "repeatConfirm": { "position": { "x": 2240, "y": 280 } },
+      "invokeAuth": { "position": { "x": 2440, "y": 40 } },
+      "checkAuth": { "position": { "x": 2640, "y": 40 } },
+      "setAuthAttrs": { "position": { "x": 2840, "y": 40 } },
+      "confirmMsg": { "position": { "x": 3040, "y": 40 } },
+      "transferToAuthMenu": { "position": { "x": 3240, "y": 40 } },
+      "bumpAttempts": { "position": { "x": 840, "y": 320 } },
+      "setAttempts1": { "position": { "x": 640, "y": 320 } },
+      "setAttempts2": { "position": { "x": 640, "y": 500 } },
+      "giveUpMsg": { "position": { "x": 1040, "y": 320 } },
+      "storeOtpChallenge": { "position": { "x": 2440, "y": 320 } },
+      "setNeutralMsg": { "position": { "x": 2640, "y": 320 } },
+      "neutralMsg": { "position": { "x": 2840, "y": 320 } },
+      "invokeOtpModule": { "position": { "x": 3040, "y": 320 } },
+      "checkOtpAuth": { "position": { "x": 3240, "y": 320 } },
+      "setNeutralMsgBail": { "position": { "x": 1040, "y": 500 } },
+      "neutralMsgBail": { "position": { "x": 1240, "y": 500 } },
+      "transferQueue": { "position": { "x": 1240, "y": 320 } },
+      "disconnectEnd": { "position": { "x": 1440, "y": 320 } }
+    },
+    "Annotations": [],
+    "name": "",
+    "description": "",
+    "type": "contactFlow",
+    "status": "SAVED",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Identifier": "initAttempts",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "attempts": "0" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "setMsgPesel",
+        "Errors": [{ "NextAction": "setMsgPesel", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setMsgPesel",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "lastMessageText": "Wprowadź swój numer PESEL, a następnie naciśnij krzyżyk." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "peselPrompt",
+        "Errors": [{ "NextAction": "peselPrompt", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "peselPrompt",
+      "Type": "GetParticipantInput",
+      "Parameters": {
+        "StoreInput": "True",
+        "InputTimeLimitSeconds": "10",
+        "Text": "$.Attributes.lastMessageText",
+        "DTMFConfiguration": { "DisableCancelKey": "False", "InterdigitTimeLimitSeconds": "5" },
+        "InputValidation": { "CustomValidation": { "MaximumLength": "11" } }
+      },
+      "Transitions": {
+        "NextAction": "savePesel",
+        "Errors": [{ "NextAction": "bumpAttempts", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "savePesel",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "pesel": "$.StoredCustomerInput" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "checkPeselEmpty",
+        "Errors": [{ "NextAction": "checkPeselEmpty", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "checkPeselEmpty",
+      "Type": "Compare",
+      "Parameters": { "Attribute": "$.Attributes.pesel" },
+      "Transitions": {
+        "NextAction": "setMsgPhone",
+        "Conditions": [
+          { "NextAction": "bumpAttempts", "Condition": { "Operator": "Equals", "Operands": [""] } }
+        ],
+        "Errors": [{ "NextAction": "setMsgPhone", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "setMsgPhone",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "Wprowadź swój numer telefonu, bez numeru kierunkowego kraju, a następnie naciśnij krzyżyk."
+        },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "phonePrompt",
+        "Errors": [{ "NextAction": "phonePrompt", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "phonePrompt",
+      "Type": "GetParticipantInput",
+      "Parameters": {
+        "StoreInput": "True",
+        "InputTimeLimitSeconds": "10",
+        "Text": "$.Attributes.lastMessageText",
+        "DTMFConfiguration": { "DisableCancelKey": "False", "InterdigitTimeLimitSeconds": "5" },
+        "InputValidation": { "CustomValidation": { "MaximumLength": "15" } }
+      },
+      "Transitions": {
+        "NextAction": "savePhoneRaw",
+        "Errors": [{ "NextAction": "bumpAttempts", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "savePhoneRaw",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "phoneRaw": "$.StoredCustomerInput" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "checkPhoneEmpty",
+        "Errors": [{ "NextAction": "checkPhoneEmpty", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "checkPhoneEmpty",
+      "Type": "Compare",
+      "Parameters": { "Attribute": "$.Attributes.phoneRaw" },
+      "Transitions": {
+        "NextAction": "savePhone",
+        "Conditions": [
+          { "NextAction": "bumpAttempts", "Condition": { "Operator": "Equals", "Operands": [""] } }
+        ],
+        "Errors": [{ "NextAction": "savePhone", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "savePhone",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "phone": "+48$.Attributes.phoneRaw" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "setMsgConfirm",
+        "Errors": [{ "NextAction": "setMsgConfirm", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setMsgConfirm",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "Podano numer PESEL $.Attributes.pesel oraz numer telefonu $.Attributes.phone. Aby potwierdzić, naciśnij jeden. Aby wprowadzić dane ponownie, naciśnij dwa."
+        },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "confirmPrompt",
+        "Errors": [{ "NextAction": "confirmPrompt", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "confirmPrompt",
+      "Type": "GetParticipantInput",
+      "Parameters": {
+        "Text": "$.Attributes.lastMessageText",
+        "InputTimeLimitSeconds": "10"
+      },
+      "Transitions": {
+        "NextAction": "bumpAttempts",
+        "Conditions": [
+          { "NextAction": "invokeAuth", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
+          { "NextAction": "bumpAttempts", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
+          { "NextAction": "setNeutralMsgBail", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
+          { "NextAction": "repeatConfirm", "Condition": { "Operator": "Equals", "Operands": ["*"] } }
+        ],
+        "Errors": [
+          { "NextAction": "bumpAttempts", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "bumpAttempts", "ErrorType": "InputTimeLimitExceeded" },
+          { "NextAction": "bumpAttempts", "ErrorType": "NoMatchingError" }
+        ]
+      }
+    },
+    {
+      "Identifier": "repeatConfirm",
+      "Type": "MessageParticipant",
+      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
+      "Transitions": {
+        "NextAction": "confirmPrompt",
+        "Errors": [{ "NextAction": "confirmPrompt", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "invokeAuth",
+      "Type": "InvokeExternalResource",
+      "Parameters": {
+        "FunctionArn": "REPLACE_WITH_AUTHENTICATE_FUNCTION_ARN",
+        "InvocationTimeLimitSeconds": "8",
+        "LambdaInvocationAttributes": {
+          "pesel": "$.Attributes.pesel",
+          "phone": "$.Attributes.phone",
+          "callerNumber": "$.CustomerEndpoint.Address"
+        },
+        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+      },
+      "Transitions": {
+        "NextAction": "checkAuth",
+        "Errors": [{ "NextAction": "setNeutralMsgBail", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "checkAuth",
+      "Type": "Compare",
+      "Parameters": { "Attribute": "$.External.authenticated" },
+      "Transitions": {
+        "NextAction": "storeOtpChallenge",
+        "Conditions": [
+          { "NextAction": "setAuthAttrs", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+        ],
+        "Errors": [{ "NextAction": "storeOtpChallenge", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "setAuthAttrs",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "authenticated": "true", "patientId": "$.External.patientId" },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "confirmMsg",
+        "Errors": [{ "NextAction": "confirmMsg", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "confirmMsg",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Dziękuję. Tożsamość została potwierdzona."
+      },
+      "Transitions": {
+        "NextAction": "transferToAuthMenu",
+        "Errors": [{ "NextAction": "transferToAuthMenu", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "transferToAuthMenu",
+      "Type": "TransferToFlow",
+      "Parameters": { "ContactFlowId": "REPLACE_WITH_AUTHENTICATED_MENU_FLOW_ARN" },
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [{ "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "bumpAttempts",
+      "Type": "Compare",
+      "Parameters": { "Attribute": "$.Attributes.attempts" },
+      "Transitions": {
+        "NextAction": "setAttempts1",
+        "Conditions": [
+          { "NextAction": "giveUpMsg", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
+          { "NextAction": "setAttempts2", "Condition": { "Operator": "Equals", "Operands": ["1"] } }
+        ],
+        "Errors": [{ "NextAction": "setAttempts1", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "setAttempts1",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "attempts": "1" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "setMsgPesel",
+        "Errors": [{ "NextAction": "setMsgPesel", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setAttempts2",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "attempts": "2" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "setMsgPesel",
+        "Errors": [{ "NextAction": "setMsgPesel", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "giveUpMsg",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Nie udało się wprowadzić poprawnych danych. Łączę z konsultantem."
+      },
+      "Transitions": {
+        "NextAction": "transferQueue",
+        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setNeutralMsgBail",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "lastMessageText": "Kod weryfikacyjny został wysłany na podany numer telefonu." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "neutralMsgBail",
+        "Errors": [{ "NextAction": "neutralMsgBail", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "neutralMsgBail",
+      "Type": "MessageParticipant",
+      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
+      "Transitions": {
+        "NextAction": "transferQueue",
+        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "storeOtpChallenge",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": {
+          "isDemo": "$.External.isDemo",
+          "code": "$.External.code",
+          "phone": "$.External.phone",
+          "patientId": "$.External.patientId"
+        },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "setNeutralMsg",
+        "Errors": [{ "NextAction": "setNeutralMsg", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setNeutralMsg",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "lastMessageText": "Kod weryfikacyjny został wysłany na podany numer telefonu." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "neutralMsg",
+        "Errors": [{ "NextAction": "neutralMsg", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "neutralMsg",
+      "Type": "MessageParticipant",
+      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
+      "Transitions": {
+        "NextAction": "invokeOtpModule",
+        "Errors": [{ "NextAction": "invokeOtpModule", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "invokeOtpModule",
+      "Type": "InvokeFlowModule",
+      "Parameters": { "FlowModuleId": "REPLACE_WITH_OTP_VERIFY_MODULE_ARN" },
+      "Transitions": {
+        "NextAction": "checkOtpAuth",
+        "Errors": [{ "NextAction": "checkOtpAuth", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "checkOtpAuth",
+      "Type": "Compare",
+      "Parameters": { "Attribute": "$.Attributes.authenticated" },
+      "Transitions": {
+        "NextAction": "giveUpMsg",
+        "Conditions": [
+          { "NextAction": "confirmMsg", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+        ],
+        "Errors": [{ "NextAction": "giveUpMsg", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "transferQueue",
+      "Type": "TransferContactToQueue",
+      "Parameters": {},
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [
+          { "NextAction": "disconnectEnd", "ErrorType": "QueueAtCapacity" },
+          { "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }
+        ]
+      }
+    },
+    {
+      "Identifier": "disconnectEnd",
+      "Type": "DisconnectParticipant",
+      "Parameters": {},
+      "Transitions": {}
+    }
+  ]
+}

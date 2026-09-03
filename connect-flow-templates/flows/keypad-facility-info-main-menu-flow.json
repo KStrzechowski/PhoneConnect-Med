@@ -1,0 +1,447 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "5fd8b757-3e76-4e8c-bd73-dc15fef37522",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": -185.6,
+      "y": 259.2
+    },
+    "ActionMetadata": {
+      "PlayGreeting": {
+        "position": {
+          "x": 304.8,
+          "y": 156.8
+        }
+      },
+      "PlayFacilityAnswer": {
+        "position": {
+          "x": 1203.2,
+          "y": -140.8
+        }
+      },
+      "SetFacilityAnswer": {
+        "position": {
+          "x": 1000,
+          "y": -280
+        }
+      },
+      "PlayRepeat": {
+        "position": {
+          "x": 588.8,
+          "y": 400
+        }
+      },
+      "5fd8b757-3e76-4e8c-bd73-dc15fef37522": {
+        "position": {
+          "x": -2.4,
+          "y": 188
+        }
+      },
+      "SetAttempts2": {
+        "position": {
+          "x": 1065.6,
+          "y": 598.4
+        },
+        "dynamicParams": []
+      },
+      "SetAttempts1": {
+        "position": {
+          "x": 1083.2,
+          "y": 821.6
+        },
+        "dynamicParams": []
+      },
+      "668c6aa1-b66d-4961-8c22-86df2dfef1c7": {
+        "position": {
+          "x": 1341.6,
+          "y": 596.8
+        }
+      },
+      "IncrementFailedAttempts": {
+        "position": {
+          "x": 820,
+          "y": 617.6
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "c31e82f8-95e4-47a3-bbb4-1b2fd6793247",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "2"
+          },
+          {
+            "id": "bd87c56e-34a7-4ffd-9934-fdd8d6dd7919",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "1"
+          }
+        ]
+      },
+      "InvokeFacilityInfo": {
+        "position": {
+          "x": 844,
+          "y": -134.4
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "REPLACE_WITH_FACILITY_INFO_FUNCTION_ARN"
+          }
+        },
+        "dynamicMetadata": {
+          "variant": false
+        }
+      },
+      "MainMenu": {
+        "position": {
+          "x": 588.8,
+          "y": 137.6
+        },
+        "conditionMetadata": [
+          {
+            "id": "8a932989-5530-41a2-8c0d-7085cd466d5b",
+            "value": "1"
+          },
+          {
+            "id": "01379dfd-e67d-49f1-9c24-e36d48c57630",
+            "value": "0"
+          },
+          {
+            "id": "fb2b0387-2077-4dce-ad29-f0cd273ea2dc",
+            "value": "*"
+          }
+        ]
+      },
+      "SetTargetQueue": {
+        "position": {
+          "x": 1474.4,
+          "y": 197.6
+        },
+        "parameters": {
+          "QueueId": {
+            "displayName": "BasicQueue"
+          }
+        },
+        "queue": {
+          "text": "BasicQueue"
+        }
+      },
+      "d5e8061d-9bfd-4e54-8b6a-73e1082541b7": {
+        "position": {
+          "x": 1748,
+          "y": 183.2
+        }
+      },
+      "DisconnectFallback": {
+        "position": {
+          "x": 2032.8,
+          "y": 225.6
+        }
+      }
+    },
+    "Annotations": [],
+    "name": "Main Menu - Facility Info (S-01)",
+    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is.",
+    "type": "contactFlow",
+    "status": "published",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Witamy w Przychodni Zdrowie."
+      },
+      "Identifier": "PlayGreeting",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "MainMenu",
+        "Errors": [
+          {
+            "NextAction": "MainMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Nasz adres to $.External.address. Jesteśmy czynni od $.External.opensAt do $.External.closesAt, $.External.openDays."
+      },
+      "Identifier": "PlayFacilityAnswer",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "MainMenu",
+        "Errors": [
+          {
+            "NextAction": "MainMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "Nasz adres to $.External.address. Jesteśmy czynni od $.External.opensAt do $.External.closesAt, $.External.openDays."
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "SetFacilityAnswer",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "PlayFacilityAnswer",
+        "Errors": [
+          {
+            "NextAction": "PlayFacilityAnswer",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.lastMessageText"
+      },
+      "Identifier": "PlayRepeat",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "MainMenu",
+        "Errors": [
+          {
+            "NextAction": "MainMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "5fd8b757-3e76-4e8c-bd73-dc15fef37522",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "PlayGreeting"
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "failedAttempts": "2"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "SetAttempts2",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "668c6aa1-b66d-4961-8c22-86df2dfef1c7",
+        "Errors": [
+          {
+            "NextAction": "668c6aa1-b66d-4961-8c22-86df2dfef1c7",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "failedAttempts": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "SetAttempts1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "668c6aa1-b66d-4961-8c22-86df2dfef1c7",
+        "Errors": [
+          {
+            "NextAction": "668c6aa1-b66d-4961-8c22-86df2dfef1c7",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Nie otrzymaliśmy poprawnego inputu. Spróbuj ponownie."
+      },
+      "Identifier": "668c6aa1-b66d-4961-8c22-86df2dfef1c7",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "MainMenu",
+        "Errors": [
+          {
+            "NextAction": "MainMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.failedAttempts"
+      },
+      "Identifier": "IncrementFailedAttempts",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "SetAttempts1",
+        "Conditions": [
+          {
+            "NextAction": "SetTargetQueue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "SetAttempts2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "SetAttempts1",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "REPLACE_WITH_FACILITY_INFO_FUNCTION_ARN",
+        "InvocationTimeLimitSeconds": "3",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "variant": "keypad"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "InvokeFacilityInfo",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "SetFacilityAnswer",
+        "Errors": [
+          {
+            "NextAction": "SetTargetQueue",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "Naciśnij 1, aby usłyszeć adres i godziny otwarcia. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć.",
+        "StoreInput": "False",
+        "InputTimeLimitSeconds": "5"
+      },
+      "Identifier": "MainMenu",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "IncrementFailedAttempts",
+        "Conditions": [
+          {
+            "NextAction": "InvokeFacilityInfo",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "SetTargetQueue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
+          },
+          {
+            "NextAction": "PlayRepeat",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "IncrementFailedAttempts",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "IncrementFailedAttempts",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "IncrementFailedAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "QueueId": "REPLACE_WITH_QUEUE_ARN"
+      },
+      "Identifier": "SetTargetQueue",
+      "Type": "UpdateContactTargetQueue",
+      "Transitions": {
+        "NextAction": "d5e8061d-9bfd-4e54-8b6a-73e1082541b7",
+        "Errors": [
+          {
+            "NextAction": "d5e8061d-9bfd-4e54-8b6a-73e1082541b7",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "d5e8061d-9bfd-4e54-8b6a-73e1082541b7",
+      "Type": "TransferContactToQueue",
+      "Transitions": {
+        "NextAction": "DisconnectFallback",
+        "Errors": [
+          {
+            "NextAction": "DisconnectFallback",
+            "ErrorType": "QueueAtCapacity"
+          },
+          {
+            "NextAction": "DisconnectFallback",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "DisconnectFallback",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    }
+  ]
+}

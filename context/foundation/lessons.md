@@ -141,3 +141,69 @@ exactly that friction while wiring `connect-flow-templates/flows/keypad-authenti
   twice in parallel.
 - IAM role names must be unique per **account**, not just per stack — reuse the
   prefix, but do not reuse the same full name across two different roles.
+
+---
+
+## L-05: Every user-input step handles the full standard set of edge cases
+
+**Rule.** Any `GetParticipantInput` / Lex turn that collects a menu digit (not a raw
+multi-digit value like a PESEL or an OTP code) must handle, in addition to its own
+menu-specific digits: transfer to agent, repeat the last message, return to main
+menu (where a main menu is actually reachable from that point), up to 3 retries on
+no input, and up to 3 retries on invalid input. User decision, given directly while
+reviewing S-04's generated flows.
+
+**Why.** These are the global affordances a caller can reach for at any point in the
+call (FR-003, FR-006, FR-007) — a menu that silently omits one of them is a dead end
+or a surprise for the caller, and because flows are hand-built outside IaC, nothing
+catches the omission automatically.
+
+**How to apply.**
+
+- Transfer (`0`) and repeat (`*`) are already reserved globally — see
+  `docs/reference/contract-surfaces.md` → "Reserved global digits". Every menu-digit
+  `GetParticipantInput` block wires both, exactly as `keypad-authenticate-flow.json`
+  and `keypad-facility-info-main-menu-flow.json` already do.
+- No digit is reserved yet for "return to main menu" — none of the flows built so
+  far (S-01 through S-04) have a sub-menu deep enough to need it; the caller is
+  always either at the main menu or mid-way through a linear, single-purpose step
+  (authenticate, enter a code) where jumping back to the main menu mid-step doesn't
+  make sense. Assign one the first time a real sub-menu needs it (a candidate for
+  S-05's booking flow) and add it to the reserved-digits list in
+  `docs/reference/contract-surfaces.md` at that point — don't invent a digit
+  speculatively before there's a concrete menu that needs it.
+- No-input (`InputTimeLimitExceeded`) and invalid-input (`NoMatchingCondition` /
+  `NoMatchingError`) route to the **same** shared attempt counter, capped at 3, not
+  two separate budgets — this matches every existing flow in the repo (`bumpAttempts`
+  in `keypad-authenticate-flow.json`, `IncrementFailedAttempts` in
+  `keypad-facility-info-main-menu-flow.json`). Follow that precedent; don't split
+  them into independent counters without a reason to diverge.
+- A raw multi-digit capture step (PESEL, phone, OTP code) does **not** intercept `0`
+  or `*` mid-entry — only single-digit menu prompts do. This also matches existing
+  precedent (`peselPrompt`/`phonePrompt` in `keypad-authenticate-flow.json` don't
+  check for `0`/`*`; `confirmPrompt` does).
+
+---
+
+## L-06: Generated Connect flow templates are committed, not gitignored
+
+**Rule.** `connect-flow-templates/` is tracked in git like any other project file.
+Every flow/module I generate or edit gets committed in the same phase-end (or
+equivalent) commit as the code it wires together, not left as an untracked personal
+working copy.
+
+**Why.** User decision, reversing the original convention (`connect-flow-templates/
+README.md` used to say "gitignored... personal working copies, not deployed by
+CDK"). Leaving generated flows uncommitted meant they had no history, could be lost,
+and weren't visible to review the same way code changes are.
+
+**How to apply.**
+
+- `.gitignore` no longer excludes `/connect-flow-templates/`.
+- Flows are still hand-imported via the Connect console (never deployed by CDK) —
+  this only changes whether the JSON/Markdown source is version-controlled, not the
+  import mechanism or the `REPLACE_WITH_*` ARN-placeholder convention.
+- Still true and unchanged: a flow that isn't itself importable (a hand-merge guide
+  for an existing console flow) keeps the naming convention in
+  `connect-flow-templates/README.md` and lives alongside the flow/module it
+  documents.
