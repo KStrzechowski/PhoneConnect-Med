@@ -511,17 +511,17 @@ existing table; the existing seeded patient row is unaffected.
 #### Automated
 
 - [x] 2.1 `npm test --workspace lambdas/patient` passes, covering all four `beginOtpChallenge`
-      branches and `verifyOtpCode`
+      branches and `verifyOtpCode` — f86ba5b
 
 ### Phase 3: Keypad-variant Lambdas
 
 #### Automated
 
-- [ ] 3.1 `npm test --workspace lambdas/authenticate` passes, covering the extended non-shortcut
+- [x] 3.1 `npm test --workspace lambdas/authenticate` passes, covering the extended non-shortcut
       branch
-- [ ] 3.2 `npm test --workspace lambdas/send-otp` passes, covering demo, real send, resend, and
+- [x] 3.2 `npm test --workspace lambdas/send-otp` passes, covering demo, real send, resend, and
       publish-failure cases
-- [ ] 3.3 `npm test --workspace lambdas/otp-verify` passes, covering match and mismatch
+- [x] 3.3 `npm test --workspace lambdas/otp-verify` passes, covering match and mismatch
 
 #### Manual
 

@@ -1,0 +1,19 @@
+{
+  "name": "send-otp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.28.2",
+    "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.1126.0",
+    "@pcm/measure": "*",
+    "@pcm/patient": "*"
+  }
+}
