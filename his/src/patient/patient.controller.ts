@@ -9,6 +9,13 @@ export class PatientController {
   async verify(@Body() body: { pesel: string; phone: string }) {
     const patient = await this.patientService.verify(body.pesel, body.phone);
     if (!patient) return { matched: false };
-    return { matched: true, id: patient.id, firstName: patient.firstName, lastName: patient.lastName };
+    return {
+      matched: true,
+      id: patient.id,
+      firstName: patient.firstName,
+      lastName: patient.lastName,
+      isDemo: patient.isDemo,
+      demoOtpCode: patient.isDemo ? patient.demoOtpCode : null,
+    };
   }
 }
