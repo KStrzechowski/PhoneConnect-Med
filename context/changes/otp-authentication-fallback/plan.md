@@ -540,9 +540,9 @@ existing table; the existing seeded patient row is unaffected.
 
 #### Automated
 
-- [x] 5.1 `cdk synth` succeeds
+- [x] 5.1 `cdk synth` succeeds — c661f72
 - [x] 5.2 `Template.fromStack` assertions pass, extended for the two new non-VPC functions and the
-      bot's new intent count
+      bot's new intent count — c661f72
 
 #### Manual
 

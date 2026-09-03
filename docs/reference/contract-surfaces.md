@@ -61,13 +61,22 @@ something that no test will catch.
     this session without recapturing it. The Lex-session-scoped analogue of the keypad variant's
     `authenticated` / `patientId` contact attributes below.
 - **`transfer`** (S-03)
-  - **Set by:** `lambdas/facility-info-speech/index.ts`'s `AuthIntent` branch, to `'true'` on
-    every non-shortcut outcome (no match, matched-wrong-number, or a downstream failure) —
-    `AuthIntent` isn't itself `AgentTransferIntent`, so the contact flow needs an explicit signal
-    to route to the agent queue after this intent closes, the same way it already reads
-    `fallbackCount` to decide loop-back vs. transfer.
+  - **Set by:** `lambdas/facility-info-speech/index.ts`'s `AuthIntent` branch, to `'true'` only on
+    a genuine downstream failure (the mock unreachable) — no longer set on a non-shortcut match or
+    no-match outcome, both of which now start an OTP challenge instead (see below).
   - **Read by:** the contact flow, via `$.Lex.SessionAttributes.transfer`, branching to the agent
     queue when present.
+- **`otpRequired`** / **`isDemo`** / **`code`** / **`phone`** (S-04)
+  - **Set by:** `lambdas/facility-info-speech/index.ts`'s `AuthIntent` branch, on every
+    non-shortcut outcome (`otpRequired: 'true'`; `code`/`phone` empty and `isDemo: 'false'` for a
+    no-match pair, so nothing observable distinguishes it from a real match). `OtpIntent` updates
+    `code` again on a resend.
+  - **Read by:** `OtpIntent`'s fulfillment, as the inputs to `@pcm/patient`'s `verifyOtpCode` and
+    to the inline resend logic (fresh code generation and `sns:Publish`, when not a demo).
+- **`otpMismatch`** (S-04)
+  - **Set by:** `OtpIntent`'s fulfillment, to `'true'` when the entered code doesn't match.
+  - **Read by:** the contact flow, via `$.Lex.SessionAttributes.otpMismatch`, to decide whether to
+    re-elicit `OtpIntent` or transfer, mirroring the keypad variant's attempt counter.
 - **Why it matters:** this is the speech variant's counterpart to the keypad variant's contact
   attributes and reserved digits — repeat and fallback/transfer state, carried in Lex session
   state instead. Nothing in the repo enforces this; flows are hand-built and outside IaC.
@@ -84,6 +93,31 @@ something that no test will catch.
   the rest of the call, set once by the Contact Flow Module so later flow blocks (and later
   slices) don't need to re-run verification. Nothing in the repo enforces this; flows are
   hand-built and outside IaC.
+
+## Keypad contact attributes: `otpRequired`, `isDemo`, `code`, `phone` (S-04)
+
+- **Set by:** the `Authenticate` function's non-shortcut output fields (`otpRequired: 'true'`,
+  `isDemo`, `code`, `phone`, `patientId`), written to contact attributes by the keypad capture
+  Contact Flow Module. A no-match pair gets the same fields with `code`/`phone` empty and
+  `isDemo: 'false'` — the same neutrality guarantee as `authenticated`/`patientId` above.
+- **Read by:** the OTP Contact Flow Module (console, not committed) — `phone`/`code`/`isDemo` are
+  the `Details.Parameters` it passes to `SendOtp`, and `code`/`isDemo`/`patientId` are what it
+  passes to `OtpVerify`. It also overwrites its own `code` contact attribute from `SendOtp`'s
+  response after a resend.
+- **Why it matters:** if a resend forgets to update the stored `code` attribute, verification
+  silently always fails against the stale code. Nothing in the repo enforces this; flows are
+  hand-built and outside IaC.
+
+## Reserved resend digit: `9` (S-04)
+
+- **Scope:** the OTP capture step only, in both variants — distinct from the global `0`/`*`
+  digits above, which apply everywhere in a call.
+- **Set by / read by:** the OTP Contact Flow Module's menu (keypad) and `OtpIntent`'s `otpCode`
+  slot value (speech) — entering `9` triggers a resend instead of code entry, without consuming
+  one of the three verification attempts.
+- **Why it matters:** unlike `0`/`*`, this digit means "resend" only inside the OTP capture step;
+  it carries no reserved meaning elsewhere in the call. Nothing in the repo enforces this; flows
+  and bot config are hand-built and outside IaC.
 
 ## `Details.Parameters.pesel` / `.phone` / `.callerNumber` (S-03)
 
