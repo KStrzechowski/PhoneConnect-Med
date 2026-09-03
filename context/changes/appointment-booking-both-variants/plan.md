@@ -511,7 +511,7 @@ Additive only — new tables, no changes to `facility` or `patient`. `down` drop
 
 #### Automated
 
-- [ ] 3.1 `npm test --workspace lambdas/booking` passes
+- [x] 3.1 `npm test --workspace lambdas/booking` passes
 
 ### Phase 4: Speech fulfillment
 
