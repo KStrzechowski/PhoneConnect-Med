@@ -78,6 +78,21 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexC
           message,
         );
       }
+      if (!result.isDemo) {
+        try {
+          await downstream(record, () =>
+            sns.send(
+              new PublishCommand({
+                PhoneNumber: result.phone ?? '',
+                Message: `Twój kod weryfikacyjny PhoneConnect Med: ${result.code ?? ''}`,
+              }),
+            ),
+          );
+        } catch (error) {
+          record.outcome = 'error';
+          record.error = String(error);
+        }
+      }
       const message = 'Kod weryfikacyjny został wysłany na podany numer telefonu.';
       return close(
         intentName,

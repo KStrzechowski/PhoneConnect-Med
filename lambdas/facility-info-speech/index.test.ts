@@ -125,8 +125,9 @@ test('AuthIntent confirms and sets session attributes when the pair matches from
   assert.equal(result.sessionState.sessionAttributes.patientId, '1');
 });
 
-test('AuthIntent speaks the neutral message and starts an OTP challenge when the pair matches no record', async () => {
+test('AuthIntent sends the code and starts an OTP challenge when the pair matches no record', async () => {
   mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ matched: false })));
+  const send = mock.method(SNSClient.prototype, 'send', async () => ({}));
   const result = await handler(authIntentEvent('00000000000', '+48000000000'));
   mock.restoreAll();
 
@@ -135,9 +136,10 @@ test('AuthIntent speaks the neutral message and starts an OTP challenge when the
   assert.equal(result.sessionState.sessionAttributes.isDemo, 'false');
   assert.equal(result.sessionState.sessionAttributes.code, '');
   assert.equal('authenticated' in result.sessionState.sessionAttributes, false);
+  assert.equal(send.mock.callCount(), 1);
 });
 
-test('AuthIntent speaks the byte-identical neutral message and issues a fresh code when the pair matches but from a different number', async () => {
+test('AuthIntent sends a fresh code and speaks the byte-identical neutral message when the pair matches but from a different number', async () => {
   mock.method(
     globalThis,
     'fetch',
@@ -146,6 +148,7 @@ test('AuthIntent speaks the byte-identical neutral message and issues a fresh co
         JSON.stringify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski', isDemo: false, demoOtpCode: null }),
       ),
   );
+  const send = mock.method(SNSClient.prototype, 'send', async () => ({}));
   const result = await handler(authIntentEvent('90010112345', '+48000000000', { callerNumber: '+48111111111' }));
   mock.restoreAll();
 
@@ -155,6 +158,7 @@ test('AuthIntent speaks the byte-identical neutral message and issues a fresh co
   assert.equal(result.sessionState.sessionAttributes.phone, '+48000000000');
   assert.equal(result.sessionState.sessionAttributes.patientId, '1');
   assert.match(result.sessionState.sessionAttributes.code, /^\d{6}$/);
+  assert.equal(send.mock.callCount(), 1);
 });
 
 test('AuthIntent uses the seeded fixed code and sends nothing for a demo match', async () => {
@@ -166,12 +170,33 @@ test('AuthIntent uses the seeded fixed code and sends nothing for a demo match',
         JSON.stringify({ matched: true, id: 2, firstName: 'Anna', lastName: 'Demo', isDemo: true, demoOtpCode: '123456' }),
       ),
   );
+  const send = mock.method(SNSClient.prototype, 'send', async () => ({}));
   const result = await handler(authIntentEvent('85050512345', '+48999999999', { callerNumber: '+48111111111' }));
   mock.restoreAll();
 
   assert.equal(result.sessionState.sessionAttributes.isDemo, 'true');
   assert.equal(result.sessionState.sessionAttributes.code, '123456');
   assert.equal(result.sessionState.sessionAttributes.phone, '');
+  assert.equal(send.mock.callCount(), 0);
+});
+
+test('AuthIntent still returns the code when the initial SNS publish fails', async () => {
+  mock.method(
+    globalThis,
+    'fetch',
+    async () =>
+      new Response(
+        JSON.stringify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski', isDemo: false, demoOtpCode: null }),
+      ),
+  );
+  mock.method(SNSClient.prototype, 'send', async () => {
+    throw new Error('sns unavailable');
+  });
+  const result = await handler(authIntentEvent('90010112345', '+48000000000', { callerNumber: '+48111111111' }));
+  mock.restoreAll();
+
+  assert.equal(result.messages[0].content, 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
+  assert.match(result.sessionState.sessionAttributes.code, /^\d{6}$/);
 });
 
 test('OtpIntent authenticates and stamps the otp auth path on a correct real code', async () => {

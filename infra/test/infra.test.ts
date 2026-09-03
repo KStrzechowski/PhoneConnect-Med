@@ -96,6 +96,17 @@ test('SendOtp and OtpVerify are not attached to the VPC', () => {
   expect(otpVerify?.Properties.VpcConfig).toBeUndefined();
 });
 
+test('SendOtp and FacilityInfoSpeech may both publish to SNS', () => {
+  const policies = template.findResources('AWS::IAM::Policy', {
+    Properties: {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({ Action: 'sns:Publish' })]),
+      },
+    },
+  });
+  expect(Object.keys(policies)).toHaveLength(2);
+});
+
 test('the speech bot has all 5 global-layer intents plus AuthIntent and OtpIntent under pl_PL', () => {
   template.hasResourceProperties('AWS::Lex::Bot', {
     DataPrivacy: { ChildDirected: false },

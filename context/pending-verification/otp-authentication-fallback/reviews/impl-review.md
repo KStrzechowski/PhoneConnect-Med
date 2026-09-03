@@ -39,7 +39,7 @@
   - Tradeoff: Directly contradicts the plan's deliberate split ("two new non-VPC Lambdas do the mechanical work... Neither new Lambda ever touches `his/`; the only Lambda that already does... is where the OTP challenge is decided") and would require reconsidering `lambdas/authenticate`'s VPC attachment and IAM surface.
   - Confidence: MEDIUM — works, but re-litigates an explicit plan decision rather than fixing a wiring gap.
   - Blind spot: Haven't confirmed `lambdas/authenticate`'s current VPC placement is compatible with an SNS call without further network changes.
-- **Decision**: PENDING
+- **Decision**: FIXED via Fix A. Speech: `lambdas/facility-info-speech/index.ts`'s `AuthIntent` non-shortcut branch now calls `sns.send` before speaking the neutral line, mirroring `OtpIntent`'s resend branch; covered by 2 new tests plus updated assertions on the 3 existing `AuthIntent` non-shortcut tests (17/17 pass). Keypad: `connect-flow-templates/flows/keypad-authenticate-flow.json` now invokes `SendOtp` (`invokeSendOtp` → `saveSentCode`) right after `storeOtpChallenge`, before the neutral message.
 
 ### F2 — `facilityInfoSpeech`'s Lambda role has no `sns:Publish` grant
 
@@ -49,7 +49,7 @@
 - **Location**: `infra/lib/infra-stack.ts:362-376` (the `FacilityInfoSpeech` `NodejsFunction` definition)
 - **Detail**: `lambdas/facility-info-speech/index.ts:118-126` calls `sns.send(new PublishCommand(...))` directly using the Lambda's own execution role in `OtpIntent`'s resend branch. `sendOtp`'s role gets an explicit grant (`infra-stack.ts:325-327`: `sendOtp.role?.addToPrincipalPolicy(new iam.PolicyStatement({ actions: ['sns:Publish'], resources: ['*'] }))`), but no equivalent exists for `facilityInfoSpeech`'s role anywhere in the stack. Every speech-variant OTP resend will throw `AccessDeniedException` in a real deployment — invisible to the caller and to casual testing because the surrounding `try/catch` swallows it (by design, per the plan's silent-SMS-failure decision), and `infra/test/infra.test.ts` has no assertion covering this permission.
 - **Fix**: Add `facilityInfoSpeech.role?.addToPrincipalPolicy(new iam.PolicyStatement({ actions: ['sns:Publish'], resources: ['*'] }))` in `infra-stack.ts`, mirroring `sendOtp`'s grant exactly, and add a `Template.fromStack` assertion for it in `infra.test.ts` alongside the existing IAM-policy checks.
-- **Decision**: PENDING
+- **Decision**: FIXED. Added the grant right after `facilityInfoSpeech`'s `NodejsFunction` definition, plus a new `infra.test.ts` assertion (`'SendOtp and FacilityInfoSpeech may both publish to SNS'`) counting exactly 2 IAM policies carrying an `sns:Publish` statement. `cdk synth` and all 19 infra tests pass.
 
 ### F3 — Migration comment added without asking first (L-01)
 
@@ -59,7 +59,7 @@
 - **Location**: `his/src/migrations/1788461728029-AddOtpFallbackToPatient.ts:12-13`
 - **Detail**: L-01 requires asking first and stating what a comment would say before adding one, even a justified one. The added comment documents the seeded demo pesel/phone/OTP triple — content the plan's Phase 1 contract explicitly calls for ("documented in the migration file and handed to testers separately"), but the precedent migration (`1788225506354-CreatePatient.ts`) seeds its own row with zero comment, and the comment was added unilaterally during implementation rather than proposed first.
 - **Fix**: Confirm with the author whether to keep the comment as-is, reword it, or remove it and rely on the values alone (as the precedent migration does).
-- **Decision**: PENDING
+- **Decision**: ACCEPTED. Author confirmed the comment stays as-is — justified under L-01's magic-value exception, and the plan explicitly required this documentation.
 
 ### F4 — `send-otp` attempts an SNS publish with an empty `PhoneNumber` on the no-match sham path
 
@@ -69,7 +69,7 @@
 - **Location**: `lambdas/send-otp/index.ts:14-22`
 - **Detail**: When a no-match caller presses resend, `send-otp` is invoked with `phone: ''` and still attempts `sns.send(new PublishCommand({ PhoneNumber: '', ... }))` rather than short-circuiting. The surrounding `try/catch` absorbs the resulting error, matching the documented silent-failure design, but an immediately-rejected invalid-parameter publish could have a different latency profile than a real publish — a smaller instance of the same class of concern as F1/F2's neutrality guarantee. Untested: no case in `send-otp/index.test.ts` or `facility-info-speech/index.test.ts` covers `phone: '', isDemo: 'false'`.
 - **Fix**: Add a test case for the empty-phone resend, and consider short-circuiting the SNS call when `phone` is empty for both cost and timing-symmetry reasons.
-- **Decision**: PENDING
+- **Decision**: FIXED (test only, no short-circuit). Added a test locking in the current behavior — `send-otp` still attempts the publish with an empty `PhoneNumber` on a no-match resend rather than special-casing it, which is actually the *more* neutrality-correct choice: skipping the call outright would make the sham path structurally distinguishable from a real send, undermining the same guarantee F1/F2 protect.
 
 ### F5 — `patientId` key presence differs between `beginOtpChallenge` branches
 
@@ -79,7 +79,7 @@
 - **Location**: `lambdas/patient/index.ts:56`
 - **Detail**: The no-match return omits the `patientId` key entirely, while the matched-wrong-number branch always includes it. Callers normalize this away (`result.patientId !== undefined ? String(result.patientId) : ''`), so there's no observable leak — purely an internal shape inconsistency.
 - **Fix**: No action needed; noted for awareness only.
-- **Decision**: PENDING
+- **Decision**: SKIPPED. No observable impact; not worth touching a working, tested function for this.
 
 ## Notes
 

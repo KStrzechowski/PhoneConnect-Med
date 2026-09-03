@@ -27,6 +27,8 @@
       "setAttempts2": { "position": { "x": 640, "y": 500 } },
       "giveUpMsg": { "position": { "x": 1040, "y": 320 } },
       "storeOtpChallenge": { "position": { "x": 2440, "y": 320 } },
+      "invokeSendOtp": { "position": { "x": 2440, "y": 440 } },
+      "saveSentCode": { "position": { "x": 2540, "y": 440 } },
       "setNeutralMsg": { "position": { "x": 2640, "y": 320 } },
       "neutralMsg": { "position": { "x": 2840, "y": 320 } },
       "invokeOtpModule": { "position": { "x": 3040, "y": 320 } },
@@ -344,6 +346,34 @@
         },
         "TargetContact": "Current"
       },
+      "Transitions": {
+        "NextAction": "invokeSendOtp",
+        "Errors": [{ "NextAction": "invokeSendOtp", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "invokeSendOtp",
+      "Type": "InvokeExternalResource",
+      "Parameters": {
+        "FunctionArn": "REPLACE_WITH_SEND_OTP_FUNCTION_ARN",
+        "InvocationTimeLimitSeconds": "8",
+        "LambdaInvocationAttributes": {
+          "code": "$.Attributes.code",
+          "phone": "$.Attributes.phone",
+          "isDemo": "$.Attributes.isDemo",
+          "isResend": "false"
+        },
+        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+      },
+      "Transitions": {
+        "NextAction": "saveSentCode",
+        "Errors": [{ "NextAction": "setNeutralMsg", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "saveSentCode",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "code": "$.External.code" }, "TargetContact": "Current" },
       "Transitions": {
         "NextAction": "setNeutralMsg",
         "Errors": [{ "NextAction": "setNeutralMsg", "ErrorType": "NoMatchingError" }]

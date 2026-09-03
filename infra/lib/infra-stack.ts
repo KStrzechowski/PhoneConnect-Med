@@ -375,6 +375,10 @@ volumes:
       loggingFormat: lambda.LoggingFormat.JSON,
     });
 
+    facilityInfoSpeech.role?.addToPrincipalPolicy(
+      new iam.PolicyStatement({ actions: ['sns:Publish'], resources: ['*'] }),
+    );
+
     const speechConversations = new logs.LogGroup(this, 'SpeechConversations', {
       retention: logs.RetentionDays.THREE_MONTHS,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
