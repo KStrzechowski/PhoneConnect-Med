@@ -46,3 +46,16 @@ test('still returns the code when the SNS publish fails', async () => {
 
   assert.deepEqual(result, { code: '654321' });
 });
+
+test('still attempts the publish and returns the code for a no-match resend with no phone on file', async () => {
+  const send = mock.method(SNSClient.prototype, 'send', async () => {
+    throw new Error('InvalidParameter: PhoneNumber');
+  });
+  const result = await handler({
+    Details: { Parameters: { code: '654321', phone: '', isDemo: 'false', isResend: 'true' } },
+  });
+  mock.restoreAll();
+
+  assert.match(result.code, /^\d{6}$/);
+  assert.equal(send.mock.callCount(), 1);
+});
