@@ -1,0 +1,22 @@
+{
+  "Name": "ContactFlowEvent",
+  "Details": {
+    "ContactData": {
+      "ContactId": "11111111-2222-3333-4444-555555555555",
+      "Channel": "VOICE",
+      "InitiationMethod": "INBOUND",
+      "CustomerEndpoint": {
+        "Address": "+48000000000",
+        "Type": "TELEPHONE_NUMBER"
+      }
+    },
+    "Parameters": {
+      "variant": "keypad",
+      "step": "days",
+      "specialty": "kardiolog",
+      "timeOfDay": "rano",
+      "authenticated": "true",
+      "patientId": "1"
+    }
+  }
+}
