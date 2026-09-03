@@ -505,7 +505,7 @@ Additive only — new tables, no changes to `facility` or `patient`. `down` drop
 
 #### Automated
 
-- [x] 2.1 `npm test --workspace lambdas/appointment` passes
+- [x] 2.1 `npm test --workspace lambdas/appointment` passes — e69738a
 
 ### Phase 3: Keypad Lambda
 

@@ -46,13 +46,16 @@ const timeOfDaySlots: Record<string, string[]> = {
   wieczorem: ['17:00', '18:30'],
 };
 
+const toLocalDateString = (date: Date): string =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
 const forwardWeekdays = (count: number): string[] => {
   const dates: string[] = [];
   const cursor = new Date();
   cursor.setDate(cursor.getDate() + 1);
   while (dates.length < count) {
     const day = cursor.getDay();
-    if (day !== 0 && day !== 6) dates.push(cursor.toISOString().slice(0, 10));
+    if (day !== 0 && day !== 6) dates.push(toLocalDateString(cursor));
     cursor.setDate(cursor.getDate() + 1);
   }
   return dates;
