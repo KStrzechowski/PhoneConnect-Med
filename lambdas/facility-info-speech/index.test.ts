@@ -1,6 +1,7 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { SNSClient } from '@aws-sdk/client-sns';
 import { handler } from './index.ts';
 import type { InvocationRecord } from '@pcm/measure';
 
@@ -39,6 +40,19 @@ const authIntentEvent = (
         pesel: { value: { interpretedValue: pesel } },
         phone: { value: { interpretedValue: phone } },
       },
+    },
+  },
+});
+
+const otpIntentEvent = (otpCode: string, sessionAttributes: Record<string, string> = {}) => ({
+  ...sampleEvent,
+  sessionState: {
+    ...sampleEvent.sessionState,
+    sessionAttributes: { contactId: 'contact-1', ...sessionAttributes },
+    intent: {
+      ...sampleEvent.sessionState.intent,
+      name: 'OtpIntent',
+      slots: { otpCode: { value: { interpretedValue: otpCode } } },
     },
   },
 });
@@ -98,7 +112,10 @@ test('AuthIntent confirms and sets session attributes when the pair matches from
   mock.method(
     globalThis,
     'fetch',
-    async () => new Response(JSON.stringify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski' })),
+    async () =>
+      new Response(
+        JSON.stringify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski', isDemo: false, demoOtpCode: null }),
+      ),
   );
   const result = await handler(authIntentEvent('90010112345', '+48000000000'));
   mock.restoreAll();
@@ -108,27 +125,113 @@ test('AuthIntent confirms and sets session attributes when the pair matches from
   assert.equal(result.sessionState.sessionAttributes.patientId, '1');
 });
 
-test('AuthIntent speaks the neutral message and signals a transfer when the pair matches no record', async () => {
+test('AuthIntent speaks the neutral message and starts an OTP challenge when the pair matches no record', async () => {
   mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ matched: false })));
   const result = await handler(authIntentEvent('00000000000', '+48000000000'));
   mock.restoreAll();
 
   assert.equal(result.messages[0].content, 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
-  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
+  assert.equal(result.sessionState.sessionAttributes.otpRequired, 'true');
+  assert.equal(result.sessionState.sessionAttributes.isDemo, 'false');
+  assert.equal(result.sessionState.sessionAttributes.code, '');
   assert.equal('authenticated' in result.sessionState.sessionAttributes, false);
 });
 
-test('AuthIntent speaks the byte-identical neutral message when the pair matches but from a different number', async () => {
+test('AuthIntent speaks the byte-identical neutral message and issues a fresh code when the pair matches but from a different number', async () => {
   mock.method(
     globalThis,
     'fetch',
-    async () => new Response(JSON.stringify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski' })),
+    async () =>
+      new Response(
+        JSON.stringify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski', isDemo: false, demoOtpCode: null }),
+      ),
   );
   const result = await handler(authIntentEvent('90010112345', '+48000000000', { callerNumber: '+48111111111' }));
   mock.restoreAll();
 
   assert.equal(result.messages[0].content, 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
-  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
+  assert.equal(result.sessionState.sessionAttributes.otpRequired, 'true');
+  assert.equal(result.sessionState.sessionAttributes.isDemo, 'false');
+  assert.equal(result.sessionState.sessionAttributes.phone, '+48000000000');
+  assert.equal(result.sessionState.sessionAttributes.patientId, '1');
+  assert.match(result.sessionState.sessionAttributes.code, /^\d{6}$/);
+});
+
+test('AuthIntent uses the seeded fixed code and sends nothing for a demo match', async () => {
+  mock.method(
+    globalThis,
+    'fetch',
+    async () =>
+      new Response(
+        JSON.stringify({ matched: true, id: 2, firstName: 'Anna', lastName: 'Demo', isDemo: true, demoOtpCode: '123456' }),
+      ),
+  );
+  const result = await handler(authIntentEvent('85050512345', '+48999999999', { callerNumber: '+48111111111' }));
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.sessionAttributes.isDemo, 'true');
+  assert.equal(result.sessionState.sessionAttributes.code, '123456');
+  assert.equal(result.sessionState.sessionAttributes.phone, '');
+});
+
+test('OtpIntent authenticates and stamps the otp auth path on a correct real code', async () => {
+  const result = await handler(
+    otpIntentEvent('654321', { code: '654321', isDemo: 'false', phone: '+48000000000', patientId: '1' }),
+  );
+
+  assert.equal(result.messages[0].content, 'Dziękuję. Tożsamość została potwierdzona.');
+  assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
+  assert.equal(result.sessionState.sessionAttributes.patientId, '1');
+});
+
+test('OtpIntent authenticates and stamps the demo auth path on a correct demo code', async () => {
+  const result = await handler(
+    otpIntentEvent('123456', { code: '123456', isDemo: 'true', phone: '', patientId: '2' }),
+  );
+
+  assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
+  assert.equal(result.sessionState.sessionAttributes.patientId, '2');
+});
+
+test('OtpIntent signals a mismatch on a wrong code without authenticating', async () => {
+  const result = await handler(
+    otpIntentEvent('000000', { code: '654321', isDemo: 'false', phone: '+48000000000', patientId: '1' }),
+  );
+
+  assert.equal(result.sessionState.sessionAttributes.otpMismatch, 'true');
+  assert.equal('authenticated' in result.sessionState.sessionAttributes, false);
+});
+
+test('OtpIntent never authenticates when no code was ever actually issued', async () => {
+  const result = await handler(
+    otpIntentEvent('000000', { code: '', isDemo: 'false', phone: '', patientId: '' }),
+  );
+
+  assert.equal(result.sessionState.sessionAttributes.otpMismatch, 'true');
+  assert.equal('authenticated' in result.sessionState.sessionAttributes, false);
+});
+
+test('OtpIntent resends a fresh code for a real challenge without consuming an attempt', async () => {
+  const send = mock.method(SNSClient.prototype, 'send', async () => ({}));
+  const result = await handler(
+    otpIntentEvent('9', { code: '654321', isDemo: 'false', phone: '+48000000000', patientId: '1' }),
+  );
+  mock.restoreAll();
+
+  assert.equal(send.mock.callCount(), 1);
+  assert.match(result.sessionState.sessionAttributes.code, /^\d{6}$/);
+  assert.notEqual(result.sessionState.sessionAttributes.code, '654321');
+  assert.equal('authenticated' in result.sessionState.sessionAttributes, false);
+  assert.equal('otpMismatch' in result.sessionState.sessionAttributes, false);
+});
+
+test('OtpIntent resend does not publish for a demo challenge', async () => {
+  const send = mock.method(SNSClient.prototype, 'send', async () => ({}));
+  const result = await handler(otpIntentEvent('9', { code: '123456', isDemo: 'true', phone: '', patientId: '2' }));
+  mock.restoreAll();
+
+  assert.equal(send.mock.callCount(), 0);
+  assert.equal(result.sessionState.sessionAttributes.code, '123456');
 });
 
 test('emits exactly one measurement record, carrying variant and contactId', async () => {

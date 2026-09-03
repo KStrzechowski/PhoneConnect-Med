@@ -12,6 +12,7 @@
     "typescript": "~5.9.3"
   },
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.1126.0",
     "@pcm/measure": "*",
     "@pcm/facility": "*",
     "@pcm/patient": "*"
