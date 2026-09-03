@@ -534,14 +534,14 @@ existing table; the existing seeded patient row is unaffected.
 #### Automated
 
 - [x] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including all new
-      `OtpIntent` cases
+      `OtpIntent` cases — 6ad3f11
 
 ### Phase 5: Infrastructure
 
 #### Automated
 
-- [ ] 5.1 `cdk synth` succeeds
-- [ ] 5.2 `Template.fromStack` assertions pass, extended for the two new non-VPC functions and the
+- [x] 5.1 `cdk synth` succeeds
+- [x] 5.2 `Template.fromStack` assertions pass, extended for the two new non-VPC functions and the
       bot's new intent count
 
 #### Manual
