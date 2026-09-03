@@ -105,6 +105,8 @@ const authUtterances = [
   'jak się zalogować',
 ];
 
+const otpUtterances = ['chcę podać kod', 'mam kod weryfikacyjny', 'podam kod z sms'];
+
 const agentTransferUtterances = [
   'połącz z agentem',
   'połącz mnie z rejestracją',
@@ -309,6 +311,54 @@ volumes:
       integrationArn: authenticate.functionArn,
     });
 
+    const sendOtp = new NodejsFunction(this, 'SendOtp', {
+      functionName: 'phoneconnect-med-send-otp',
+      entry: path.join(repoRoot, 'lambdas/send-otp/index.ts'),
+      projectRoot: repoRoot,
+      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
+      runtime: lambda.Runtime.NODEJS_24_X,
+      timeout: cdk.Duration.seconds(2),
+      logGroup: measurements,
+      loggingFormat: lambda.LoggingFormat.JSON,
+    });
+
+    sendOtp.role?.addToPrincipalPolicy(
+      new iam.PolicyStatement({ actions: ['sns:Publish'], resources: ['*'] }),
+    );
+
+    sendOtp.addPermission('ConnectInvoke', {
+      principal: new iam.ServicePrincipal('connect.amazonaws.com'),
+      sourceArn: connectInstanceArn,
+    });
+
+    new connect.CfnIntegrationAssociation(this, 'SendOtpFunctionAssociation', {
+      instanceId: connectInstanceArn,
+      integrationType: 'LAMBDA_FUNCTION',
+      integrationArn: sendOtp.functionArn,
+    });
+
+    const otpVerify = new NodejsFunction(this, 'OtpVerify', {
+      functionName: 'phoneconnect-med-otp-verify',
+      entry: path.join(repoRoot, 'lambdas/otp-verify/index.ts'),
+      projectRoot: repoRoot,
+      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
+      runtime: lambda.Runtime.NODEJS_24_X,
+      timeout: cdk.Duration.seconds(2),
+      logGroup: measurements,
+      loggingFormat: lambda.LoggingFormat.JSON,
+    });
+
+    otpVerify.addPermission('ConnectInvoke', {
+      principal: new iam.ServicePrincipal('connect.amazonaws.com'),
+      sourceArn: connectInstanceArn,
+    });
+
+    new connect.CfnIntegrationAssociation(this, 'OtpVerifyFunctionAssociation', {
+      instanceId: connectInstanceArn,
+      integrationType: 'LAMBDA_FUNCTION',
+      integrationArn: otpVerify.functionArn,
+    });
+
     const facilityInfoSpeech = new NodejsFunction(this, 'FacilityInfoSpeech', {
       functionName: 'phoneconnect-med-facility-info-speech',
       entry: path.join(repoRoot, 'lambdas/facility-info-speech/index.ts'),
@@ -360,6 +410,11 @@ volumes:
               name: 'KeyedPhone',
               valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
               slotTypeValues: [{ sampleValue: { value: '000000000' } }],
+            },
+            {
+              name: 'KeyedOtpCode',
+              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
+              slotTypeValues: [{ sampleValue: { value: '000000' } }],
             },
           ],
           intents: [
@@ -438,6 +493,36 @@ volumes:
                   },
                 },
               },
+            },
+            {
+              name: 'OtpIntent',
+              sampleUtterances: otpUtterances.map((utterance) => ({ utterance })),
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [{ slotName: 'otpCode', priority: 1 }],
+              slots: [
+                {
+                  name: 'otpCode',
+                  slotTypeName: 'KeyedOtpCode',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say(
+                          'Wprowadź otrzymany kod na klawiaturze telefonu, a następnie naciśnij krzyżyk. ' +
+                            'Aby otrzymać nowy kod, naciśnij dziewięć.',
+                        ),
+                      ],
+                      promptAttemptsSpecification: {
+                        Initial: keypadOnlyAttempt(6),
+                        Retry1: keypadOnlyAttempt(6),
+                        Retry2: keypadOnlyAttempt(6),
+                      },
+                    },
+                  },
+                },
+              ],
             },
             {
               name: 'FallbackIntent',
@@ -598,6 +683,8 @@ volumes:
     new cdk.CfnOutput(this, 'ConnectHealthFunctionName', { value: connectHealth.functionName });
     new cdk.CfnOutput(this, 'FacilityInfoFunctionName', { value: facilityInfo.functionName });
     new cdk.CfnOutput(this, 'AuthenticateFunctionName', { value: authenticate.functionName });
+    new cdk.CfnOutput(this, 'SendOtpFunctionName', { value: sendOtp.functionName });
+    new cdk.CfnOutput(this, 'OtpVerifyFunctionName', { value: otpVerify.functionName });
     new cdk.CfnOutput(this, 'FacilityInfoSpeechFunctionName', { value: facilityInfoSpeech.functionName });
     new cdk.CfnOutput(this, 'SpeechBotAliasArn', { value: speechBotAlias.attrArn });
     new cdk.CfnOutput(this, 'DeployRoleArn', { value: deployRole.roleArn });
