@@ -560,3 +560,10 @@ existing table; the existing seeded patient row is unaffected.
       a real wrong code
 - [ ] 6.5 Wrong pesel/phone and wrong OTP code produce identical transfer experiences
 - [ ] 6.6 Per-call records show `authPath: 'otp'` / `'demo'` correctly, absent on the no-match path
+- [ ] 6.7 Verify the generated flow templates: import
+      `connect-flow-templates/modules/keypad-otp-verify-module.json` and the updated
+      `connect-flow-templates/flows/keypad-authenticate-flow.json` in the console, replace the
+      `REPLACE_WITH_*` ARN placeholders, and hand-merge
+      `connect-flow-templates/flows/speech-otpintent-fragment.md` into the existing speech flow
+      (confirming the `x-amz-lex:start-intent` mechanism against the designer, per that doc's
+      caveat) — before running 6.1-6.6
