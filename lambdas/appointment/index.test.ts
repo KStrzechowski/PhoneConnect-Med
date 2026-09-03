@@ -62,6 +62,14 @@ test('resolveTime returns a null time for a choice outside the offered range', a
   assert.deepEqual(result, { time: null });
 });
 
+test('resolveTime returns a null time when the search comes back empty', async () => {
+  mockJson({ times: [] });
+  const result = await resolveTime('alergolog', 'rano', '2026-09-04', 1, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(result, { time: null });
+});
+
 test('bookAppointment reports a successful booking', async () => {
   mockJson({ booked: true });
   const booked = await bookAppointment('kardiolog', 'rano', '2026-09-04', '08:00', 1, AbortSignal.timeout(1000));
