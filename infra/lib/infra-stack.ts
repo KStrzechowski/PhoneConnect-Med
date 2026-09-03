@@ -559,22 +559,20 @@ volumes:
     });
     images.grantPullPush(deployRole);
 
-    const instanceArn = cdk.Arn.format(
-      { service: 'ec2', resource: 'instance', resourceName: instance.instanceId },
-      this,
-    );
-
+    // MockInstance's AMI (latestAmazonLinux2023) can change between deploys, which forces EC2 to
+    // replace the instance under a new id/ARN. Scope by the CloudFormation-managed stack-name tag
+    // instead of a specific instance ARN so this permission doesn't go stale on replacement.
     deployRole.addToPolicy(
       new iam.PolicyStatement({
-        actions: ['ec2:StartInstances'],
-        resources: [instanceArn],
+        actions: ['ec2:StartInstances', 'ssm:SendCommand'],
+        resources: ['*'],
+        conditions: { StringEquals: { 'aws:ResourceTag/aws:cloudformation:stack-name': this.stackName } },
       }),
     );
     deployRole.addToPolicy(
       new iam.PolicyStatement({
         actions: ['ssm:SendCommand'],
         resources: [
-          instanceArn,
           cdk.Arn.format(
             { service: 'ssm', account: '', resource: 'document', resourceName: 'AWS-RunShellScript' },
             this,
