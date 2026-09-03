@@ -1,5 +1,5 @@
 import { measured, downstream } from '@pcm/measure';
-import { authenticate } from '@pcm/patient';
+import { beginOtpChallenge } from '@pcm/patient';
 
 export const handler = measured(
   'authenticate',
@@ -7,8 +7,8 @@ export const handler = measured(
     const { pesel = '', phone = '', callerNumber = '' } = event.Details?.Parameters ?? {};
     const abort = AbortSignal.timeout(1000);
     try {
-      const result = await downstream(record, () => authenticate(pesel, phone, callerNumber, abort));
-      if (result.authenticated) {
+      const result = await downstream(record, () => beginOtpChallenge(pesel, phone, callerNumber, abort));
+      if ('authenticated' in result) {
         record.authPath = 'caller-id';
         return {
           reachable: 'true',
@@ -17,8 +17,15 @@ export const handler = measured(
           firstName: result.firstName,
         };
       }
-      record.outcome = 'transferred';
-      return { reachable: 'true', authenticated: 'false' };
+      return {
+        reachable: 'true',
+        authenticated: 'false',
+        otpRequired: 'true',
+        isDemo: String(result.isDemo),
+        code: result.code ?? '',
+        phone: result.phone ?? '',
+        patientId: result.patientId !== undefined ? String(result.patientId) : '',
+      };
     } catch (error) {
       const message = String(error);
       record.outcome = 'error';
