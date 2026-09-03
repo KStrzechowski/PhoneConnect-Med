@@ -482,7 +482,7 @@ capability additive to the existing system.
 
 #### Manual
 
-- [ ] 3.2 Direct test-event invocation with the seeded pair and matching `callerNumber` returns
+- [x] 3.2 Direct test-event invocation with the seeded pair and matching `callerNumber` returns
       `authenticated: 'true'`
 
 ### Phase 4: Speech-variant fulfillment
