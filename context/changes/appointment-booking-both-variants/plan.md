@@ -492,8 +492,8 @@ Additive only — new tables, no changes to `facility` or `patient`. `down` drop
 
 #### Automated
 
-- [x] 1.1 `npm run test` inside `his/` passes, including new `appointment.service.spec.ts` cases
-- [x] 1.2 `npm run migration:run` inside `his/` applies cleanly against a fresh database
+- [x] 1.1 `npm run test` inside `his/` passes, including new `appointment.service.spec.ts` cases — b8624d7
+- [x] 1.2 `npm run migration:run` inside `his/` applies cleanly against a fresh database — b8624d7
 
 #### Manual
 
@@ -505,7 +505,7 @@ Additive only — new tables, no changes to `facility` or `patient`. `down` drop
 
 #### Automated
 
-- [ ] 2.1 `npm test --workspace lambdas/appointment` passes
+- [x] 2.1 `npm test --workspace lambdas/appointment` passes
 
 ### Phase 3: Keypad Lambda
 
