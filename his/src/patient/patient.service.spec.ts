@@ -42,4 +42,30 @@ describe('PatientService', () => {
 
     expect(patient).toBeNull();
   });
+
+  it('matches the seeded demo pesel and phone pair', async () => {
+    const patient = await service.verify('85050512345', '+48999999999');
+
+    expect(patient).toEqual(
+      expect.objectContaining({
+        pesel: '85050512345',
+        phone: '+48999999999',
+        firstName: 'Anna',
+        lastName: 'Demo',
+        isDemo: true,
+        demoOtpCode: '123456',
+      }),
+    );
+  });
+
+  it('does not carry a demo flag on the non-demo patient', async () => {
+    const patient = await service.verify('90010112345', '+48000000000');
+
+    expect(patient).toEqual(
+      expect.objectContaining({
+        isDemo: false,
+        demoOtpCode: null,
+      }),
+    );
+  });
 });

@@ -16,4 +16,10 @@ export class Patient {
 
   @Column()
   lastName: string;
+
+  @Column({ default: false })
+  isDemo: boolean;
+
+  @Column({ type: 'varchar', nullable: true })
+  demoOtpCode: string | null;
 }
