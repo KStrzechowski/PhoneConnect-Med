@@ -518,10 +518,10 @@ existing table; the existing seeded patient row is unaffected.
 #### Automated
 
 - [x] 3.1 `npm test --workspace lambdas/authenticate` passes, covering the extended non-shortcut
-      branch
+      branch — 75dc1cf
 - [x] 3.2 `npm test --workspace lambdas/send-otp` passes, covering demo, real send, resend, and
-      publish-failure cases
-- [x] 3.3 `npm test --workspace lambdas/otp-verify` passes, covering match and mismatch
+      publish-failure cases — 75dc1cf
+- [x] 3.3 `npm test --workspace lambdas/otp-verify` passes, covering match and mismatch — 75dc1cf
 
 #### Manual
 
@@ -533,7 +533,7 @@ existing table; the existing seeded patient row is unaffected.
 
 #### Automated
 
-- [ ] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including all new
+- [x] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including all new
       `OtpIntent` cases
 
 ### Phase 5: Infrastructure

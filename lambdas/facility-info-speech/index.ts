@@ -1,6 +1,10 @@
+import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import { measured, downstream, type ConnectEvent, type InvocationRecord } from '@pcm/measure';
 import { fetchFacility } from '@pcm/facility';
-import { authenticate } from '@pcm/patient';
+import { beginOtpChallenge, generateOtpCode, verifyOtpCode } from '@pcm/patient';
+
+const sns = new SNSClient({});
+const RESEND_DIGIT = '9';
 
 type LexEvent = {
   invocationSource: 'FulfillmentCodeHook';
@@ -57,9 +61,9 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexC
     const callerNumber = incoming.callerNumber ?? '';
     try {
       const result = await downstream(record, () =>
-        authenticate(pesel, phone, callerNumber, AbortSignal.timeout(1000)),
+        beginOtpChallenge(pesel, phone, callerNumber, AbortSignal.timeout(1000)),
       );
-      if (result.authenticated) {
+      if ('authenticated' in result) {
         record.authPath = 'caller-id';
         const message = 'Dziękuję. Tożsamość została potwierdzona.';
         return close(
@@ -74,11 +78,19 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexC
           message,
         );
       }
-      record.outcome = 'transferred';
       const message = 'Kod weryfikacyjny został wysłany na podany numer telefonu.';
       return close(
         intentName,
-        { ...incoming, lastMessageText: message, fallbackCount: '0', transfer: 'true' },
+        {
+          ...incoming,
+          lastMessageText: message,
+          fallbackCount: '0',
+          otpRequired: 'true',
+          isDemo: String(result.isDemo),
+          code: result.code ?? '',
+          phone: result.phone ?? '',
+          patientId: result.patientId !== undefined ? String(result.patientId) : '',
+        },
         message,
       );
     } catch (error) {
@@ -91,6 +103,56 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexC
         message,
       );
     }
+  }
+
+  if (intentName === 'OtpIntent') {
+    const entered = event.sessionState.intent.slots?.otpCode?.value?.interpretedValue ?? '';
+    const isDemo = incoming.isDemo === 'true';
+    const expectedCode = incoming.code ?? '';
+    const phone = incoming.phone ?? '';
+    const patientId = incoming.patientId ?? '';
+
+    if (entered === RESEND_DIGIT) {
+      const freshCode = isDemo ? expectedCode : generateOtpCode();
+      if (!isDemo) {
+        try {
+          await downstream(record, () =>
+            sns.send(
+              new PublishCommand({
+                PhoneNumber: phone,
+                Message: `Twój kod weryfikacyjny PhoneConnect Med: ${freshCode}`,
+              }),
+            ),
+          );
+        } catch (error) {
+          record.outcome = 'error';
+          record.error = String(error);
+        }
+      }
+      const message = 'Wysłaliśmy nowy kod. Proszę wprowadzić go na klawiaturze telefonu.';
+      return close(
+        intentName,
+        { ...incoming, lastMessageText: message, fallbackCount: '0', code: freshCode },
+        message,
+      );
+    }
+
+    if (verifyOtpCode(expectedCode === '' ? null : expectedCode, entered)) {
+      record.authPath = isDemo ? 'demo' : 'otp';
+      const message = 'Dziękuję. Tożsamość została potwierdzona.';
+      return close(
+        intentName,
+        { ...incoming, lastMessageText: message, fallbackCount: '0', authenticated: 'true', patientId },
+        message,
+      );
+    }
+
+    const message = 'Podany kod jest nieprawidłowy.';
+    return close(
+      intentName,
+      { ...incoming, lastMessageText: message, fallbackCount: '0', otpMismatch: 'true' },
+      message,
+    );
   }
 
   if (intentName === 'MainMenuIntent') {
