@@ -1,12 +1,14 @@
 /.agents
 /.claude
 
+# Real ARNs for connect-flow-templates' REPLACE_WITH_* placeholders, and the filled-in
+# flow JSON fill-arns.mjs produces from them — never committed, account-identifying.
+/connect-flow-templates/fill-arns.local.json
+/connect-flow-templates/filled/
+
 # Scratch output from manual runbook testing (aws lambda invoke, sample events)
 /event.keypad.json
 /out.json
-
-# Local Connect flow import templates — never committed, flows are hand-built per convention
-/connect-flow-templates/
 
 # Logs
 logs
