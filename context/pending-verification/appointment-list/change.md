@@ -1,9 +1,9 @@
 ---
 change_id: appointment-list
 title: Appointment list
-status: implementing
+status: impl_reviewed
 created: 2026-09-04
-updated: 2026-09-04
+updated: 2026-09-05
 archived_at: null
 ---
 

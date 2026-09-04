@@ -5,6 +5,9 @@ import { SNSClient } from '@aws-sdk/client-sns';
 import { handler } from './index.ts';
 import type { InvocationRecord } from '@pcm/measure';
 
+const messageOf = (result: Awaited<ReturnType<typeof handler>>): string =>
+  (result as { messages: [{ content: string }] }).messages[0].content;
+
 const sampleEvent = JSON.parse(readFileSync(new URL('./event.sample.json', import.meta.url), 'utf8'));
 
 const sampleFacility = {
@@ -94,7 +97,7 @@ test('InfoIntent returns the byte-identical facility sentence', async () => {
   mock.restoreAll();
 
   assert.equal(
-    result.messages[0].content,
+    messageOf(result),
     'Nasz adres to ul. Kwiatowa 12, 00-001 Warszawa. Jesteśmy czynni od 08:00 do 18:00, monday-friday.',
   );
   assert.equal(result.sessionState.dialogAction.type, 'Close');
@@ -105,13 +108,13 @@ test('InfoIntent returns the byte-identical facility sentence', async () => {
 test('RepeatLastMessageIntent echoes the last spoken message', async () => {
   const result = await handler(eventFor('RepeatLastMessageIntent', { lastMessageText: 'poprzednia wiadomość' }));
 
-  assert.equal(result.messages[0].content, 'poprzednia wiadomość');
+  assert.equal(messageOf(result), 'poprzednia wiadomość');
 });
 
 test('AgentTransferIntent returns a connecting message', async () => {
   const result = await handler(eventFor('AgentTransferIntent'));
 
-  assert.equal(result.messages[0].content, 'Już łączę z konsultantem.');
+  assert.equal(messageOf(result), 'Już łączę z konsultantem.');
 });
 
 test('FallbackIntent escalates across three consecutive invocations', async () => {
@@ -123,7 +126,7 @@ test('FallbackIntent escalates across three consecutive invocations', async () =
   assert.equal(second.sessionState.sessionAttributes.fallbackCount, '2');
   assert.equal(third.sessionState.sessionAttributes.fallbackCount, '3');
 
-  const messages = [first, second, third].map((response) => response.messages[0].content);
+  const messages = [first, second, third].map(messageOf);
   assert.equal(new Set(messages).size, 3);
 });
 
@@ -145,7 +148,7 @@ test('AuthIntent confirms and sets session attributes when the pair matches from
   const result = await handler(authIntentEvent('90010112345', '+48000000000'));
   mock.restoreAll();
 
-  assert.equal(result.messages[0].content, 'Dziękuję. Tożsamość została potwierdzona.');
+  assert.equal(messageOf(result), 'Dziękuję. Tożsamość została potwierdzona.');
   assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
   assert.equal(result.sessionState.sessionAttributes.patientId, '1');
 });
@@ -156,7 +159,7 @@ test('AuthIntent sends the code and starts an OTP challenge when the pair matche
   const result = await handler(authIntentEvent('00000000000', '+48000000000'));
   mock.restoreAll();
 
-  assert.equal(result.messages[0].content, 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
+  assert.equal(messageOf(result), 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
   assert.equal(result.sessionState.sessionAttributes.otpRequired, 'true');
   assert.equal(result.sessionState.sessionAttributes.isDemo, 'false');
   assert.equal(result.sessionState.sessionAttributes.code, '');
@@ -177,7 +180,7 @@ test('AuthIntent sends a fresh code and speaks the byte-identical neutral messag
   const result = await handler(authIntentEvent('90010112345', '+48000000000', { callerNumber: '+48111111111' }));
   mock.restoreAll();
 
-  assert.equal(result.messages[0].content, 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
+  assert.equal(messageOf(result), 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
   assert.equal(result.sessionState.sessionAttributes.otpRequired, 'true');
   assert.equal(result.sessionState.sessionAttributes.isDemo, 'false');
   assert.equal(result.sessionState.sessionAttributes.phone, '+48000000000');
@@ -220,7 +223,7 @@ test('AuthIntent still returns the code when the initial SNS publish fails', asy
   const result = await handler(authIntentEvent('90010112345', '+48000000000', { callerNumber: '+48111111111' }));
   mock.restoreAll();
 
-  assert.equal(result.messages[0].content, 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
+  assert.equal(messageOf(result), 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
   assert.match(result.sessionState.sessionAttributes.code, /^\d{6}$/);
 });
 
@@ -229,7 +232,7 @@ test('OtpIntent authenticates and stamps the otp auth path on a correct real cod
     otpIntentEvent('654321', { code: '654321', isDemo: 'false', phone: '+48000000000', patientId: '1' }),
   );
 
-  assert.equal(result.messages[0].content, 'Dziękuję. Tożsamość została potwierdzona.');
+  assert.equal(messageOf(result), 'Dziękuję. Tożsamość została potwierdzona.');
   assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
   assert.equal(result.sessionState.sessionAttributes.patientId, '1');
 });
@@ -315,7 +318,7 @@ test('BookingIntent dialog hook offers days once specialty and time of day are f
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
   assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
   assert.equal(result.sessionState.sessionAttributes.bookingStage, 'day');
-  assert.match(result.messages[0].content, /Który termin/);
+  assert.match(messageOf(result), /Który termin/);
 });
 
 test('BookingIntent dialog hook re-elicits specialty when no days are available, without transferring on the first miss', async () => {
@@ -364,7 +367,7 @@ test('BookingIntent dialog hook resolves the chosen day and offers times', async
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
   assert.equal(result.sessionState.sessionAttributes.bookingStage, 'time');
   assert.equal(result.sessionState.sessionAttributes.bookingDate, '2026-09-07');
-  assert.match(result.messages[0].content, /09:30/);
+  assert.match(messageOf(result), /09:30/);
 });
 
 test('BookingIntent dialog hook re-elicits the day choice when it does not resolve', async () => {
@@ -397,8 +400,8 @@ test('BookingIntent dialog hook resolves the chosen time and asks for confirmati
   assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
   assert.equal(result.sessionState.sessionAttributes.bookingStage, 'confirm');
   assert.equal(result.sessionState.sessionAttributes.bookingTime, '09:30');
-  assert.match(result.messages[0].content, /kardiolog/);
-  assert.match(result.messages[0].content, /09:30/);
+  assert.match(messageOf(result), /kardiolog/);
+  assert.match(messageOf(result), /09:30/);
 });
 
 test('BookingIntent dialog hook offers fresh days again after a decline (bookingStage confirm)', async () => {
@@ -455,7 +458,7 @@ test('BookingIntent fulfillment books the resolved slot and confirms', async () 
   mock.restoreAll();
 
   assert.equal(result.sessionState.dialogAction.type, 'Close');
-  assert.match(result.messages[0].content, /umówiona/);
+  assert.match(messageOf(result), /umówiona/);
 });
 
 test('BookingIntent fulfillment reports a clean failure when the slot was taken in the meantime', async () => {
@@ -485,7 +488,7 @@ test('ListAppointmentsIntent reports no appointments for a patient with none', a
   const result = await handler(eventFor('ListAppointmentsIntent', { authenticated: 'true', patientId: '1' }));
   mock.restoreAll();
 
-  assert.equal(result.messages[0].content, 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.');
+  assert.equal(messageOf(result), 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.');
 });
 
 test('ListAppointmentsIntent speaks up to three appointments without an overflow line when under the cap', async () => {
@@ -505,9 +508,9 @@ test('ListAppointmentsIntent speaks up to three appointments without an overflow
   const result = await handler(eventFor('ListAppointmentsIntent', { authenticated: 'true', patientId: '1' }));
   mock.restoreAll();
 
-  assert.match(result.messages[0].content, /kardiolog/);
-  assert.match(result.messages[0].content, /okulista/);
-  assert.doesNotMatch(result.messages[0].content, /więcej/);
+  assert.match(messageOf(result), /kardiolog/);
+  assert.match(messageOf(result), /okulista/);
+  assert.doesNotMatch(messageOf(result), /więcej/);
 });
 
 test('ListAppointmentsIntent adds the overflow line when a fourth appointment exists', async () => {
@@ -529,8 +532,8 @@ test('ListAppointmentsIntent adds the overflow line when a fourth appointment ex
   const result = await handler(eventFor('ListAppointmentsIntent', { authenticated: 'true', patientId: '1' }));
   mock.restoreAll();
 
-  assert.doesNotMatch(result.messages[0].content, /dermatolog/);
-  assert.match(result.messages[0].content, /więcej/);
+  assert.doesNotMatch(messageOf(result), /dermatolog/);
+  assert.match(messageOf(result), /więcej/);
 });
 
 test('ListAppointmentsIntent transfers to an agent when the mock is unreachable', async () => {
