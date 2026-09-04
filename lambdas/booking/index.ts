@@ -1,11 +1,12 @@
 import { measured, downstream } from '@pcm/measure';
-import { findAvailableDays, findAvailableTimes, resolveDay, resolveTime, bookAppointment } from '@pcm/appointment';
-
-const formatDayLabel = (dateStr: string): string => {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
-  return new Intl.DateTimeFormat('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
-};
+import {
+  findAvailableDays,
+  findAvailableTimes,
+  resolveDay,
+  resolveTime,
+  bookAppointment,
+  formatDayLabel,
+} from '@pcm/appointment';
 
 export const handler = measured(
   'booking',

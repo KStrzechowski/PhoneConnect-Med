@@ -44,6 +44,23 @@ export const resolveTime = async (
   return { time: times[timeChoice - 1] ?? null };
 };
 
+export const listAppointments = async (
+  patientId: number,
+  signal: AbortSignal,
+): Promise<{ specialty: string; date: string; time: string }[]> => {
+  const url = `${baseUrl()}/appointment/mine?patientId=${encodeURIComponent(String(patientId))}`;
+  const response = await fetch(url, { signal });
+  if (!response.ok) throw new Error(`GET /appointment/mine failed: ${response.status}`);
+  const body = (await response.json()) as { appointments: { specialty: string; date: string; time: string }[] };
+  return body.appointments;
+};
+
+export const formatDayLabel = (dateStr: string): string => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return new Intl.DateTimeFormat('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
+};
+
 export const bookAppointment = async (
   specialty: string,
   timeOfDay: string,

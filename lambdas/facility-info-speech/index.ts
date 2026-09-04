@@ -2,7 +2,14 @@ import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import { measured, downstream, type ConnectEvent, type InvocationRecord } from '@pcm/measure';
 import { fetchFacility } from '@pcm/facility';
 import { beginOtpChallenge, generateOtpCode, verifyOtpCode } from '@pcm/patient';
-import { findAvailableDays, findAvailableTimes, resolveDay, resolveTime, bookAppointment } from '@pcm/appointment';
+import {
+  findAvailableDays,
+  findAvailableTimes,
+  resolveDay,
+  resolveTime,
+  bookAppointment,
+  formatDayLabel,
+} from '@pcm/appointment';
 
 const sns = new SNSClient({});
 const RESEND_DIGIT = '9';
@@ -106,12 +113,6 @@ const delegate = (intentName: string, slots: LexSlots, sessionAttributes: Record
     sessionAttributes,
   },
 });
-
-const formatDayLabel = (dateStr: string): string => {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
-  return new Intl.DateTimeFormat('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
-};
 
 const handleBookingDialog = async (
   slots: LexSlots,
