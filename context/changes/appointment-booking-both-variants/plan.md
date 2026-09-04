@@ -511,13 +511,13 @@ Additive only — new tables, no changes to `facility` or `patient`. `down` drop
 
 #### Automated
 
-- [x] 3.1 `npm test --workspace lambdas/booking` passes
+- [x] 3.1 `npm test --workspace lambdas/booking` passes — fa38597
 
 ### Phase 4: Speech fulfillment
 
 #### Automated
 
-- [ ] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including new
+- [x] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including new
       `BookingIntent` cases
 
 ### Phase 5: Infrastructure

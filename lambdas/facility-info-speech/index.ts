@@ -2,15 +2,19 @@ import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import { measured, downstream, type ConnectEvent, type InvocationRecord } from '@pcm/measure';
 import { fetchFacility } from '@pcm/facility';
 import { beginOtpChallenge, generateOtpCode, verifyOtpCode } from '@pcm/patient';
+import { findAvailableDays, findAvailableTimes, resolveDay, resolveTime, bookAppointment } from '@pcm/appointment';
 
 const sns = new SNSClient({});
 const RESEND_DIGIT = '9';
+const BOOKING_ATTEMPT_LIMIT = 3;
+
+type LexSlots = Record<string, { value?: { interpretedValue?: string } } | null>;
 
 type LexEvent = {
-  invocationSource: 'FulfillmentCodeHook';
+  invocationSource: 'DialogCodeHook' | 'FulfillmentCodeHook';
   sessionState: {
     sessionAttributes?: Record<string, string>;
-    intent: { name: string; slots?: Record<string, { value?: { interpretedValue?: string } } | null> };
+    intent: { name: string; slots?: LexSlots };
   };
 };
 
@@ -22,6 +26,34 @@ type LexCloseResponse = {
   };
   messages: [{ contentType: 'PlainText'; content: string }];
 };
+
+type LexElicitSlotResponse = {
+  sessionState: {
+    dialogAction: { type: 'ElicitSlot'; slotToElicit: string };
+    intent: { name: string; slots: LexSlots; state: 'InProgress' };
+    sessionAttributes: Record<string, string>;
+  };
+  messages: [{ contentType: 'PlainText'; content: string }];
+};
+
+type LexConfirmIntentResponse = {
+  sessionState: {
+    dialogAction: { type: 'ConfirmIntent' };
+    intent: { name: string; slots: LexSlots; state: 'InProgress' };
+    sessionAttributes: Record<string, string>;
+  };
+  messages: [{ contentType: 'PlainText'; content: string }];
+};
+
+type LexDelegateResponse = {
+  sessionState: {
+    dialogAction: { type: 'Delegate' };
+    intent: { name: string; slots: LexSlots; state: 'InProgress' };
+    sessionAttributes: Record<string, string>;
+  };
+};
+
+type LexResponse = LexCloseResponse | LexElicitSlotResponse | LexConfirmIntentResponse | LexDelegateResponse;
 
 const FALLBACK_MESSAGES = [
   'Przepraszam, nie zrozumiałem. Proszę powiedzieć to jeszcze raz.',
@@ -38,7 +70,193 @@ const close = (intentName: string, sessionAttributes: Record<string, string>, me
   messages: [{ contentType: 'PlainText', content: message }],
 });
 
-const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexCloseResponse> => {
+const elicitSlot = (
+  intentName: string,
+  slotToElicit: string,
+  slots: LexSlots,
+  sessionAttributes: Record<string, string>,
+  message: string,
+): LexElicitSlotResponse => ({
+  sessionState: {
+    dialogAction: { type: 'ElicitSlot', slotToElicit },
+    intent: { name: intentName, slots, state: 'InProgress' },
+    sessionAttributes,
+  },
+  messages: [{ contentType: 'PlainText', content: message }],
+});
+
+const confirmIntent = (
+  intentName: string,
+  slots: LexSlots,
+  sessionAttributes: Record<string, string>,
+  message: string,
+): LexConfirmIntentResponse => ({
+  sessionState: {
+    dialogAction: { type: 'ConfirmIntent' },
+    intent: { name: intentName, slots, state: 'InProgress' },
+    sessionAttributes,
+  },
+  messages: [{ contentType: 'PlainText', content: message }],
+});
+
+const delegate = (intentName: string, slots: LexSlots, sessionAttributes: Record<string, string>): LexDelegateResponse => ({
+  sessionState: {
+    dialogAction: { type: 'Delegate' },
+    intent: { name: intentName, slots, state: 'InProgress' },
+    sessionAttributes,
+  },
+});
+
+const formatDayLabel = (dateStr: string): string => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return new Intl.DateTimeFormat('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
+};
+
+const handleBookingDialog = async (
+  slots: LexSlots,
+  incoming: Record<string, string>,
+  record: InvocationRecord,
+): Promise<LexResponse> => {
+  const specialty = slots.specialty?.value?.interpretedValue;
+  const timeOfDay = slots.timeOfDay?.value?.interpretedValue;
+
+  if (incoming.authenticated !== 'true') {
+    const message = 'Aby umówić wizytę, proszę się najpierw zidentyfikować.';
+    return close('BookingIntent', { ...incoming, lastMessageText: message, needsAuth: 'true' }, message);
+  }
+
+  if (!specialty || !timeOfDay) {
+    return delegate('BookingIntent', slots, incoming);
+  }
+
+  const stage = incoming.bookingStage ?? '';
+  const attempts = Number(incoming.bookingAttempts ?? '0');
+  const abort = AbortSignal.timeout(1000);
+
+  const giveUp = async (): Promise<LexResponse> => {
+    const message = 'Nie udało się umówić wizyty. Łączę z konsultantem.';
+    return close('BookingIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+  };
+
+  const retry = (slotName: string, message: string, extra: Record<string, string> = {}): LexResponse =>
+    elicitSlot(
+      'BookingIntent',
+      slotName,
+      { ...slots, [slotName]: null },
+      { ...incoming, lastMessageText: message, bookingAttempts: String(attempts + 1), ...extra },
+      message,
+    );
+
+  if (stage === '' || stage === 'confirm') {
+    try {
+      const days = await downstream(record, () => findAvailableDays(specialty, timeOfDay, abort));
+      if (days.length === 0) {
+        if (attempts + 1 >= BOOKING_ATTEMPT_LIMIT) return giveUp();
+        const message =
+          'Brak wolnych terminów dla wybranej specjalizacji i pory dnia. Proszę podać inną specjalizację lub porę dnia.';
+        return elicitSlot(
+          'BookingIntent',
+          'specialty',
+          { ...slots, specialty: null, timeOfDay: null },
+          { ...incoming, lastMessageText: message, bookingStage: '', bookingAttempts: String(attempts + 1) },
+          message,
+        );
+      }
+      const options = days.map((d, i) => `${i + 1} - ${formatDayLabel(d)}`).join(', ');
+      const message = `Mam wolne terminy: ${options}. Który termin Pani/Panu odpowiada? Proszę podać numer.`;
+      return elicitSlot(
+        'BookingIntent',
+        'selectedSlot',
+        { ...slots, selectedSlot: null },
+        { ...incoming, lastMessageText: message, bookingStage: 'day', bookingAttempts: '0' },
+        message,
+      );
+    } catch (error) {
+      record.outcome = 'error';
+      record.error = String(error);
+      const message = 'Przepraszam, mam teraz problem z wyszukaniem terminów. Łączę z konsultantem.';
+      return close('BookingIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    }
+  }
+
+  if (stage === 'day') {
+    const dayChoice = Number(slots.selectedSlot?.value?.interpretedValue ?? '');
+    try {
+      const { date } = await downstream(record, () => resolveDay(specialty, timeOfDay, dayChoice, abort));
+      if (date === null) {
+        if (attempts + 1 >= BOOKING_ATTEMPT_LIMIT) return giveUp();
+        return retry('selectedSlot', 'Nie rozpoznałem podanego numeru terminu. Proszę spróbować jeszcze raz.');
+      }
+      const times = await downstream(record, () => findAvailableTimes(specialty, timeOfDay, date, abort));
+      const options = times.map((t, i) => `${i + 1} - godzina ${t}`).join(', ');
+      const message = `${formatDayLabel(date)}: ${options}. Którą godzinę Pani/Pan wybiera?`;
+      return elicitSlot(
+        'BookingIntent',
+        'selectedSlot',
+        { ...slots, selectedSlot: null },
+        { ...incoming, lastMessageText: message, bookingStage: 'time', bookingDate: date, bookingAttempts: '0' },
+        message,
+      );
+    } catch (error) {
+      record.outcome = 'error';
+      record.error = String(error);
+      const message = 'Przepraszam, mam teraz problem z wyszukaniem terminów. Łączę z konsultantem.';
+      return close('BookingIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    }
+  }
+
+  const timeChoice = Number(slots.selectedSlot?.value?.interpretedValue ?? '');
+  const date = incoming.bookingDate ?? '';
+  try {
+    const { time } = await downstream(record, () => resolveTime(specialty, timeOfDay, date, timeChoice, abort));
+    if (time === null) {
+      if (attempts + 1 >= BOOKING_ATTEMPT_LIMIT) return giveUp();
+      return retry('selectedSlot', 'Nie rozpoznałem podanej godziny. Proszę spróbować jeszcze raz.');
+    }
+    const message = `Umawiam Panią/Pana do ${specialty}, ${formatDayLabel(date)}, godzina ${time}. Czy się zgadza?`;
+    return confirmIntent(
+      'BookingIntent',
+      slots,
+      { ...incoming, lastMessageText: message, bookingStage: 'confirm', bookingTime: time },
+      message,
+    );
+  } catch (error) {
+    record.outcome = 'error';
+    record.error = String(error);
+    const message = 'Przepraszam, mam teraz problem z wyszukaniem terminów. Łączę z konsultantem.';
+    return close('BookingIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+  }
+};
+
+const handleBookingFulfillment = async (
+  slots: LexSlots,
+  incoming: Record<string, string>,
+  record: InvocationRecord,
+): Promise<LexCloseResponse> => {
+  const specialty = slots.specialty?.value?.interpretedValue ?? '';
+  const timeOfDay = slots.timeOfDay?.value?.interpretedValue ?? '';
+  const date = incoming.bookingDate ?? '';
+  const time = incoming.bookingTime ?? '';
+  const patientId = Number(incoming.patientId ?? '');
+
+  try {
+    const booked = await downstream(record, () =>
+      bookAppointment(specialty, timeOfDay, date, time, patientId, AbortSignal.timeout(1000)),
+    );
+    const message = booked
+      ? 'Wizyta została umówiona. Dziękuję.'
+      : 'Niestety ten termin został już zajęty. Proszę spróbować ponownie.';
+    return close('BookingIntent', { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
+  } catch (error) {
+    record.outcome = 'error';
+    record.error = String(error);
+    const message = 'Przepraszam, mam teraz problem z umówieniem wizyty. Łączę z konsultantem.';
+    return close('BookingIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+  }
+};
+
+const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexResponse> => {
   const intentName = event.sessionState.intent.name;
   const incoming = event.sessionState.sessionAttributes ?? {};
 
@@ -170,6 +388,14 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexC
     );
   }
 
+  if (intentName === 'BookingIntent') {
+    const slots = event.sessionState.intent.slots ?? {};
+    if (event.invocationSource === 'DialogCodeHook') {
+      return handleBookingDialog(slots, incoming, record);
+    }
+    return handleBookingFulfillment(slots, incoming, record);
+  }
+
   if (intentName === 'MainMenuIntent') {
     const message =
       'Proszę powiedzieć, czego Pan lub Pani potrzebuje: adres i godziny otwarcia placówki, ' +
@@ -192,7 +418,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexC
   return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: String(count) }, message);
 };
 
-export const handler = (event: LexEvent): Promise<LexCloseResponse> => {
+export const handler = (event: LexEvent): Promise<LexResponse> => {
   const contactId = event.sessionState.sessionAttributes?.contactId;
   const synthetic: ConnectEvent = {
     Details: {
