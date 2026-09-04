@@ -125,7 +125,7 @@ test('SendOtp and FacilityInfoSpeech may both publish to SNS', () => {
   expect(Object.keys(policies)).toHaveLength(2);
 });
 
-test('the speech bot has all 5 global-layer intents plus AuthIntent, OtpIntent and BookingIntent under pl_PL', () => {
+test('the speech bot has all 6 global-layer intents plus AuthIntent, OtpIntent and BookingIntent under pl_PL', () => {
   template.hasResourceProperties('AWS::Lex::Bot', {
     DataPrivacy: { ChildDirected: false },
     BotLocales: Match.arrayWith([
@@ -136,6 +136,7 @@ test('the speech bot has all 5 global-layer intents plus AuthIntent, OtpIntent a
           Match.objectLike({ Name: 'InfoIntent' }),
           Match.objectLike({ Name: 'RepeatLastMessageIntent' }),
           Match.objectLike({ Name: 'AgentTransferIntent' }),
+          Match.objectLike({ Name: 'ListAppointmentsIntent' }),
           Match.objectLike({ Name: 'AuthIntent' }),
           Match.objectLike({ Name: 'OtpIntent' }),
           Match.objectLike({ Name: 'BookingIntent' }),

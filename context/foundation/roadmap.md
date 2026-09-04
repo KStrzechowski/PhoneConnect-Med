@@ -55,7 +55,7 @@ that produces evidence rather than infrastructure.
 | S-03 | `caller-id-authentication` | prove identity by PESEL + phone when calling from their own number | S-02, F-03 | FR-005, §Access Control L2 | proposed |
 | S-04 | `otp-authentication-fallback` | prove identity by PESEL + phone plus a texted code, from any number | S-03 | FR-005, §Access Control L2 | proposed |
 | S-05 | `appointment-booking-both-variants` | book a visit by specialty and time of day, choosing from offered slots | S-03 | FR-012, §Business Logic | proposed |
-| S-06 | `appointment-list` | hear the list of their scheduled appointments | S-03 | FR-013 | proposed |
+| S-06 | `appointment-list` | hear the list of their scheduled appointments | S-03 | FR-013 | in-progress |
 | S-07 | `appointment-cancel` | cancel a scheduled appointment, releasing the slot | S-06 | FR-014 | proposed |
 | S-08 | `appointment-reschedule` | move an appointment to a new slot, releasing the old one | S-05, S-07 | FR-015 | proposed |
 | S-09 | `intent-accuracy-measurement` | (measurement) the project can report intent accuracy on held-out Polish speech | S-05 | NFR-14, FR-009, FR-012 | proposed |
@@ -342,7 +342,7 @@ the number**: no bot, no contact flow, no deployed function.
   before it, even though it is smaller, because it produces no evidence — under a
   validation-first bias, small and evidence-free loses to large and evidence-bearing. Listed as
   parallel with S-05 so it can be picked up independently if S-05 stalls on something external.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-07: Cancelling an appointment
 

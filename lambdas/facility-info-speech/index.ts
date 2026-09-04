@@ -8,6 +8,7 @@ import {
   resolveDay,
   resolveTime,
   bookAppointment,
+  listAppointments,
   formatDayLabel,
 } from '@pcm/appointment';
 
@@ -406,6 +407,38 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
       return handleBookingDialog(slots, incoming, record);
     }
     return handleBookingFulfillment(slots, incoming, record);
+  }
+
+  if (intentName === 'ListAppointmentsIntent') {
+    if (incoming.authenticated !== 'true') {
+      const message = 'Aby usłyszeć listę wizyt, proszę się najpierw zidentyfikować.';
+      return close(intentName, { ...incoming, lastMessageText: message, needsAuth: 'true' }, message);
+    }
+    try {
+      const appointments = await downstream(record, () =>
+        listAppointments(Number(incoming.patientId), AbortSignal.timeout(1000)),
+      );
+      if (appointments.length === 0) {
+        const message = 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.';
+        return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
+      }
+      const lines = appointments
+        .slice(0, 3)
+        .map((a) => `${a.specialty}, ${formatDayLabel(a.date)}, godzina ${a.time}`)
+        .join('. ');
+      const overflow = appointments.length > 3 ? ' Ma Pani/Pan więcej zaplanowanych wizyt.' : '';
+      const message = `Najbliższe wizyty: ${lines}.${overflow}`;
+      return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
+    } catch (error) {
+      record.outcome = 'error';
+      record.error = String(error);
+      const message = 'Przepraszam, mam teraz problem z pobraniem listy wizyt. Łączę z konsultantem.';
+      return close(
+        intentName,
+        { ...incoming, lastMessageText: message, fallbackCount: '0', transfer: 'true' },
+        message,
+      );
+    }
   }
 
   if (intentName === 'MainMenuIntent') {
