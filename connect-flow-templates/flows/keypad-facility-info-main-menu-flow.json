@@ -118,6 +118,24 @@
           }
         ]
       },
+      "CheckAuthForBooking": {
+        "position": {
+          "x": 844,
+          "y": 200
+        }
+      },
+      "TransferToBookingFlow": {
+        "position": {
+          "x": 1080,
+          "y": 60
+        }
+      },
+      "TransferToAuthenticateFlow": {
+        "position": {
+          "x": 1080,
+          "y": 340
+        }
+      },
       "SetTargetQueue": {
         "position": {
           "x": 1474.4,
@@ -350,7 +368,7 @@
     },
     {
       "Parameters": {
-        "Text": "Naciśnij 1, aby usłyszeć adres i godziny otwarcia. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć.",
+        "Text": "Naciśnij 1, aby usłyszeć adres i godziny otwarcia. Naciśnij 2, aby umówić wizytę. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć.",
         "StoreInput": "False",
         "InputTimeLimitSeconds": "5"
       },
@@ -365,6 +383,15 @@
               "Operator": "Equals",
               "Operands": [
                 "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "CheckAuthForBooking",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
               ]
             }
           },
@@ -398,6 +425,65 @@
           },
           {
             "NextAction": "IncrementFailedAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attribute": "$.Attributes.authenticated"
+      },
+      "Identifier": "CheckAuthForBooking",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "TransferToAuthenticateFlow",
+        "Conditions": [
+          {
+            "NextAction": "TransferToBookingFlow",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "TransferToAuthenticateFlow",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "REPLACE_WITH_BOOKING_FLOW_ARN"
+      },
+      "Identifier": "TransferToBookingFlow",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "DisconnectFallback",
+        "Errors": [
+          {
+            "NextAction": "DisconnectFallback",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "REPLACE_WITH_AUTHENTICATE_FLOW_ARN"
+      },
+      "Identifier": "TransferToAuthenticateFlow",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "DisconnectFallback",
+        "Errors": [
+          {
+            "NextAction": "DisconnectFallback",
             "ErrorType": "NoMatchingError"
           }
         ]

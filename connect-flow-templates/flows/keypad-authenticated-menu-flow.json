@@ -8,6 +8,8 @@
       "setMsgMenu": { "position": { "x": 240, "y": 40 } },
       "menuPrompt": { "position": { "x": 440, "y": 40 } },
       "repeatMenu": { "position": { "x": 440, "y": 260 } },
+      "transferToBookingFlow": { "position": { "x": 640, "y": -140 } },
+      "transferToMainMenu": { "position": { "x": 640, "y": 200 } },
       "transferQueue": { "position": { "x": 640, "y": 40 } },
       "disconnectEnd": { "position": { "x": 840, "y": 40 } }
     },
@@ -28,7 +30,7 @@
       "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Tożsamość została potwierdzona. Ta część menu jest jeszcze w budowie. Naciśnij zero, aby połączyć się z konsultantem, albo gwiazdkę, aby usłyszeć to jeszcze raz."
+          "lastMessageText": "Tożsamość została potwierdzona. Naciśnij 1, aby umówić wizytę. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć."
         },
         "TargetContact": "Current"
       },
@@ -47,8 +49,10 @@
       "Transitions": {
         "NextAction": "menuPrompt",
         "Conditions": [
+          { "NextAction": "transferToBookingFlow", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
           { "NextAction": "transferQueue", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
-          { "NextAction": "repeatMenu", "Condition": { "Operator": "Equals", "Operands": ["*"] } }
+          { "NextAction": "repeatMenu", "Condition": { "Operator": "Equals", "Operands": ["*"] } },
+          { "NextAction": "transferToMainMenu", "Condition": { "Operator": "Equals", "Operands": ["#"] } }
         ],
         "Errors": [
           { "NextAction": "menuPrompt", "ErrorType": "NoMatchingCondition" },
@@ -64,6 +68,24 @@
       "Transitions": {
         "NextAction": "menuPrompt",
         "Errors": [{ "NextAction": "menuPrompt", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "transferToBookingFlow",
+      "Type": "TransferToFlow",
+      "Parameters": { "ContactFlowId": "REPLACE_WITH_BOOKING_FLOW_ARN" },
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [{ "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "transferToMainMenu",
+      "Type": "TransferToFlow",
+      "Parameters": { "ContactFlowId": "REPLACE_WITH_MAIN_MENU_FLOW_ARN" },
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [{ "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }]
       }
     },
     {
