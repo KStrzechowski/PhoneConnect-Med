@@ -27,6 +27,10 @@ function say(value: string): lex.CfnBot.MessageGroupProperty {
   return { message: { plainTextMessage: { value } } };
 }
 
+function slotValue(value: string, synonyms: string[]): lex.CfnBot.SlotTypeValueProperty {
+  return { sampleValue: { value }, synonyms: synonyms.map((synonym) => ({ value: synonym })) };
+}
+
 function keypadOnlyAttempt(maxLength: number): lex.CfnBot.PromptAttemptSpecificationProperty {
   return {
     allowedInputTypes: { allowAudioInput: false, allowDtmfInput: true },
@@ -106,6 +110,26 @@ const authUtterances = [
 ];
 
 const otpUtterances = ['chcę podać kod', 'mam kod weryfikacyjny', 'podam kod z sms'];
+
+const bookingUtterances = [
+  'chcę umówić wizytę',
+  'chcę się zapisać do lekarza',
+  'chciałbym się zapisać',
+  'potrzebuję wizyty',
+  'potrzebuję terminu',
+  'chcę się umówić do {specialty}',
+  'chcę wizytę u {specialty}',
+  'zapisz mnie do {specialty}',
+  'zarejestruj mnie do {specialty}',
+  'potrzebuję terminu u {specialty}',
+  'czy jest wolny termin do {specialty}',
+  'chcę się dostać do {specialty}',
+  'chcę się umówić do {specialty} {timeOfDay}',
+  'chcę się dostać do {specialty} {timeOfDay}',
+  'umów mnie do {specialty} {timeOfDay}',
+  'szukam terminu {timeOfDay}',
+  'umów mnie {timeOfDay}',
+];
 
 const agentTransferUtterances = [
   'połącz z agentem',
@@ -359,6 +383,33 @@ volumes:
       integrationArn: otpVerify.functionArn,
     });
 
+    const booking = new NodejsFunction(this, 'Booking', {
+      functionName: 'phoneconnect-med-booking',
+      entry: path.join(repoRoot, 'lambdas/booking/index.ts'),
+      projectRoot: repoRoot,
+      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
+      runtime: lambda.Runtime.NODEJS_24_X,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      securityGroups: [functionSecurityGroup],
+      allowPublicSubnet: true,
+      environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
+      timeout: cdk.Duration.seconds(2),
+      logGroup: measurements,
+      loggingFormat: lambda.LoggingFormat.JSON,
+    });
+
+    booking.addPermission('ConnectInvoke', {
+      principal: new iam.ServicePrincipal('connect.amazonaws.com'),
+      sourceArn: connectInstanceArn,
+    });
+
+    new connect.CfnIntegrationAssociation(this, 'BookingFunctionAssociation', {
+      instanceId: connectInstanceArn,
+      integrationType: 'LAMBDA_FUNCTION',
+      integrationArn: booking.functionArn,
+    });
+
     const facilityInfoSpeech = new NodejsFunction(this, 'FacilityInfoSpeech', {
       functionName: 'phoneconnect-med-facility-info-speech',
       entry: path.join(repoRoot, 'lambdas/facility-info-speech/index.ts'),
@@ -419,6 +470,37 @@ volumes:
               name: 'KeyedOtpCode',
               valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
               slotTypeValues: [{ sampleValue: { value: '000000' } }],
+            },
+            {
+              name: 'Specialty',
+              valueSelectionSetting: { resolutionStrategy: 'TOP_RESOLUTION' },
+              slotTypeValues: [
+                slotValue('kardiolog', ['lekarz od serca', 'kardiologia', 'serce']),
+                slotValue('dermatolog', ['lekarz od skóry', 'dermatologia', 'skóra']),
+                slotValue('okulista', ['lekarz od oczu', 'okulistyka', 'oczy', 'wzrok']),
+                slotValue('laryngolog', ['lekarz od gardła', 'laryngologia', 'uszy', 'gardło']),
+                slotValue('neurolog', ['neurologia']),
+                slotValue('ortopeda', ['ortopedia', 'kości', 'staw']),
+                slotValue('internista', ['lekarz rodzinny', 'lekarz pierwszego kontaktu', 'internistyczna']),
+                slotValue('ginekolog', ['ginekologia']),
+                slotValue('pediatra', ['lekarz dziecięcy', 'pediatria']),
+                slotValue('endokrynolog', ['endokrynologia', 'hormony', 'tarczyca']),
+                slotValue('chirurg', ['chirurgia']),
+                slotValue('urolog', ['urologia']),
+                slotValue('psychiatra', ['psychiatria']),
+                slotValue('alergolog', ['alergologia', 'alergia']),
+                slotValue('reumatolog', ['reumatologia']),
+              ],
+            },
+            {
+              name: 'TimeOfDay',
+              valueSelectionSetting: { resolutionStrategy: 'TOP_RESOLUTION' },
+              slotTypeValues: [
+                slotValue('rano', ['z rana', 'rankiem', 'o poranku', 'wcześnie']),
+                slotValue('przed południem', ['przedpołudniem', 'dopołudnia']),
+                slotValue('po południu', ['popołudniu', 'popołudniowe']),
+                slotValue('wieczorem', ['na wieczór', 'wieczór', 'późno']),
+              ],
             },
           ],
           intents: [
@@ -527,6 +609,75 @@ volumes:
                   },
                 },
               ],
+            },
+            {
+              name: 'BookingIntent',
+              sampleUtterances: bookingUtterances.map((utterance) => ({ utterance })),
+              dialogCodeHook: { enabled: true },
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [
+                { slotName: 'specialty', priority: 1 },
+                { slotName: 'timeOfDay', priority: 2 },
+                { slotName: 'selectedSlot', priority: 3 },
+              ],
+              slots: [
+                {
+                  name: 'specialty',
+                  slotTypeName: 'Specialty',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Do jakiego specjalisty chce się Pani/Pan umówić?')],
+                    },
+                  },
+                },
+                {
+                  name: 'timeOfDay',
+                  slotTypeName: 'TimeOfDay',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say(
+                          'Jaka pora dnia Pani/Panu odpowiada: rano, przed południem, po południu, czy wieczorem?',
+                        ),
+                      ],
+                    },
+                  },
+                },
+                {
+                  name: 'selectedSlot',
+                  slotTypeName: 'AMAZON.Number',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Który numer Pani/Pan wybiera?')],
+                    },
+                  },
+                },
+              ],
+              intentConfirmationSetting: {
+                promptSpecification: {
+                  maxRetries: 2,
+                  allowInterrupt: false,
+                  messageGroupsList: [say('Czy się zgadza? Powiedz tak albo nie.')],
+                },
+                declinationResponse: {
+                  messageGroupsList: [say('Dobrze, wybierzmy inny termin.')],
+                },
+                declinationNextStep: {
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
+                  intent: {
+                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                  },
+                },
+              },
             },
             {
               name: 'FallbackIntent',
@@ -689,6 +840,7 @@ volumes:
     new cdk.CfnOutput(this, 'AuthenticateFunctionName', { value: authenticate.functionName });
     new cdk.CfnOutput(this, 'SendOtpFunctionName', { value: sendOtp.functionName });
     new cdk.CfnOutput(this, 'OtpVerifyFunctionName', { value: otpVerify.functionName });
+    new cdk.CfnOutput(this, 'BookingFunctionName', { value: booking.functionName });
     new cdk.CfnOutput(this, 'FacilityInfoSpeechFunctionName', { value: facilityInfoSpeech.functionName });
     new cdk.CfnOutput(this, 'SpeechBotAliasArn', { value: speechBotAlias.attrArn });
     new cdk.CfnOutput(this, 'DeployRoleArn', { value: deployRole.roleArn });

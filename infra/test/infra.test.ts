@@ -77,11 +77,11 @@ test('the telephony instance may invoke the function', () => {
   });
 });
 
-test('all five keypad-invoked functions may be invoked by the telephony instance', () => {
+test('all six keypad-invoked functions may be invoked by the telephony instance', () => {
   const permissions = template.findResources('AWS::Lambda::Permission', {
     Properties: { Principal: 'connect.amazonaws.com' },
   });
-  expect(Object.keys(permissions)).toHaveLength(5);
+  expect(Object.keys(permissions)).toHaveLength(6);
 });
 
 test('SendOtp and OtpVerify are not attached to the VPC', () => {
@@ -96,6 +96,15 @@ test('SendOtp and OtpVerify are not attached to the VPC', () => {
   expect(otpVerify?.Properties.VpcConfig).toBeUndefined();
 });
 
+test('Booking is named per convention and reaches the mock over the VPC', () => {
+  const functions = template.findResources('AWS::Lambda::Function');
+  const booking = Object.values(functions).find(
+    (fn) => fn.Properties.FunctionName === 'phoneconnect-med-booking',
+  );
+  expect(booking).toBeDefined();
+  expect(booking?.Properties.VpcConfig).toBeDefined();
+});
+
 test('SendOtp and FacilityInfoSpeech may both publish to SNS', () => {
   const policies = template.findResources('AWS::IAM::Policy', {
     Properties: {
@@ -107,7 +116,7 @@ test('SendOtp and FacilityInfoSpeech may both publish to SNS', () => {
   expect(Object.keys(policies)).toHaveLength(2);
 });
 
-test('the speech bot has all 5 global-layer intents plus AuthIntent and OtpIntent under pl_PL', () => {
+test('the speech bot has all 5 global-layer intents plus AuthIntent, OtpIntent and BookingIntent under pl_PL', () => {
   template.hasResourceProperties('AWS::Lex::Bot', {
     DataPrivacy: { ChildDirected: false },
     BotLocales: Match.arrayWith([
@@ -120,11 +129,55 @@ test('the speech bot has all 5 global-layer intents plus AuthIntent and OtpInten
           Match.objectLike({ Name: 'AgentTransferIntent' }),
           Match.objectLike({ Name: 'AuthIntent' }),
           Match.objectLike({ Name: 'OtpIntent' }),
+          Match.objectLike({ Name: 'BookingIntent' }),
           Match.objectLike({ Name: 'FallbackIntent' }),
         ]),
       }),
     ]),
   });
+});
+
+test('BookingIntent has a dialog code hook in addition to fulfillment, and three slots in priority order', () => {
+  const bots = template.findResources('AWS::Lex::Bot');
+  const [bot] = Object.values(bots);
+  const locale = (bot.Properties.BotLocales as Array<{ LocaleId: string; Intents: Array<{ Name: string }> }>).find(
+    (candidate) => candidate.LocaleId === 'pl_PL',
+  );
+  const bookingIntent = locale?.Intents.find((intent) => intent.Name === 'BookingIntent') as
+    | {
+        DialogCodeHook?: { Enabled: boolean };
+        FulfillmentCodeHook?: { Enabled: boolean };
+        SlotPriorities?: Array<{ SlotName: string; Priority: number }>;
+      }
+    | undefined;
+
+  expect(bookingIntent?.DialogCodeHook?.Enabled).toBe(true);
+  expect(bookingIntent?.FulfillmentCodeHook?.Enabled).toBe(true);
+  expect(
+    bookingIntent?.SlotPriorities?.slice().sort((a, b) => a.Priority - b.Priority).map((slot) => slot.SlotName),
+  ).toEqual(['specialty', 'timeOfDay', 'selectedSlot']);
+});
+
+test('BookingIntent has an explicit declination path that clears only selectedSlot', () => {
+  const bots = template.findResources('AWS::Lex::Bot');
+  const [bot] = Object.values(bots);
+  const locale = (bot.Properties.BotLocales as Array<{ LocaleId: string; Intents: Array<{ Name: string }> }>).find(
+    (candidate) => candidate.LocaleId === 'pl_PL',
+  );
+  const bookingIntent = locale?.Intents.find((intent) => intent.Name === 'BookingIntent') as
+    | {
+        IntentConfirmationSetting?: {
+          DeclinationNextStep?: {
+            DialogAction?: { SlotToElicit?: string };
+            Intent?: { Slots?: Array<{ SlotName: string }> };
+          };
+        };
+      }
+    | undefined;
+
+  const declinationNextStep = bookingIntent?.IntentConfirmationSetting?.DeclinationNextStep;
+  expect(declinationNextStep?.DialogAction?.SlotToElicit).toBe('selectedSlot');
+  expect(declinationNextStep?.Intent?.Slots).toEqual([{ SlotName: 'selectedSlot', SlotValueOverride: {} }]);
 });
 
 test('AuthIntent has an explicit declination path that clears both slots and re-elicits pesel', () => {
@@ -159,17 +212,18 @@ test('the bot association custom resource may associate and disassociate the bot
   });
 });
 
-test('all five keypad-invoked functions are associated with the telephony instance', () => {
+test('all six keypad-invoked functions are associated with the telephony instance', () => {
   const associations = template.findResources('AWS::Connect::IntegrationAssociation');
   const targets = Object.values(associations).map(
     (assoc) => (assoc.Properties.IntegrationArn as { 'Fn::GetAtt': [string, string] })['Fn::GetAtt'][0],
   );
-  expect(targets).toHaveLength(5);
+  expect(targets).toHaveLength(6);
   expect(targets.some((t) => t.startsWith('ConnectHealth'))).toBe(true);
   expect(targets.some((t) => t.startsWith('FacilityInfo'))).toBe(true);
   expect(targets.some((t) => t.startsWith('Authenticate'))).toBe(true);
   expect(targets.some((t) => t.startsWith('SendOtp'))).toBe(true);
   expect(targets.some((t) => t.startsWith('OtpVerify'))).toBe(true);
+  expect(targets.some((t) => t.startsWith('Booking'))).toBe(true);
 });
 
 test('the instance user data still installs docker', () => {

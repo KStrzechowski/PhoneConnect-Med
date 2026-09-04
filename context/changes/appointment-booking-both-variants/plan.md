@@ -518,14 +518,14 @@ Additive only — new tables, no changes to `facility` or `patient`. `down` drop
 #### Automated
 
 - [x] 4.1 `npm test --workspace lambdas/facility-info-speech` passes, including new
-      `BookingIntent` cases
+      `BookingIntent` cases — d069cad
 
 ### Phase 5: Infrastructure
 
 #### Automated
 
-- [ ] 5.1 `cdk synth` succeeds
-- [ ] 5.2 `infra/test/infra.test.ts` assertions pass, extended for `Booking` and `BookingIntent`
+- [x] 5.1 `cdk synth` succeeds
+- [x] 5.2 `infra/test/infra.test.ts` assertions pass, extended for `Booking` and `BookingIntent`
 
 ### Phase 6: Contact flow + hand-off
 
