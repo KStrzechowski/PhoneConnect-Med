@@ -9,6 +9,7 @@
       "menuPrompt": { "position": { "x": 440, "y": 40 } },
       "repeatMenu": { "position": { "x": 440, "y": 260 } },
       "transferToBookingFlow": { "position": { "x": 640, "y": -140 } },
+      "transferToAppointmentListFlow": { "position": { "x": 640, "y": -260 } },
       "transferToMainMenu": { "position": { "x": 640, "y": 200 } },
       "transferQueue": { "position": { "x": 640, "y": 40 } },
       "disconnectEnd": { "position": { "x": 840, "y": 40 } }
@@ -30,7 +31,7 @@
       "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Tożsamość została potwierdzona. Naciśnij 1, aby umówić wizytę. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć."
+          "lastMessageText": "Tożsamość została potwierdzona. Naciśnij 1, aby umówić wizytę. Naciśnij 2, aby usłyszeć swoje wizyty. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć."
         },
         "TargetContact": "Current"
       },
@@ -50,6 +51,7 @@
         "NextAction": "menuPrompt",
         "Conditions": [
           { "NextAction": "transferToBookingFlow", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
+          { "NextAction": "transferToAppointmentListFlow", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
           { "NextAction": "transferQueue", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
           { "NextAction": "repeatMenu", "Condition": { "Operator": "Equals", "Operands": ["*"] } },
           { "NextAction": "transferToMainMenu", "Condition": { "Operator": "Equals", "Operands": ["#"] } }
@@ -74,6 +76,15 @@
       "Identifier": "transferToBookingFlow",
       "Type": "TransferToFlow",
       "Parameters": { "ContactFlowId": "REPLACE_WITH_BOOKING_FLOW_ARN" },
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [{ "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "transferToAppointmentListFlow",
+      "Type": "TransferToFlow",
+      "Parameters": { "ContactFlowId": "REPLACE_WITH_APPOINTMENT_LIST_FLOW_ARN" },
       "Transitions": {
         "NextAction": "disconnectEnd",
         "Errors": [{ "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }]

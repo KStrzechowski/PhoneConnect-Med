@@ -256,3 +256,36 @@ something that no test will catch.
 - **Read by:** whatever ad hoc CloudWatch Logs Insights query the measurement write-up runs at
   analysis time (see `context/changes/call-measurement-substrate/queries.md` for the existing
   query style this convention extends).
+
+## Keypad digits: main menu `3`, authenticated menu `2` (S-06)
+
+- **Scope:** `keypad-facility-info-main-menu-flow.json`'s `3` digit and
+  `keypad-authenticated-menu-flow.json`'s `2` digit — both reach the appointment list, gated the
+  same way booking's `2`/`1` pair is (see "Auth-gate redirect asymmetry between variants" above):
+  an unauthenticated caller pressing `3` at the main menu is routed through
+  `keypad-authenticate-flow.json` first, landing on the authenticated menu where digit `2` (not
+  `3`) reaches the list; an already-authenticated caller pressing `3` at the main menu goes
+  straight to `keypad-appointment-list-flow.json`.
+- **Set by / read by:** `CheckAuthForAppointmentList` (mirroring `CheckAuthForBooking`) in
+  `keypad-facility-info-main-menu-flow.json`, and the authenticated menu's own digit-`2` branch.
+- **Why it matters:** same class of gap as the booking pair above — the two digits differ (`3` vs
+  `2`) because each menu already has its own booking digit occupying a different slot at each
+  level; a future contributor copying booking's "same digit at both menus" pattern verbatim would
+  misassign this one. Nothing in the repo enforces this; flows are hand-built and outside IaC.
+
+## `hasAppointments` / `hasMore` / `appt1` / `appt2` / `appt3` (S-06)
+
+- **Set by:** `lambdas/appointment-list/index.ts` (keypad output fields) — `hasAppointments:
+  'false'` for an empty list; otherwise `hasAppointments: 'true'`, `hasMore` reflecting whether a
+  fourth upcoming appointment exists beyond the three spoken, and `appt1`/`appt2`/`appt3` each a
+  formatted `"<specialty>, <day label>, godzina <time>"` string (empty when absent).
+- **Read by:** `keypad-appointment-list-flow.json`'s `checkHasAppointments`/`checkHasMore`
+  branches, to choose which of the three message variants (empty / populated /
+  populated-with-overflow) to play.
+- **Why it matters:** same class of gap as `Details.Parameters.step` above — a hand-built
+  `Compare` block that checks the wrong field, or a flow edit that forgets to update
+  `checkHasMore`'s branch after changing the cap, silently plays the wrong message rather than
+  failing loudly. The speech variant (`ListAppointmentsIntent` in
+  `lambdas/facility-info-speech/index.ts`) reaches the identical `listAppointments`/
+  `formatDayLabel` calls but builds its own single spoken sentence rather than three separate
+  fields — see L-03.

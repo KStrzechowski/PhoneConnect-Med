@@ -130,6 +130,18 @@
           "y": 60
         }
       },
+      "CheckAuthForAppointmentList": {
+        "position": {
+          "x": 844,
+          "y": 480
+        }
+      },
+      "TransferToAppointmentListFlow": {
+        "position": {
+          "x": 1080,
+          "y": 480
+        }
+      },
       "TransferToAuthenticateFlow": {
         "position": {
           "x": 1080,
@@ -368,7 +380,7 @@
     },
     {
       "Parameters": {
-        "Text": "Naciśnij 1, aby usłyszeć adres i godziny otwarcia. Naciśnij 2, aby umówić wizytę. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć.",
+        "Text": "Naciśnij 1, aby usłyszeć adres i godziny otwarcia. Naciśnij 2, aby umówić wizytę. Naciśnij 3, aby usłyszeć swoje wizyty. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć.",
         "StoreInput": "False",
         "InputTimeLimitSeconds": "5"
       },
@@ -392,6 +404,15 @@
               "Operator": "Equals",
               "Operands": [
                 "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "CheckAuthForAppointmentList",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "3"
               ]
             }
           },
@@ -462,6 +483,49 @@
         "ContactFlowId": "REPLACE_WITH_BOOKING_FLOW_ARN"
       },
       "Identifier": "TransferToBookingFlow",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "DisconnectFallback",
+        "Errors": [
+          {
+            "NextAction": "DisconnectFallback",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attribute": "$.Attributes.authenticated"
+      },
+      "Identifier": "CheckAuthForAppointmentList",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "TransferToAuthenticateFlow",
+        "Conditions": [
+          {
+            "NextAction": "TransferToAppointmentListFlow",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "TransferToAuthenticateFlow",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "REPLACE_WITH_APPOINTMENT_LIST_FLOW_ARN"
+      },
+      "Identifier": "TransferToAppointmentListFlow",
       "Type": "TransferToFlow",
       "Transitions": {
         "NextAction": "DisconnectFallback",
