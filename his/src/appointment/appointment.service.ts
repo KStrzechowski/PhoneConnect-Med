@@ -10,7 +10,10 @@ export class AppointmentService {
     private readonly slotRepository: Repository<Slot>,
   ) {}
 
-  async findAvailableDays(specialty: string, timeOfDay: string): Promise<string[]> {
+  async findAvailableDays(
+    specialty: string,
+    timeOfDay: string,
+  ): Promise<string[]> {
     const rows = await this.slotRepository
       .createQueryBuilder('slot')
       .innerJoin('slot.doctor', 'doctor')
@@ -25,7 +28,11 @@ export class AppointmentService {
     return rows.map((row) => row.date);
   }
 
-  async findAvailableTimes(specialty: string, timeOfDay: string, date: string): Promise<string[]> {
+  async findAvailableTimes(
+    specialty: string,
+    timeOfDay: string,
+    date: string,
+  ): Promise<string[]> {
     const rows = await this.slotRepository
       .createQueryBuilder('slot')
       .innerJoin('slot.doctor', 'doctor')
@@ -41,7 +48,9 @@ export class AppointmentService {
     return rows.map((row) => row.time);
   }
 
-  async findAppointmentsForPatient(patientId: number): Promise<{ specialty: string; date: string; time: string }[]> {
+  async findAppointmentsForPatient(
+    patientId: number,
+  ): Promise<{ specialty: string; date: string; time: string }[]> {
     return this.slotRepository
       .createQueryBuilder('slot')
       .innerJoin('slot.doctor', 'doctor')
@@ -57,7 +66,13 @@ export class AppointmentService {
       .getRawMany<{ specialty: string; date: string; time: string }>();
   }
 
-  async book(specialty: string, timeOfDay: string, date: string, time: string, patientId: number): Promise<boolean> {
+  async book(
+    specialty: string,
+    timeOfDay: string,
+    date: string,
+    time: string,
+    patientId: number,
+  ): Promise<boolean> {
     const candidate = await this.slotRepository
       .createQueryBuilder('slot')
       .innerJoin('slot.doctor', 'doctor')
@@ -69,7 +84,27 @@ export class AppointmentService {
       .getOne();
     if (!candidate) return false;
 
-    const result = await this.slotRepository.update({ id: candidate.id, taken: false }, { taken: true, patientId });
+    const result = await this.slotRepository.update(
+      { id: candidate.id, taken: false },
+      { taken: true, patientId },
+    );
+    return (result.affected ?? 0) > 0;
+  }
+
+  async cancel(
+    date: string,
+    time: string,
+    patientId: number,
+  ): Promise<boolean> {
+    const candidate = await this.slotRepository.findOne({
+      where: { date, time, patientId, taken: true },
+    });
+    if (!candidate) return false;
+
+    const result = await this.slotRepository.update(
+      { id: candidate.id, taken: true },
+      { taken: false, patientId: null },
+    );
     return (result.affected ?? 0) > 0;
   }
 }

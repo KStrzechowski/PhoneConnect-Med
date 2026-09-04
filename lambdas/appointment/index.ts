@@ -79,3 +79,29 @@ export const bookAppointment = async (
   const body = (await response.json()) as { booked: boolean };
   return body.booked;
 };
+
+export const resolveAppointment = async (
+  patientId: number,
+  selectedSlot: number,
+  signal: AbortSignal,
+): Promise<{ specialty: string; date: string; time: string } | null> => {
+  const appointments = await listAppointments(patientId, signal);
+  return appointments[selectedSlot - 1] ?? null;
+};
+
+export const cancelAppointment = async (
+  date: string,
+  time: string,
+  patientId: number,
+  signal: AbortSignal,
+): Promise<boolean> => {
+  const response = await fetch(`${baseUrl()}/appointment/cancel`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ date, time, patientId }),
+    signal,
+  });
+  if (!response.ok) throw new Error(`POST /appointment/cancel failed: ${response.status}`);
+  const body = (await response.json()) as { cancelled: boolean };
+  return body.cancelled;
+};

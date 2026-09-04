@@ -1,6 +1,15 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import { findAvailableDays, findAvailableTimes, resolveDay, resolveTime, bookAppointment, listAppointments } from './index.ts';
+import {
+  findAvailableDays,
+  findAvailableTimes,
+  resolveDay,
+  resolveTime,
+  bookAppointment,
+  listAppointments,
+  resolveAppointment,
+  cancelAppointment,
+} from './index.ts';
 
 const mockJson = (body: object) => {
   mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify(body)));
@@ -92,4 +101,36 @@ test('listAppointments returns the appointments from the mock', async () => {
   mock.restoreAll();
 
   assert.deepEqual(appointments, [{ specialty: 'kardiolog', date: '2026-09-04', time: '08:00' }]);
+});
+
+test('resolveAppointment re-derives the appointment at the chosen index', async () => {
+  mockJson({ appointments: [{ specialty: 'kardiolog', date: '2026-09-04', time: '08:00' }] });
+  const result = await resolveAppointment(1, 1, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(result, { specialty: 'kardiolog', date: '2026-09-04', time: '08:00' });
+});
+
+test('resolveAppointment returns null for a choice outside the offered range', async () => {
+  mockJson({ appointments: [{ specialty: 'kardiolog', date: '2026-09-04', time: '08:00' }] });
+  const result = await resolveAppointment(1, 2, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.equal(result, null);
+});
+
+test('cancelAppointment reports a successful cancellation', async () => {
+  mockJson({ cancelled: true });
+  const cancelled = await cancelAppointment('2026-09-04', '08:00', 1, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.equal(cancelled, true);
+});
+
+test('cancelAppointment reports a failed cancellation', async () => {
+  mockJson({ cancelled: false });
+  const cancelled = await cancelAppointment('2026-09-04', '08:00', 1, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.equal(cancelled, false);
 });

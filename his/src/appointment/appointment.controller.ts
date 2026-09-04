@@ -6,8 +6,16 @@ export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
   @Get('days')
-  async days(@Query('specialty') specialty: string, @Query('timeOfDay') timeOfDay: string) {
-    return { days: await this.appointmentService.findAvailableDays(specialty, timeOfDay) };
+  async days(
+    @Query('specialty') specialty: string,
+    @Query('timeOfDay') timeOfDay: string,
+  ) {
+    return {
+      days: await this.appointmentService.findAvailableDays(
+        specialty,
+        timeOfDay,
+      ),
+    };
   }
 
   @Get('times')
@@ -16,17 +24,34 @@ export class AppointmentController {
     @Query('timeOfDay') timeOfDay: string,
     @Query('date') date: string,
   ) {
-    return { times: await this.appointmentService.findAvailableTimes(specialty, timeOfDay, date) };
+    return {
+      times: await this.appointmentService.findAvailableTimes(
+        specialty,
+        timeOfDay,
+        date,
+      ),
+    };
   }
 
   @Get('mine')
   async mine(@Query('patientId') patientId: string) {
-    return { appointments: await this.appointmentService.findAppointmentsForPatient(Number(patientId)) };
+    return {
+      appointments: await this.appointmentService.findAppointmentsForPatient(
+        Number(patientId),
+      ),
+    };
   }
 
   @Post('book')
   async book(
-    @Body() body: { specialty: string; timeOfDay: string; date: string; time: string; patientId: number },
+    @Body()
+    body: {
+      specialty: string;
+      timeOfDay: string;
+      date: string;
+      time: string;
+      patientId: number;
+    },
   ) {
     const booked = await this.appointmentService.book(
       body.specialty,
@@ -36,5 +61,17 @@ export class AppointmentController {
       body.patientId,
     );
     return { booked };
+  }
+
+  @Post('cancel')
+  async cancel(
+    @Body() body: { date: string; time: string; patientId: number },
+  ) {
+    const cancelled = await this.appointmentService.cancel(
+      body.date,
+      body.time,
+      body.patientId,
+    );
+    return { cancelled };
   }
 }

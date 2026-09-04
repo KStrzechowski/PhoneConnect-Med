@@ -11,7 +11,10 @@ describe('AppointmentService', () => {
   let dataSource: DataSource;
 
   const releasePatientSlots = (patientId: number) =>
-    dataSource.query(`UPDATE slot SET taken = false, "patientId" = NULL WHERE "patientId" = $1`, [patientId]);
+    dataSource.query(
+      `UPDATE slot SET taken = false, "patientId" = NULL WHERE "patientId" = $1`,
+      [patientId],
+    );
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -36,7 +39,11 @@ describe('AppointmentService', () => {
   it('returns available times on a chosen day', async () => {
     const [date] = await service.findAvailableDays('dermatolog', 'po południu');
 
-    const times = await service.findAvailableTimes('dermatolog', 'po południu', date);
+    const times = await service.findAvailableTimes(
+      'dermatolog',
+      'po południu',
+      date,
+    );
 
     expect(times).toEqual(['13:30', '15:00']);
   });
@@ -55,10 +62,18 @@ describe('AppointmentService', () => {
 
   it('books a free slot and it stops appearing as available', async () => {
     const [date] = await service.findAvailableDays('okulista', 'wieczorem');
-    const [time] = await service.findAvailableTimes('okulista', 'wieczorem', date);
+    const [time] = await service.findAvailableTimes(
+      'okulista',
+      'wieczorem',
+      date,
+    );
 
     const booked = await service.book('okulista', 'wieczorem', date, time, 1);
-    const remaining = await service.findAvailableTimes('okulista', 'wieczorem', date);
+    const remaining = await service.findAvailableTimes(
+      'okulista',
+      'wieczorem',
+      date,
+    );
 
     expect(booked).toBe(true);
     expect(remaining).not.toContain(time);
@@ -66,10 +81,20 @@ describe('AppointmentService', () => {
 
   it('fails to book a slot that is already taken', async () => {
     const [date] = await service.findAvailableDays('urolog', 'przed południem');
-    const [time] = await service.findAvailableTimes('urolog', 'przed południem', date);
+    const [time] = await service.findAvailableTimes(
+      'urolog',
+      'przed południem',
+      date,
+    );
     await service.book('urolog', 'przed południem', date, time, 1);
 
-    const bookedAgain = await service.book('urolog', 'przed południem', date, time, 1);
+    const bookedAgain = await service.book(
+      'urolog',
+      'przed południem',
+      date,
+      time,
+      1,
+    );
 
     expect(bookedAgain).toBe(false);
   });
@@ -98,7 +123,11 @@ describe('AppointmentService', () => {
     let date = '';
     for (const timeOfDay of timesOfDay) {
       [date] = await service.findAvailableDays('ortopeda', timeOfDay);
-      const times = await service.findAvailableTimes('ortopeda', timeOfDay, date);
+      const times = await service.findAvailableTimes(
+        'ortopeda',
+        timeOfDay,
+        date,
+      );
       for (const time of times) {
         await service.book('ortopeda', timeOfDay, date, time, patientId);
       }
@@ -107,13 +136,52 @@ describe('AppointmentService', () => {
     const appointments = await service.findAppointmentsForPatient(patientId);
 
     expect(appointments.length).toBe(4);
-    expect(appointments.map((a) => a.time)).toEqual(['08:00', '09:30', '11:00', '12:00']);
-    expect(appointments.every((a) => a.specialty === 'ortopeda' && a.date === date)).toBe(true);
+    expect(appointments.map((a) => a.time)).toEqual([
+      '08:00',
+      '09:30',
+      '11:00',
+      '12:00',
+    ]);
+    expect(
+      appointments.every((a) => a.specialty === 'ortopeda' && a.date === date),
+    ).toBe(true);
+  });
+
+  it('cancels a booked appointment and frees the slot for rebooking', async () => {
+    const patientId = 504;
+    await releasePatientSlots(patientId);
+    const [date] = await service.findAvailableDays('kardiolog', 'wieczorem');
+    const [time] = await service.findAvailableTimes(
+      'kardiolog',
+      'wieczorem',
+      date,
+    );
+    await service.book('kardiolog', 'wieczorem', date, time, patientId);
+
+    const cancelled = await service.cancel(date, time, patientId);
+    const rebooked = await service.book(
+      'kardiolog',
+      'wieczorem',
+      date,
+      time,
+      patientId,
+    );
+
+    expect(cancelled).toBe(true);
+    expect(rebooked).toBe(true);
+  });
+
+  it('fails to cancel a slot that is not booked by that patient at that date/time', async () => {
+    const cancelled = await service.cancel('2026-01-01', '08:00', 999999);
+
+    expect(cancelled).toBe(false);
   });
 
   it('excludes a past-dated appointment even when taken', async () => {
     const patientId = 503;
-    await dataSource.query(`DELETE FROM slot WHERE "patientId" = $1`, [patientId]);
+    await dataSource.query(`DELETE FROM slot WHERE "patientId" = $1`, [
+      patientId,
+    ]);
     const [{ id: doctorId }] = await dataSource.query(
       `SELECT id FROM doctor WHERE specialty = $1 LIMIT 1`,
       ['endokrynolog'],
