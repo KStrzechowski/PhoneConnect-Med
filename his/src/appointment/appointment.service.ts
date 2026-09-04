@@ -41,6 +41,22 @@ export class AppointmentService {
     return rows.map((row) => row.time);
   }
 
+  async findAppointmentsForPatient(patientId: number): Promise<{ specialty: string; date: string; time: string }[]> {
+    return this.slotRepository
+      .createQueryBuilder('slot')
+      .innerJoin('slot.doctor', 'doctor')
+      .where('slot.patientId = :patientId', { patientId })
+      .andWhere('slot.taken = true')
+      .andWhere('slot.date >= CURRENT_DATE')
+      .select('doctor.specialty', 'specialty')
+      .addSelect('slot.date::text', 'date')
+      .addSelect('slot.time', 'time')
+      .orderBy('slot.date::text', 'ASC')
+      .addOrderBy('slot.time', 'ASC')
+      .limit(4)
+      .getRawMany<{ specialty: string; date: string; time: string }>();
+  }
+
   async book(specialty: string, timeOfDay: string, date: string, time: string, patientId: number): Promise<boolean> {
     const candidate = await this.slotRepository
       .createQueryBuilder('slot')

@@ -19,6 +19,11 @@ export class AppointmentController {
     return { times: await this.appointmentService.findAvailableTimes(specialty, timeOfDay, date) };
   }
 
+  @Get('mine')
+  async mine(@Query('patientId') patientId: string) {
+    return { appointments: await this.appointmentService.findAppointmentsForPatient(Number(patientId)) };
+  }
+
   @Post('book')
   async book(
     @Body() body: { specialty: string; timeOfDay: string; date: string; time: string; patientId: number },

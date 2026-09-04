@@ -1,6 +1,6 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import { findAvailableDays, findAvailableTimes, resolveDay, resolveTime, bookAppointment } from './index.ts';
+import { findAvailableDays, findAvailableTimes, resolveDay, resolveTime, bookAppointment, listAppointments } from './index.ts';
 
 const mockJson = (body: object) => {
   mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify(body)));
@@ -84,4 +84,12 @@ test('bookAppointment reports a failed booking', async () => {
   mock.restoreAll();
 
   assert.equal(booked, false);
+});
+
+test('listAppointments returns the appointments from the mock', async () => {
+  mockJson({ appointments: [{ specialty: 'kardiolog', date: '2026-09-04', time: '08:00' }] });
+  const appointments = await listAppointments(1, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(appointments, [{ specialty: 'kardiolog', date: '2026-09-04', time: '08:00' }]);
 });
