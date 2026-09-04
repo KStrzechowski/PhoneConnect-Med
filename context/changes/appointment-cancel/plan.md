@@ -516,18 +516,18 @@ None — no schema change.
 
 #### Automated
 
-- [x] 1.1 HIS unit tests pass: `cd his && npm test`
-- [x] 1.2 `@pcm/appointment` unit tests pass: `cd lambdas/appointment && npm test`
-- [x] 1.3 Type checking passes across touched packages
-- [x] 1.4 Linting passes
+- [x] 1.1 HIS unit tests pass: `cd his && npm test` — 429867d
+- [x] 1.2 `@pcm/appointment` unit tests pass: `cd lambdas/appointment && npm test` — 429867d
+- [x] 1.3 Type checking passes across touched packages — 429867d
+- [x] 1.4 Linting passes — 429867d
 
 ### Phase 2: Keypad Lambda
 
 #### Automated
 
-- [ ] 2.1 Keypad Lambda unit tests pass: `cd lambdas/appointment-cancel && npm test`
-- [ ] 2.2 `cdk synth` succeeds with the new function and integration association
-- [ ] 2.3 Type checking and linting pass
+- [x] 2.1 Keypad Lambda unit tests pass: `cd lambdas/appointment-cancel && npm test`
+- [x] 2.2 `cdk synth` succeeds with the new function and integration association
+- [x] 2.3 Type checking and linting pass
 
 ### Phase 3: Speech intent
 

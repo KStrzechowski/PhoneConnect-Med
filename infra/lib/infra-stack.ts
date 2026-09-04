@@ -448,6 +448,33 @@ volumes:
       integrationArn: appointmentList.functionArn,
     });
 
+    const appointmentCancel = new NodejsFunction(this, 'AppointmentCancel', {
+      functionName: 'phoneconnect-med-appointment-cancel',
+      entry: path.join(repoRoot, 'lambdas/appointment-cancel/index.ts'),
+      projectRoot: repoRoot,
+      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
+      runtime: lambda.Runtime.NODEJS_24_X,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      securityGroups: [functionSecurityGroup],
+      allowPublicSubnet: true,
+      environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
+      timeout: cdk.Duration.seconds(2),
+      logGroup: measurements,
+      loggingFormat: lambda.LoggingFormat.JSON,
+    });
+
+    appointmentCancel.addPermission('ConnectInvoke', {
+      principal: new iam.ServicePrincipal('connect.amazonaws.com'),
+      sourceArn: connectInstanceArn,
+    });
+
+    new connect.CfnIntegrationAssociation(this, 'AppointmentCancelFunctionAssociation', {
+      instanceId: connectInstanceArn,
+      integrationType: 'LAMBDA_FUNCTION',
+      integrationArn: appointmentCancel.functionArn,
+    });
+
     const facilityInfoSpeech = new NodejsFunction(this, 'FacilityInfoSpeech', {
       functionName: 'phoneconnect-med-facility-info-speech',
       entry: path.join(repoRoot, 'lambdas/facility-info-speech/index.ts'),
@@ -881,6 +908,7 @@ volumes:
     new cdk.CfnOutput(this, 'OtpVerifyFunctionName', { value: otpVerify.functionName });
     new cdk.CfnOutput(this, 'BookingFunctionName', { value: booking.functionName });
     new cdk.CfnOutput(this, 'AppointmentListFunctionName', { value: appointmentList.functionName });
+    new cdk.CfnOutput(this, 'AppointmentCancelFunctionName', { value: appointmentCancel.functionName });
     new cdk.CfnOutput(this, 'FacilityInfoSpeechFunctionName', { value: facilityInfoSpeech.functionName });
     new cdk.CfnOutput(this, 'SpeechBotAliasArn', { value: speechBotAlias.attrArn });
     new cdk.CfnOutput(this, 'DeployRoleArn', { value: deployRole.roleArn });
