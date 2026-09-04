@@ -80,6 +80,26 @@ const bookingIntentEvent = (
   },
 });
 
+const cancelIntentEvent = (
+  invocationSource: 'DialogCodeHook' | 'FulfillmentCodeHook',
+  slots: Record<string, string | null>,
+  sessionAttributes: Record<string, string> = {},
+) => ({
+  ...sampleEvent,
+  invocationSource,
+  sessionState: {
+    ...sampleEvent.sessionState,
+    sessionAttributes: { contactId: 'contact-1', ...sessionAttributes },
+    intent: {
+      ...sampleEvent.sessionState.intent,
+      name: 'CancelIntent',
+      slots: Object.fromEntries(
+        Object.entries(slots).map(([key, value]) => [key, value === null ? null : { value: { interpretedValue: value } }]),
+      ),
+    },
+  },
+});
+
 const mockFetchSequence = (bodies: object[]) => {
   let i = 0;
   mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify(bodies[i++])));
@@ -474,6 +494,131 @@ test('BookingIntent fulfillment reports a clean failure when the slot was taken 
 
   assert.equal(result.sessionState.dialogAction.type, 'Close');
   assert.equal('transfer' in result.sessionState.sessionAttributes, false);
+});
+
+test('CancelIntent dialog hook needs auth before listing anything', async () => {
+  const result = await handler(cancelIntentEvent('DialogCodeHook', {}, { authenticated: 'false' }));
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(result.sessionState.sessionAttributes.needsAuth, 'true');
+});
+
+test('CancelIntent dialog hook closes with the empty message for a patient with no appointments', async () => {
+  mockFetchSequence([{ appointments: [] }]);
+  const result = await handler(
+    cancelIntentEvent('DialogCodeHook', {}, { authenticated: 'true', patientId: '1' }),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(messageOf(result), 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.');
+});
+
+test('CancelIntent dialog hook lists appointments and elicits a selection', async () => {
+  mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
+  const result = await handler(
+    cancelIntentEvent('DialogCodeHook', {}, { authenticated: 'true', patientId: '1' }),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
+  assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
+  assert.equal(result.sessionState.sessionAttributes.cancelStage, 'select');
+  assert.match(messageOf(result), /kardiolog/);
+});
+
+test('CancelIntent dialog hook resolves the chosen appointment and asks for confirmation', async () => {
+  mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
+  const result = await handler(
+    cancelIntentEvent(
+      'DialogCodeHook',
+      { selectedSlot: '1' },
+      { authenticated: 'true', patientId: '1', cancelStage: 'select', cancelAttempts: '0' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.match(messageOf(result), /kardiolog/);
+  assert.match(messageOf(result), /09:30/);
+});
+
+test('CancelIntent dialog hook re-elicits the selection when it does not resolve', async () => {
+  mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
+  const result = await handler(
+    cancelIntentEvent(
+      'DialogCodeHook',
+      { selectedSlot: '9' },
+      { authenticated: 'true', patientId: '1', cancelStage: 'select', cancelAttempts: '0' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
+  assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
+  assert.equal(result.sessionState.sessionAttributes.cancelAttempts, '1');
+});
+
+test('CancelIntent dialog hook transfers after the third consecutive unresolved selection', async () => {
+  mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
+  const result = await handler(
+    cancelIntentEvent(
+      'DialogCodeHook',
+      { selectedSlot: '9' },
+      { authenticated: 'true', patientId: '1', cancelStage: 'select', cancelAttempts: '2' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
+});
+
+test('CancelIntent fulfillment needs auth before cancelling', async () => {
+  const result = await handler(
+    cancelIntentEvent('FulfillmentCodeHook', { selectedSlot: '1' }, { authenticated: 'false', patientId: '1' }),
+  );
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(result.sessionState.sessionAttributes.needsAuth, 'true');
+});
+
+test('CancelIntent fulfillment resolves the appointment and cancels it', async () => {
+  mockFetchSequence([
+    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
+    { cancelled: true },
+  ]);
+  const result = await handler(
+    cancelIntentEvent('FulfillmentCodeHook', { selectedSlot: '1' }, { authenticated: 'true', patientId: '1' }),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.match(messageOf(result), /odwołana/);
+});
+
+test('CancelIntent fulfillment reports a clean failure when the cancellation does not go through', async () => {
+  mockFetchSequence([
+    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
+    { cancelled: false },
+  ]);
+  const result = await handler(
+    cancelIntentEvent('FulfillmentCodeHook', { selectedSlot: '1' }, { authenticated: 'true', patientId: '1' }),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal('transfer' in result.sessionState.sessionAttributes, false);
+});
+
+test('CancelIntent fulfillment transfers when the appointment no longer resolves', async () => {
+  mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
+  const result = await handler(
+    cancelIntentEvent('FulfillmentCodeHook', { selectedSlot: '9' }, { authenticated: 'true', patientId: '1' }),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
 });
 
 test('ListAppointmentsIntent needs auth before fetching anything', async () => {

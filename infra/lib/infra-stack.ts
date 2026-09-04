@@ -142,6 +142,17 @@ const listAppointmentsUtterances = [
   'wymień moje wizyty',
 ];
 
+const cancelUtterances = [
+  'odwołaj wizytę',
+  'chcę odwołać wizytę',
+  'chcę odwołać',
+  'muszę odwołać termin',
+  'anuluj moją wizytę',
+  'proszę usunąć moją wizytę',
+  'nie przyjdę na wizytę',
+  'chcę zrezygnować z wizyty',
+];
+
 const agentTransferUtterances = [
   'połącz z agentem',
   'połącz mnie z rejestracją',
@@ -736,6 +747,43 @@ volumes:
                 },
                 declinationResponse: {
                   messageGroupsList: [say('Dobrze, wybierzmy inny termin.')],
+                },
+                declinationNextStep: {
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
+                  intent: {
+                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                  },
+                },
+              },
+            },
+            {
+              name: 'CancelIntent',
+              sampleUtterances: cancelUtterances.map((utterance) => ({ utterance })),
+              dialogCodeHook: { enabled: true },
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [{ slotName: 'selectedSlot', priority: 1 }],
+              slots: [
+                {
+                  name: 'selectedSlot',
+                  slotTypeName: 'AMAZON.Number',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Który numer Pani/Pan wybiera?')],
+                    },
+                  },
+                },
+              ],
+              intentConfirmationSetting: {
+                promptSpecification: {
+                  maxRetries: 2,
+                  allowInterrupt: false,
+                  messageGroupsList: [say('Czy się zgadza? Powiedz tak albo nie.')],
+                },
+                declinationResponse: {
+                  messageGroupsList: [say('Dobrze, zostawiam tę wizytę bez zmian.')],
                 },
                 declinationNextStep: {
                   dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },

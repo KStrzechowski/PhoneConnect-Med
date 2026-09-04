@@ -525,17 +525,17 @@ None — no schema change.
 
 #### Automated
 
-- [x] 2.1 Keypad Lambda unit tests pass: `cd lambdas/appointment-cancel && npm test`
-- [x] 2.2 `cdk synth` succeeds with the new function and integration association
-- [x] 2.3 Type checking and linting pass
+- [x] 2.1 Keypad Lambda unit tests pass: `cd lambdas/appointment-cancel && npm test` — 73d89b5
+- [x] 2.2 `cdk synth` succeeds with the new function and integration association — 73d89b5
+- [x] 2.3 Type checking and linting pass — 73d89b5
 
 ### Phase 3: Speech intent
 
 #### Automated
 
-- [ ] 3.1 Speech Lambda unit tests pass (new `CancelIntent` coverage)
-- [ ] 3.2 `cdk synth` succeeds with the new Lex intent
-- [ ] 3.3 Type checking and linting pass
+- [x] 3.1 Speech Lambda unit tests pass (new `CancelIntent` coverage)
+- [x] 3.2 `cdk synth` succeeds with the new Lex intent
+- [x] 3.3 Type checking and linting pass
 
 ### Phase 4: Contact flow & hand-off
 
