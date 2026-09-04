@@ -289,3 +289,34 @@ something that no test will catch.
   `lambdas/facility-info-speech/index.ts`) reaches the identical `listAppointments`/
   `formatDayLabel` calls but builds its own single spoken sentence rather than three separate
   fields — see L-03.
+
+## Keypad digits: main menu `4`, authenticated menu `3` (S-07)
+
+- **Scope:** `keypad-facility-info-main-menu-flow.json`'s `4` digit and
+  `keypad-authenticated-menu-flow.json`'s `3` digit — both reach appointment cancellation, gated
+  the same way the booking and list pairs above are: an unauthenticated caller pressing `4` at the
+  main menu is routed through `keypad-authenticate-flow.json` first, landing on the authenticated
+  menu where digit `3` (not `4`) reaches cancel; an already-authenticated caller pressing `4` at
+  the main menu goes straight to `keypad-appointment-cancel-flow.json`.
+- **Set by / read by:** `CheckAuthForAppointmentCancel` (mirroring `CheckAuthForAppointmentList`)
+  in `keypad-facility-info-main-menu-flow.json`, and the authenticated menu's own digit-`3` branch.
+- **Why it matters:** same class of gap as the booking/list pairs above — the two digits differ
+  (`4` vs `3`) because each menu already has its own occupied digits at different positions.
+  Nothing in the repo enforces this; flows are hand-built and outside IaC.
+
+## `found` / `cancelled` / `message` (S-07)
+
+- **Set by:** `lambdas/appointment-cancel/index.ts` (keypad output fields) — `confirm` and
+  `cancel` steps both return `found: 'false'` when the caller's position digit no longer resolves
+  against a fresh `listAppointments` call; `confirm` additionally returns `message`, a formatted
+  `"<specialty>, <day label>, godzina <time>"` string for the read-back prompt; `cancel`
+  additionally returns `cancelled: 'true' | 'false'` reflecting whether the mock actually freed the
+  slot.
+- **Read by:** `keypad-appointment-cancel-flow.json`'s `checkFound`/`checkCancelFound`/
+  `checkCancelled` branches, to choose between re-prompting the selection menu, playing the
+  read-back confirmation, or reporting success/failure.
+- **Why it matters:** same class of gap as `hasAppointments`/`hasMore` above — a hand-built
+  `Compare` block checking the wrong field silently plays the wrong message rather than failing
+  loudly. The speech variant (`CancelIntent` in `lambdas/facility-info-speech/index.ts`) reaches
+  the identical `resolveAppointment`/`cancelAppointment` calls but drives its own dialog-stage
+  state machine rather than reading these three fields directly — see L-03.
