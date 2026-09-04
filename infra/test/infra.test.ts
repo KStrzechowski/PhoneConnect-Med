@@ -77,11 +77,11 @@ test('the telephony instance may invoke the function', () => {
   });
 });
 
-test('all six keypad-invoked functions may be invoked by the telephony instance', () => {
+test('all seven keypad-invoked functions may be invoked by the telephony instance', () => {
   const permissions = template.findResources('AWS::Lambda::Permission', {
     Properties: { Principal: 'connect.amazonaws.com' },
   });
-  expect(Object.keys(permissions)).toHaveLength(6);
+  expect(Object.keys(permissions)).toHaveLength(7);
 });
 
 test('SendOtp and OtpVerify are not attached to the VPC', () => {
@@ -103,6 +103,15 @@ test('Booking is named per convention and reaches the mock over the VPC', () => 
   );
   expect(booking).toBeDefined();
   expect(booking?.Properties.VpcConfig).toBeDefined();
+});
+
+test('AppointmentList is named per convention and reaches the mock over the VPC', () => {
+  const functions = template.findResources('AWS::Lambda::Function');
+  const appointmentList = Object.values(functions).find(
+    (fn) => fn.Properties.FunctionName === 'phoneconnect-med-appointment-list',
+  );
+  expect(appointmentList).toBeDefined();
+  expect(appointmentList?.Properties.VpcConfig).toBeDefined();
 });
 
 test('SendOtp and FacilityInfoSpeech may both publish to SNS', () => {
@@ -212,18 +221,19 @@ test('the bot association custom resource may associate and disassociate the bot
   });
 });
 
-test('all six keypad-invoked functions are associated with the telephony instance', () => {
+test('all seven keypad-invoked functions are associated with the telephony instance', () => {
   const associations = template.findResources('AWS::Connect::IntegrationAssociation');
   const targets = Object.values(associations).map(
     (assoc) => (assoc.Properties.IntegrationArn as { 'Fn::GetAtt': [string, string] })['Fn::GetAtt'][0],
   );
-  expect(targets).toHaveLength(6);
+  expect(targets).toHaveLength(7);
   expect(targets.some((t) => t.startsWith('ConnectHealth'))).toBe(true);
   expect(targets.some((t) => t.startsWith('FacilityInfo'))).toBe(true);
   expect(targets.some((t) => t.startsWith('Authenticate'))).toBe(true);
   expect(targets.some((t) => t.startsWith('SendOtp'))).toBe(true);
   expect(targets.some((t) => t.startsWith('OtpVerify'))).toBe(true);
   expect(targets.some((t) => t.startsWith('Booking'))).toBe(true);
+  expect(targets.some((t) => t.startsWith('AppointmentList'))).toBe(true);
 });
 
 test('the instance user data still installs docker', () => {

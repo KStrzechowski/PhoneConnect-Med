@@ -343,10 +343,10 @@ None — no schema change. Reuses `Slot`/`Doctor` as already migrated by S-05
 
 #### Automated
 
-- [x] 1.1 `his/` unit tests pass, including new `findAppointmentsForPatient` cases
-- [x] 1.2 `lambdas/appointment` unit tests pass, including new `listAppointments` case
-- [x] 1.3 `lambdas/booking` and `lambdas/facility-info-speech` unit tests still pass after the `formatDayLabel` import switch
-- [x] 1.4 Type checking passes across `his/`, `lambdas/appointment`, `lambdas/booking`, `lambdas/facility-info-speech`
+- [x] 1.1 `his/` unit tests pass, including new `findAppointmentsForPatient` cases — 61a308d
+- [x] 1.2 `lambdas/appointment` unit tests pass, including new `listAppointments` case — 61a308d
+- [x] 1.3 `lambdas/booking` and `lambdas/facility-info-speech` unit tests still pass after the `formatDayLabel` import switch — 61a308d
+- [x] 1.4 Type checking passes across `his/`, `lambdas/appointment`, `lambdas/booking`, `lambdas/facility-info-speech` — 61a308d
 
 #### Manual
 
@@ -356,9 +356,9 @@ None — no schema change. Reuses `Slot`/`Doctor` as already migrated by S-05
 
 #### Automated
 
-- [ ] 2.1 `lambdas/appointment-list` unit tests pass
-- [ ] 2.2 `infra/test/infra.test.ts` passes, including the new `AppointmentList` naming/VPC assertion
-- [ ] 2.3 `cdk synth` succeeds
+- [x] 2.1 `lambdas/appointment-list` unit tests pass
+- [x] 2.2 `infra/test/infra.test.ts` passes, including the new `AppointmentList` naming/VPC assertion
+- [x] 2.3 `cdk synth` succeeds
 
 #### Manual
 
