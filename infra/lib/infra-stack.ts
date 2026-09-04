@@ -131,6 +131,17 @@ const bookingUtterances = [
   'umów mnie {timeOfDay}',
 ];
 
+const listAppointmentsUtterances = [
+  'chcę usłyszeć moje wizyty',
+  'jakie mam zaplanowane wizyty',
+  'jakie mam terminy',
+  'sprawdź moje wizyty',
+  'przypomnij mi moje wizyty',
+  'kiedy mam wizytę',
+  'czy mam jakieś umówione wizyty',
+  'wymień moje wizyty',
+];
+
 const agentTransferUtterances = [
   'połącz z agentem',
   'połącz mnie z rejestracją',
@@ -535,6 +546,7 @@ volumes:
             globalIntent('InfoIntent', infoUtterances),
             globalIntent('RepeatLastMessageIntent', repeatUtterances),
             globalIntent('AgentTransferIntent', agentTransferUtterances),
+            globalIntent('ListAppointmentsIntent', listAppointmentsUtterances),
             {
               name: 'AuthIntent',
               sampleUtterances: authUtterances.map((utterance) => ({ utterance })),

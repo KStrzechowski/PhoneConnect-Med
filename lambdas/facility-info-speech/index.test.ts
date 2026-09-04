@@ -473,6 +473,76 @@ test('BookingIntent fulfillment reports a clean failure when the slot was taken 
   assert.equal('transfer' in result.sessionState.sessionAttributes, false);
 });
 
+test('ListAppointmentsIntent needs auth before fetching anything', async () => {
+  const result = await handler(eventFor('ListAppointmentsIntent', { authenticated: 'false' }));
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(result.sessionState.sessionAttributes.needsAuth, 'true');
+});
+
+test('ListAppointmentsIntent reports no appointments for a patient with none', async () => {
+  mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ appointments: [] })));
+  const result = await handler(eventFor('ListAppointmentsIntent', { authenticated: 'true', patientId: '1' }));
+  mock.restoreAll();
+
+  assert.equal(result.messages[0].content, 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.');
+});
+
+test('ListAppointmentsIntent speaks up to three appointments without an overflow line when under the cap', async () => {
+  mock.method(
+    globalThis,
+    'fetch',
+    async () =>
+      new Response(
+        JSON.stringify({
+          appointments: [
+            { specialty: 'kardiolog', date: '2026-09-08', time: '09:30' },
+            { specialty: 'okulista', date: '2026-09-09', time: '10:00' },
+          ],
+        }),
+      ),
+  );
+  const result = await handler(eventFor('ListAppointmentsIntent', { authenticated: 'true', patientId: '1' }));
+  mock.restoreAll();
+
+  assert.match(result.messages[0].content, /kardiolog/);
+  assert.match(result.messages[0].content, /okulista/);
+  assert.doesNotMatch(result.messages[0].content, /więcej/);
+});
+
+test('ListAppointmentsIntent adds the overflow line when a fourth appointment exists', async () => {
+  mock.method(
+    globalThis,
+    'fetch',
+    async () =>
+      new Response(
+        JSON.stringify({
+          appointments: [
+            { specialty: 'kardiolog', date: '2026-09-08', time: '09:30' },
+            { specialty: 'okulista', date: '2026-09-09', time: '10:00' },
+            { specialty: 'urolog', date: '2026-09-10', time: '11:00' },
+            { specialty: 'dermatolog', date: '2026-09-11', time: '12:00' },
+          ],
+        }),
+      ),
+  );
+  const result = await handler(eventFor('ListAppointmentsIntent', { authenticated: 'true', patientId: '1' }));
+  mock.restoreAll();
+
+  assert.doesNotMatch(result.messages[0].content, /dermatolog/);
+  assert.match(result.messages[0].content, /więcej/);
+});
+
+test('ListAppointmentsIntent transfers to an agent when the mock is unreachable', async () => {
+  mock.method(globalThis, 'fetch', async () => {
+    throw new Error('connect ECONNREFUSED');
+  });
+  const result = await handler(eventFor('ListAppointmentsIntent', { authenticated: 'true', patientId: '1' }));
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
+});
+
 test('emits exactly one measurement record, carrying variant and contactId', async () => {
   const records = captureRecords();
   await handler(eventFor('AgentTransferIntent'));

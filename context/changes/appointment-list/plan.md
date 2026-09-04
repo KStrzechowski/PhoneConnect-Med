@@ -356,9 +356,9 @@ None — no schema change. Reuses `Slot`/`Doctor` as already migrated by S-05
 
 #### Automated
 
-- [x] 2.1 `lambdas/appointment-list` unit tests pass
-- [x] 2.2 `infra/test/infra.test.ts` passes, including the new `AppointmentList` naming/VPC assertion
-- [x] 2.3 `cdk synth` succeeds
+- [x] 2.1 `lambdas/appointment-list` unit tests pass — a351fa1
+- [x] 2.2 `infra/test/infra.test.ts` passes, including the new `AppointmentList` naming/VPC assertion — a351fa1
+- [x] 2.3 `cdk synth` succeeds — a351fa1
 
 #### Manual
 
@@ -368,9 +368,9 @@ None — no schema change. Reuses `Slot`/`Doctor` as already migrated by S-05
 
 #### Automated
 
-- [ ] 3.1 `lambdas/facility-info-speech` unit tests pass, including the four new `ListAppointmentsIntent` branches
-- [ ] 3.2 `infra/test/infra.test.ts` passes, including the new `ListAppointmentsIntent` presence assertion
-- [ ] 3.3 `cdk synth` succeeds
+- [x] 3.1 `lambdas/facility-info-speech` unit tests pass, including the four new `ListAppointmentsIntent` branches
+- [x] 3.2 `infra/test/infra.test.ts` passes, including the new `ListAppointmentsIntent` presence assertion
+- [x] 3.3 `cdk synth` succeeds
 
 #### Manual
 
