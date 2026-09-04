@@ -417,6 +417,32 @@ test('BookingIntent dialog hook offers fresh days again after a decline (booking
   assert.equal(result.sessionState.sessionAttributes.bookingStage, 'day');
 });
 
+test('BookingIntent fulfillment needs auth before booking', async () => {
+  const result = await handler(
+    bookingIntentEvent(
+      'FulfillmentCodeHook',
+      { specialty: 'kardiolog', timeOfDay: 'rano' },
+      { authenticated: 'false', patientId: '1', bookingDate: '2026-09-07', bookingTime: '09:30' },
+    ),
+  );
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(result.sessionState.sessionAttributes.needsAuth, 'true');
+});
+
+test('BookingIntent fulfillment reports a clean failure when patientId is missing', async () => {
+  const result = await handler(
+    bookingIntentEvent(
+      'FulfillmentCodeHook',
+      { specialty: 'kardiolog', timeOfDay: 'rano' },
+      { authenticated: 'true', bookingDate: '2026-09-07', bookingTime: '09:30' },
+    ),
+  );
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
+});
+
 test('BookingIntent fulfillment books the resolved slot and confirms', async () => {
   mockFetchSequence([{ booked: true }]);
   const result = await handler(

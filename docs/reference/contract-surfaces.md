@@ -229,6 +229,21 @@ something that no test will catch.
   authentication, then able to book" as satisfying the requirement in both variants, not a literal
   same-turn resume — read 6.7 against this asymmetry, not against the plan's original prose.
 
+## Speech confirmation read-back text (S-05)
+
+- **Set by:** `lambdas/facility-info-speech/index.ts`'s `handleBookingDialog`, on the turn that
+  transitions `bookingStage` to `'confirm'` — it returns a `ConfirmIntent` response whose `messages`
+  field carries the templated read-back (`Umawiam Panią/Pana do {specialty}, {day}, godzina {time}.
+  Czy się zgadza?`), which Lex plays instead of the intent's own confirmation prompt for that turn.
+- **Not set by:** `BookingIntent`'s `intentConfirmationSetting` prompt in `infra/lib/infra-stack.ts` —
+  that prompt is a static string (`Czy się zgadza? Powiedz tak albo nie.`), unlike `AuthIntent`'s
+  `{pesel}`/`{phone}` Lex-native slot templating. `date`/`time` aren't `BookingIntent` slot values (they're
+  derived, not elicited), so they can't be referenced in a Lex `{slot}` template the way `AuthIntent`'s
+  PESEL/phone can — the Lambda's `messages` override is the mechanism that fills that gap.
+- **Why it matters:** anyone changing `BookingIntent`'s `intentConfirmationSetting` prompt text in
+  `infra-stack.ts` expecting it to change what the caller actually hears will be surprised — the
+  Lambda's per-turn `messages` always wins for this intent's confirmation.
+
 ## Turn-count measurement convention for booking (S-05, FR-012)
 
 - **Convention:** turns-to-completion for a booking session is the count of `InvocationRecord`s
