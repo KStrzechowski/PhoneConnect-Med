@@ -68,6 +68,12 @@ export const handler = measured(
       }
 
       if (step === 'book') {
+        if (!patientId) {
+          const message = 'missing patientId';
+          record.outcome = 'error';
+          record.error = message;
+          return { reachable: 'false', error: message };
+        }
         const { date } = await downstream(record, () => resolveDay(specialty, timeOfDay, Number(dayChoice), abort));
         if (date === null) return { reachable: 'true', available: 'false' };
         const { time } = await downstream(record, () =>

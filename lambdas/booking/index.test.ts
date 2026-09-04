@@ -100,6 +100,13 @@ test('book step reports failure when the slot was already taken', async () => {
   assert.deepEqual(result, { reachable: 'true', booked: 'false' });
 });
 
+test('book step reports failure when patientId is missing', async () => {
+  const result = await handler(withParams({ step: 'book', dayChoice: '1', timeChoice: '1', patientId: '' }));
+
+  assert.equal(result.reachable, 'false');
+  assert.match(result.error, /patientId/);
+});
+
 test('returns a handled error when the mock is unreachable', async () => {
   mock.method(globalThis, 'fetch', async () => {
     throw new Error('connect ECONNREFUSED');

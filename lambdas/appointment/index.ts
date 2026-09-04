@@ -3,6 +3,7 @@ const baseUrl = (): string => process.env.MOCK_BASE_URL as string;
 export const findAvailableDays = async (specialty: string, timeOfDay: string, signal: AbortSignal): Promise<string[]> => {
   const url = `${baseUrl()}/appointment/days?specialty=${encodeURIComponent(specialty)}&timeOfDay=${encodeURIComponent(timeOfDay)}`;
   const response = await fetch(url, { signal });
+  if (!response.ok) throw new Error(`GET /appointment/days failed: ${response.status}`);
   const body = (await response.json()) as { days: string[] };
   return body.days;
 };
@@ -17,6 +18,7 @@ export const findAvailableTimes = async (
     `${baseUrl()}/appointment/times?specialty=${encodeURIComponent(specialty)}` +
     `&timeOfDay=${encodeURIComponent(timeOfDay)}&date=${encodeURIComponent(date)}`;
   const response = await fetch(url, { signal });
+  if (!response.ok) throw new Error(`GET /appointment/times failed: ${response.status}`);
   const body = (await response.json()) as { times: string[] };
   return body.times;
 };
@@ -56,6 +58,7 @@ export const bookAppointment = async (
     body: JSON.stringify({ specialty, timeOfDay, date, time, patientId }),
     signal,
   });
+  if (!response.ok) throw new Error(`POST /appointment/book failed: ${response.status}`);
   const body = (await response.json()) as { booked: boolean };
   return body.booked;
 };

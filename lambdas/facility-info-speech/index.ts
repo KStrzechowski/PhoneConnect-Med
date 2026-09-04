@@ -234,11 +234,22 @@ const handleBookingFulfillment = async (
   incoming: Record<string, string>,
   record: InvocationRecord,
 ): Promise<LexCloseResponse> => {
+  if (incoming.authenticated !== 'true') {
+    const message = 'Aby umówić wizytę, proszę się najpierw zidentyfikować.';
+    return close('BookingIntent', { ...incoming, lastMessageText: message, needsAuth: 'true' }, message);
+  }
+
   const specialty = slots.specialty?.value?.interpretedValue ?? '';
   const timeOfDay = slots.timeOfDay?.value?.interpretedValue ?? '';
   const date = incoming.bookingDate ?? '';
   const time = incoming.bookingTime ?? '';
-  const patientId = Number(incoming.patientId ?? '');
+  if (!incoming.patientId) {
+    const message = 'Przepraszam, mam teraz problem z umówieniem wizyty. Łączę z konsultantem.';
+    record.outcome = 'error';
+    record.error = 'missing patientId';
+    return close('BookingIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+  }
+  const patientId = Number(incoming.patientId);
 
   try {
     const booked = await downstream(record, () =>
