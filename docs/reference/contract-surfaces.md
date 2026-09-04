@@ -136,9 +136,108 @@ something that no test will catch.
 - **`0`** — always transfers to the agent queue (FR-006), from any Get Customer Input block.
 - **`*`** — always repeats the last spoken prompt, reading `lastMessageText` back verbatim
   (FR-003). See `lastMessageText` above.
+- **`#`** (S-05) — always returns to the top-level main menu
+  (`keypad-facility-info-main-menu-flow.json`), from any Get Customer Input block deep enough to
+  need it. Assigned when `keypad-booking-flow.json` became this system's first genuinely deep
+  sub-menu (specialty page → time-of-day → day choice → time choice → confirm); no flow before
+  S-05 was deep enough to need it (see the lessons file's rule on assigning this digit only once a
+  real sub-menu needs it). In-progress booking state (`specialty`, `timeOfDay`, `dayChoice`,
+  `timeChoice`) is discarded on `#` — it is a fresh start, not a resume point.
 - **Set by / read by:** every Get Customer Input block in every contact flow, alongside that
   block's own menu-specific digits.
-- **Why it matters:** these two digits are reserved across the whole system. A future menu must
-  never reassign `0` or `*` to a menu-specific choice — doing so would silently break the global
-  commands FR-003/FR-006 guarantee from any point in the call. Nothing in the repo enforces this;
+- **Why it matters:** these three digits are reserved across the whole system. A future menu must
+  never reassign `0`, `*`, or `#` to a menu-specific choice — doing so would silently break the
+  global commands FR-003/FR-006 guarantee (or, for `#`, strand the caller with no way back to the
+  main menu) from any point in the call. Nothing in the repo enforces this; flows are hand-built
+  and outside IaC.
+
+## `Details.Parameters.step` / `.specialty` / `.timeOfDay` / `.dayChoice` / `.timeChoice` (S-05)
+
+- **Set by:** `keypad-booking-flow.json`'s four `InvokeExternalResource` blocks, invoking the
+  `Booking` function — `step` is a literal (`days` / `times` / `confirm` / `book`) per block;
+  `specialty` and `timeOfDay` come from the digit-menu selection earlier in the same flow;
+  `dayChoice` / `timeChoice` are the raw `1`/`2`/`3` digits the caller pressed at the day/time
+  menus, added once each is captured.
+- **Read by:** `lambdas/booking/index.ts`, which re-derives the actual date/time from
+  `dayChoice`/`timeChoice` via `@pcm/appointment`'s `resolveDay`/`resolveTime` on every call — the
+  flow never stores or passes a resolved date/time itself (L-03: the digit-to-date mapping is a
+  domain decision and lives only in the shared layer).
+- **Why it matters:** same class of gap as `Details.Parameters.variant` above — a hand-built
+  Invoke AWS Lambda block that forgets one of these silently sends an empty string through, and
+  `findAvailableDays`/`resolveDay`/`resolveTime` all treat an empty specialty/timeOfDay as a
+  genuine (if odd) empty search rather than failing loudly. Nothing in the repo enforces this;
   flows are hand-built and outside IaC.
+
+## `selectedSlot`'s dual-purpose reuse (S-05, speech only)
+
+- **Set by:** the caller, once for the day choice and again for the time choice, both times as the
+  same `BookingIntent` slot (`selectedSlot`, `AMAZON.Number`) — the dialog code hook tracks which
+  meaning is current via the `bookingStage` session attribute (`'day'` vs. `'time'`), not via two
+  separate slots.
+- **Reset by:** the dialog code hook, via `slotValueOverride: {}` on `selectedSlot` between the day
+  and time turns (`elicitSlot('BookingIntent', 'selectedSlot', { ...slots, selectedSlot: null }, ...)`
+  in `lambdas/facility-info-speech/index.ts`), and by `BookingIntent`'s `declinationNextStep` on the
+  read-back decline path — the same `slotValueOverride` mechanic `AuthIntent`'s
+  `declinationNextStep` already uses to reset `pesel`/`phone`, applied here to a single slot instead
+  of two.
+- **Why it matters:** a caller declining the confirmation must land back at the day offering with
+  `specialty`/`timeOfDay` intact but `selectedSlot` cleared — clearing the wrong slot(s), or
+  clearing none, would either lose the caller's specialty choice or resume mid-way through a stale
+  day/time selection. Nothing in the repo enforces this; the Lex bot config is hand-built and
+  outside IaC (see `infra/lib/infra-stack.ts`'s `BookingIntent` definition for the actual
+  `declinationNextStep`).
+
+## `needsAuth` (S-05)
+
+- **Set by:** `lambdas/booking/index.ts` (returned as a Lambda output field, not a contact
+  attribute) and `lambdas/facility-info-speech/index.ts`'s `BookingIntent` dialog code hook (as a
+  Lex session attribute), both when the caller reaches for booking without `authenticated`/
+  `authenticated` session attribute equal to `'true'`.
+- **Read by, keypad:** nothing — see "Auth-gate redirect asymmetry between variants" below.
+  `lambdas/booking/index.ts` still returns it defensively (matching the plan's original design), but
+  `keypad-facility-info-main-menu-flow.json` and `keypad-authenticated-menu-flow.json` gate on the
+  `authenticated` **contact attribute** directly, before ever invoking `Booking`, so this output
+  field is not expected to be read by either committed keypad flow in normal operation.
+- **Read by, speech:** the speech flow's `checkBookingNeedsAuth` branch (see
+  `connect-flow-templates/flows/speech-bookingintent-fragment.md`), via
+  `$.Lex.SessionAttributes.needsAuth`, looping back to re-prompt the caller so they can say an
+  `AuthIntent` utterance.
+- **Why it matters:** the two variants resolve the same requirement (an unauthenticated caller
+  reaching for booking must authenticate first) through genuinely different mechanisms, documented
+  next.
+
+## Auth-gate redirect asymmetry between variants (S-05)
+
+- **Keypad:** a flow-level branch. `keypad-facility-info-main-menu-flow.json`'s `2` digit
+  (book an appointment) and `keypad-authenticated-menu-flow.json`'s `1` digit both exist —an
+  unauthenticated caller pressing `2` at the main menu is `TransferToFlow`'d into
+  `keypad-authenticate-flow.json` as-is (that flow's own hardcoded ending lands them on
+  `keypad-authenticated-menu-flow.json`); an already-authenticated caller pressing `2` is
+  transferred straight into `keypad-booking-flow.json`. The caller who was routed through
+  authentication presses one more digit (`1`, "book an appointment") on the authenticated menu to
+  actually enter booking — this is a deliberate adaptation, not the plan's original literal
+  "resume exactly where booking left off": `keypad-authenticate-flow.json` is a standalone Contact
+  Flow with a hardcoded transfer target (not a reusable Contact Flow Module the plan assumed), so a
+  true same-turn resume was not buildable without either refactoring that already-verified S-03
+  flow or duplicating its ~400 lines of PESEL/phone/OTP capture logic. Costs one extra keypress;
+  avoids both alternatives.
+- **Speech:** no flow-level redirect at all. `BookingIntent`'s dialog code hook closes with
+  `needsAuth: 'true'` and a spoken prompt; the flow loops back to `elicitAgain` and the caller says
+  an `AuthIntent` utterance in the same bot session, then simply restates their booking request —
+  Lex V2 has no "switch intent" dialog action to resume `BookingIntent` automatically.
+- **Why it matters:** the manual verification matrix (this plan's Phase 6) treats "routed through
+  authentication, then able to book" as satisfying the requirement in both variants, not a literal
+  same-turn resume — read 6.7 against this asymmetry, not against the plan's original prose.
+
+## Turn-count measurement convention for booking (S-05, FR-012)
+
+- **Convention:** turns-to-completion for a booking session is the count of `InvocationRecord`s
+  with `handler: 'booking'` (keypad) — or `handler: 'facility-info-speech'` carrying a
+  `BookingIntent`-stage session attribute (speech) — sharing one `contactId`.
+- **Why no schema change:** `InvocationRecord` already carries `handler` and (via the synthetic
+  `ConnectEvent` `lambdas/facility-info-speech/index.ts` builds) `contactId` for every invocation;
+  grouping by those two existing fields is sufficient, so this is a query-time convention, not a new
+  field.
+- **Read by:** whatever ad hoc CloudWatch Logs Insights query the measurement write-up runs at
+  analysis time (see `context/changes/call-measurement-substrate/queries.md` for the existing
+  query style this convention extends).

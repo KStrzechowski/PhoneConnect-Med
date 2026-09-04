@@ -524,8 +524,8 @@ Additive only — new tables, no changes to `facility` or `patient`. `down` drop
 
 #### Automated
 
-- [x] 5.1 `cdk synth` succeeds
-- [x] 5.2 `infra/test/infra.test.ts` assertions pass, extended for `Booking` and `BookingIntent`
+- [x] 5.1 `cdk synth` succeeds — 1e093a6
+- [x] 5.2 `infra/test/infra.test.ts` assertions pass, extended for `Booking` and `BookingIntent` — 1e093a6
 
 ### Phase 6: Contact flow + hand-off
 
