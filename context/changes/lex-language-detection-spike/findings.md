@@ -126,20 +126,29 @@ first test call) deferred to the end-of-slice pass per user instruction.
   is pinned to), no explicit locale switch is needed in the flow at all. If Phase 4 refutes session
   continuity, this flow design needs revisiting too, not just the hand-off mechanism in isolation.
 - **`spike-flow.json`'s `InvokeLambdaFunction`/`Wait`/"Load Lambda Result" JSON is a first-cut, not
-  a confirmed schema.** AWS documents the async-invoke-then-load-result pattern
-  ([Invoke Lambda function block](https://docs.aws.amazon.com/connect/latest/adminguide/invoke-lambda-function-block.html))
-  and confirms the mechanism exists (`$.LambdaInvocation.InvocationId`, "Load Lambda Result" as a
-  second mode of the same block), but does not publish the flow-language JSON for the "Load Lambda
-  Result" mode in a form this session could fetch. `loadResult`'s `LambdaInvocationId` parameter
-  name in `spike-flow.json` is a best-effort guess. Per this project's standing convention, the flow
-  is hand-imported and hand-corrected in the console anyway — this needs checking (and fixing, if
-  wrong) against what the console's own "AWS Lambda function" block generates when configured
-  through the UI, before the first real call.
+  a confirmed schema — narrowed down but not closed.** Confirmed via AWS docs
+  ([Invoke Lambda function block](https://docs.aws.amazon.com/connect/latest/adminguide/invoke-lambda-function-block.html)):
+  the async-invoke-then-load-result pattern is a real, native two-mode UI on the same "AWS Lambda
+  function" block ("Invoke Lambda" / "Load Lambda Result"), keyed by
+  `$.LambdaInvocation.InvocationId` (Namespace = Lambda Invocation, Key = Invocation ID). This is
+  a comparatively new capability — the CX-consultant writeup found
+  ([bloy.me.uk/async-lambda-execution](https://bloy.me.uk/async-lambda-execution)) dates the
+  underlying "Parallel AWS Lambda execution in flows" feature to July 2025 and mentions a "Lambda
+  Invocation JSON path" needed when tracking *multiple* concurrent async invocations — which this
+  spike only needs one of, but is a sign the exact JSON shape may not be the naive single-field
+  guess in `spike-flow.json`. No raw flow-language JSON for the "Load Lambda Result" action turned
+  up despite checking: the admin guide, its GitHub mirror, the official AWS Contact Center blog's
+  older (DynamoDB-polling) async pattern, and the CX-consultant blog above. `loadResult`'s
+  `LambdaInvocationId` parameter name in `spike-flow.json` stays a best-effort guess pending a check
+  against what the console itself generates.
 - **KVS stream parameters** (`streamArn`, `startFragmentNumber`) are passed into the Lambda as
-  `LambdaInvocationAttributes` sourced from `$.MediaStreams.Customer.Audio.StreamARN` and
-  `$.MediaStreams.Customer.Audio.StartFragmentNumber` — these are Connect's documented system
-  attributes for a stream started by a `StartMediaStreaming` block, not independently verified
-  against a live contact in this session.
+  `LambdaInvocationAttributes` — **both the field name and the two `$.MediaStreams.Customer.Audio.*`
+  attribute paths are now confirmed verbatim** against AWS's own
+  [Lambda functions guide](https://docs.aws.amazon.com/connect/latest/adminguide/connect-lambda-functions.md)
+  (its sample `ContactFlowEvent` JSON shows `MediaStreams.Customer.Audio.StreamARN` and
+  `StartFragmentNumber` exactly as used here, and a separate search result independently confirmed
+  `LambdaInvocationAttributes` as the parameter-map field name for the async invoke action). Not
+  yet exercised against a live contact, but no longer a guess.
 - **Audio capture window is a fixed 5 seconds of wall-clock time** (`audioCaptureMs` in
   `lambdas/language-detect-spike/index.ts`), not a byte/sample-count budget — deliberately simple
   given Phase 1's finding that the exact codec (and therefore bytes-per-second) isn't confirmed yet.
@@ -151,6 +160,20 @@ first test call) deferred to the end-of-slice pass per user instruction.
 **What Phase 2's first real invocation should check before trusting anything downstream:** log the
 parsed `TrackEntry` (`codecId`, `trackType`) from `captureAudioFrames` once, confirming or
 correcting the PCM/8kHz assumption before relying on it.
+
+**Post-hoc correction, found by adding local tests before deploying (not from a real call):**
+`captureAudioFrames`'s original implementation consumed `ebml`'s `Decoder` with `for await...of`,
+assuming a Node `Transform` stream is always async-iterable. It is not, in this package's build —
+`decoder is not async iterable` at runtime, caught by a new local unit test that pipes a
+hand-built, minimal synthetic Matroska buffer (real EBML element IDs, no AWS/KVS involved) through
+the function and asserts it extracts only the audio track's `SimpleBlock` payloads. Rewritten to
+consume the decoder with `.on('data', ...)` / `.on('end', ...)` instead, which is also a more
+correct way to implement the capture deadline (a real `setTimeout`, rather than a polled
+`Date.now()` check that only runs between loop iterations). This would have surfaced as "the
+Lambda times out and RecognizeText never gets called" on the very first real test call, with
+nothing more specific in CloudWatch — worth knowing before Phase 2's manual deploy step, not after.
+Also confirms the deadline-exhausted edge case (`captureMs <= 0`) resolves immediately rather than
+depending on a timing race.
 
 ## Phase 3: The call matrix
 

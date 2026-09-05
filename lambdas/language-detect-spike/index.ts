@@ -46,34 +46,46 @@ type SpikeResult = {
   sessionState: unknown;
 };
 
-async function captureAudioFrames(payload: Readable, captureMs: number): Promise<Uint8Array[]> {
+export function captureAudioFrames(payload: Readable, captureMs: number): Promise<Uint8Array[]> {
+  const frames: Uint8Array[] = [];
+  if (captureMs <= 0) {
+    payload.destroy();
+    return Promise.resolve(frames);
+  }
+
   const decoder = new Decoder();
   payload.pipe(decoder as unknown as NodeJS.WritableStream);
 
   const trackTypes = new Map<number, number>();
   let audioTrack: number | undefined;
   let currentTrackNumber: number | undefined;
-  const frames: Uint8Array[] = [];
-  const deadline = Date.now() + captureMs;
 
-  for await (const [tag, elm] of decoder as AsyncIterable<[string, Record<string, unknown>]>) {
-    if (Date.now() > deadline) break;
+  return new Promise((resolve) => {
+    const finish = () => {
+      clearTimeout(timer);
+      decoder.removeAllListeners();
+      payload.destroy();
+      resolve(frames);
+    };
+    const timer = setTimeout(finish, captureMs);
 
-    if (tag === 'tag' && elm.name === 'TrackNumber') {
-      currentTrackNumber = elm.value as number;
-    } else if (tag === 'tag' && elm.name === 'TrackType') {
-      if (currentTrackNumber !== undefined) trackTypes.set(currentTrackNumber, elm.value as number);
-      if (elm.value === 2) audioTrack = currentTrackNumber;
-    } else if (tag === 'tag' && (elm.name === 'SimpleBlock' || elm.name === 'Block')) {
-      const track = elm.track as number;
-      if (audioTrack === undefined || track === audioTrack) {
-        frames.push(elm.payload as Uint8Array);
+    decoder.on('data', ([tag, elm]: [string, Record<string, unknown>]) => {
+      if (tag === 'tag' && elm.name === 'TrackNumber') {
+        currentTrackNumber = elm.value as number;
+      } else if (tag === 'tag' && elm.name === 'TrackType') {
+        if (currentTrackNumber !== undefined) trackTypes.set(currentTrackNumber, elm.value as number);
+        if (elm.value === 2) audioTrack = currentTrackNumber;
+      } else if (tag === 'tag' && (elm.name === 'SimpleBlock' || elm.name === 'Block')) {
+        const track = elm.track as number;
+        if (audioTrack === undefined || track === audioTrack) {
+          frames.push(elm.payload as Uint8Array);
+        }
       }
-    }
-  }
+    });
 
-  payload.destroy();
-  return frames;
+    decoder.on('end', finish);
+    decoder.on('error', finish);
+  });
 }
 
 async function* replayAsAudioStream(frames: Uint8Array[]): AsyncGenerator<AudioStream> {

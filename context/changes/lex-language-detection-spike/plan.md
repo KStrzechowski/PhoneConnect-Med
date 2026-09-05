@@ -557,11 +557,11 @@ project's spend.
 
 #### Automated
 
-- [x] 2.1 CDK synthesises with the spike stack present
-- [x] 2.2 `npm test --workspace lambdas/language-detect-spike` passes
-- [x] 2.3 Template asserts both `pl_PL` and `en_US` locales exist on the bot
-- [x] 2.4 Template asserts the alias has text conversation logs
-- [x] 2.5 Infra tests pass
+- [x] 2.1 CDK synthesises with the spike stack present — 8cf61c0
+- [x] 2.2 `npm test --workspace lambdas/language-detect-spike` passes — 8cf61c0
+- [x] 2.3 Template asserts both `pl_PL` and `en_US` locales exist on the bot — 8cf61c0
+- [x] 2.4 Template asserts the alias has text conversation logs — 8cf61c0
+- [x] 2.5 Infra tests pass — 8cf61c0
 
 #### Manual
 
