@@ -486,6 +486,33 @@ volumes:
       integrationArn: appointmentCancel.functionArn,
     });
 
+    const appointmentReschedule = new NodejsFunction(this, 'AppointmentReschedule', {
+      functionName: 'phoneconnect-med-appointment-reschedule',
+      entry: path.join(repoRoot, 'lambdas/appointment-reschedule/index.ts'),
+      projectRoot: repoRoot,
+      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
+      runtime: lambda.Runtime.NODEJS_24_X,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      securityGroups: [functionSecurityGroup],
+      allowPublicSubnet: true,
+      environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
+      timeout: cdk.Duration.seconds(2),
+      logGroup: measurements,
+      loggingFormat: lambda.LoggingFormat.JSON,
+    });
+
+    appointmentReschedule.addPermission('ConnectInvoke', {
+      principal: new iam.ServicePrincipal('connect.amazonaws.com'),
+      sourceArn: connectInstanceArn,
+    });
+
+    new connect.CfnIntegrationAssociation(this, 'AppointmentRescheduleFunctionAssociation', {
+      instanceId: connectInstanceArn,
+      integrationType: 'LAMBDA_FUNCTION',
+      integrationArn: appointmentReschedule.functionArn,
+    });
+
     const facilityInfoSpeech = new NodejsFunction(this, 'FacilityInfoSpeech', {
       functionName: 'phoneconnect-med-facility-info-speech',
       entry: path.join(repoRoot, 'lambdas/facility-info-speech/index.ts'),
@@ -957,6 +984,7 @@ volumes:
     new cdk.CfnOutput(this, 'BookingFunctionName', { value: booking.functionName });
     new cdk.CfnOutput(this, 'AppointmentListFunctionName', { value: appointmentList.functionName });
     new cdk.CfnOutput(this, 'AppointmentCancelFunctionName', { value: appointmentCancel.functionName });
+    new cdk.CfnOutput(this, 'AppointmentRescheduleFunctionName', { value: appointmentReschedule.functionName });
     new cdk.CfnOutput(this, 'FacilityInfoSpeechFunctionName', { value: facilityInfoSpeech.functionName });
     new cdk.CfnOutput(this, 'SpeechBotAliasArn', { value: speechBotAlias.attrArn });
     new cdk.CfnOutput(this, 'DeployRoleArn', { value: deployRole.roleArn });
