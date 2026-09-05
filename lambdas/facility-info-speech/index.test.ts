@@ -856,6 +856,59 @@ test('RescheduleIntent dialog hook resolves the chosen time and asks for confirm
   assert.match(messageOf(result), /kardiolog.*godzina 09:30.*na.*godzina 09:30/);
 });
 
+test('RescheduleIntent dialog hook transfers immediately when the appointment resolution goes stale at the day stage', async () => {
+  const fetchMock = mock.method(
+    globalThis,
+    'fetch',
+    async () => new Response(JSON.stringify({ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] })),
+  );
+  const result = await handler(
+    rescheduleIntentEvent(
+      'DialogCodeHook',
+      { timeOfDay: 'rano', selectedSlot: '2' },
+      {
+        authenticated: 'true',
+        patientId: '1',
+        rescheduleStage: 'day',
+        rescheduleApptSelection: '9',
+        rescheduleAttempts: '0',
+      },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
+  assert.equal(fetchMock.mock.callCount(), 1);
+});
+
+test('RescheduleIntent dialog hook transfers immediately when the appointment resolution goes stale at the time stage', async () => {
+  const fetchMock = mock.method(
+    globalThis,
+    'fetch',
+    async () => new Response(JSON.stringify({ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] })),
+  );
+  const result = await handler(
+    rescheduleIntentEvent(
+      'DialogCodeHook',
+      { timeOfDay: 'rano', selectedSlot: '2' },
+      {
+        authenticated: 'true',
+        patientId: '1',
+        rescheduleStage: 'time',
+        rescheduleApptSelection: '9',
+        rescheduleDate: '2026-09-07',
+        rescheduleAttempts: '0',
+      },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
+  assert.equal(fetchMock.mock.callCount(), 1);
+});
+
 test('RescheduleIntent dialog hook re-elicits the time choice when it does not resolve', async () => {
   mockFetchSequence([
     { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
