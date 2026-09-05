@@ -508,6 +508,8 @@ convention for that case.
 - [ ] 3.5 OTP attempts exhausted reaches queue with OTP `transferReason`, no identity
 - [ ] 3.6 Caller-ID-shortcut-authenticated call later transferring carries full identity
 - [ ] 3.7 OTP-authenticated call later transferring carries full identity
+- [ ] 3.8 Digit `0` during the PESEL/phone confirm step reaches queue with caller-request `transferReason` (not in original plan — found while wiring; `neutralMsgBail` also fed the old `transferQueue` block)
+- [ ] 3.9 An `Authenticate` Lambda invocation error during confirm reaches queue with a system-error `transferReason` (same finding)
 
 ### Phase 4: Speech flow wiring
 
@@ -515,7 +517,14 @@ convention for that case.
 
 - [ ] 4.1 `AgentTransferIntent` utterance reaches queue with caller-request `transferReason`
 - [ ] 4.2 Three fallback turns reaches queue with unclear-utterances `transferReason`
-- [ ] 4.3 Fragment docs updated and legible for a future implementer
+- [ ] 4.3 Fragment docs updated and legible for a future implementer (already superseded before
+      this session — confirm they still read correctly)
+- [ ] 4.4 `checkAuthTransfer`'s downstream-failure path (Lambda invocation error during `AuthIntent`)
+      reaches queue with a system-error `transferReason` (not in original plan — S-03's speech auth
+      flow turned out already merged into the console template, unlike the plan's Current State
+      Analysis)
+- [ ] 4.5 Three wrong OTP codes (`bumpOtpMismatch`'s exceeded branch) reaches queue with the
+      OTP-exceeded `transferReason` (same finding)
 
 ### Phase 5: Agent-side display and end-to-end verification
 
