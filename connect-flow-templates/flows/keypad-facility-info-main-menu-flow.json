@@ -154,6 +154,18 @@
           "y": 720
         }
       },
+      "CheckAuthForAppointmentReschedule": {
+        "position": {
+          "x": 844,
+          "y": 960
+        }
+      },
+      "TransferToAppointmentRescheduleFlow": {
+        "position": {
+          "x": 1080,
+          "y": 960
+        }
+      },
       "TransferToAuthenticateFlow": {
         "position": {
           "x": 1080,
@@ -392,7 +404,7 @@
     },
     {
       "Parameters": {
-        "Text": "Naciśnij 1, aby usłyszeć adres i godziny otwarcia. Naciśnij 2, aby umówić wizytę. Naciśnij 3, aby usłyszeć swoje wizyty. Naciśnij 4, aby odwołać wizytę. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć.",
+        "Text": "Naciśnij 1, aby usłyszeć adres i godziny otwarcia. Naciśnij 2, aby umówić wizytę. Naciśnij 3, aby usłyszeć swoje wizyty. Naciśnij 4, aby odwołać wizytę. Naciśnij 5, aby przełożyć wizytę. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć.",
         "StoreInput": "False",
         "InputTimeLimitSeconds": "5"
       },
@@ -434,6 +446,15 @@
               "Operator": "Equals",
               "Operands": [
                 "4"
+              ]
+            }
+          },
+          {
+            "NextAction": "CheckAuthForAppointmentReschedule",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "5"
               ]
             }
           },
@@ -590,6 +611,49 @@
         "ContactFlowId": "REPLACE_WITH_APPOINTMENT_CANCEL_FLOW_ARN"
       },
       "Identifier": "TransferToAppointmentCancelFlow",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "DisconnectFallback",
+        "Errors": [
+          {
+            "NextAction": "DisconnectFallback",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attribute": "$.Attributes.authenticated"
+      },
+      "Identifier": "CheckAuthForAppointmentReschedule",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "TransferToAuthenticateFlow",
+        "Conditions": [
+          {
+            "NextAction": "TransferToAppointmentRescheduleFlow",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "TransferToAuthenticateFlow",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "REPLACE_WITH_APPOINTMENT_RESCHEDULE_FLOW_ARN"
+      },
+      "Identifier": "TransferToAppointmentRescheduleFlow",
       "Type": "TransferToFlow",
       "Transitions": {
         "NextAction": "DisconnectFallback",

@@ -168,6 +168,66 @@ something that no test will catch.
   genuine (if odd) empty search rather than failing loudly. Nothing in the repo enforces this;
   flows are hand-built and outside IaC.
 
+## Keypad digits: main menu `5`, authenticated menu `4` (S-08)
+
+- **Scope:** `keypad-facility-info-main-menu-flow.json`'s `5` digit and
+  `keypad-authenticated-menu-flow.json`'s `4` digit — both reach appointment rescheduling, gated
+  the same way the booking/list/cancel pairs above are: an unauthenticated caller pressing `5` at
+  the main menu is routed through `keypad-authenticate-flow.json` first, landing on the
+  authenticated menu where digit `4` (not `5`) reaches reschedule; an already-authenticated caller
+  pressing `5` at the main menu goes straight to `keypad-appointment-reschedule-flow.json`.
+- **Set by / read by:** `CheckAuthForAppointmentReschedule` (mirroring `CheckAuthForAppointmentCancel`)
+  in `keypad-facility-info-main-menu-flow.json`, and the authenticated menu's own digit-`4` branch.
+- **Why it matters:** same class of gap as the booking/list/cancel pairs above — the two digits
+  differ (`5` vs `4`) because each menu already has its own occupied digits at different positions.
+  Nothing in the repo enforces this; flows are hand-built and outside IaC.
+
+## `found` / `available` / `rescheduled` (S-08)
+
+- **Set by:** `lambdas/appointment-reschedule/index.ts` (keypad output fields) — `days`, `times`,
+  `confirm`, and `reschedule` steps all return `found: 'false'` when the old-appointment position
+  digit no longer resolves against a fresh `listAppointments` call; `days`/`times`/`confirm`/
+  `reschedule` additionally return `available: 'false'` when the day/time search for the resolved
+  appointment's specialty and the caller's time-of-day choice comes back empty or the day/time
+  choice no longer resolves; `confirm` additionally returns `message`, a combined old+new read-back
+  string; `reschedule` additionally returns `rescheduled: 'true' | 'false'` reflecting whether the
+  new slot was actually booked (`oldSlotReleased` is computed in `@pcm/appointment` but not
+  surfaced to either flow — see the plan's Implementation Approach for the accepted residual risk).
+- **Read by:** `keypad-appointment-reschedule-flow.json`'s `checkDaysFound`/`checkDaysAvailable`
+  (and the identically-shaped pairs for `times`/`confirm`/`reschedule`) branches, to choose between
+  re-prompting the selection menu, re-prompting the time-of-day menu, or proceeding.
+- **Why it matters:** same class of gap as `found`/`cancelled`/`message` above — a hand-built
+  `Compare` block checking the wrong field silently plays the wrong message rather than failing
+  loudly. The speech variant (`RescheduleIntent` in `lambdas/facility-info-speech/index.ts`) reaches
+  the identical `resolveAppointment`/`resolveDay`/`resolveTime`/`rescheduleAppointment` calls but
+  drives its own dialog-stage state machine rather than reading these fields directly — see L-03.
+
+## `selectedSlot`'s triple-purpose reuse and `rescheduleApptSelection` (S-08, speech only)
+
+- **Set by:** the caller, for the old-appointment position choice, then the day choice, then the
+  time choice — all three times as the same `RescheduleIntent` slot (`selectedSlot`,
+  `AMAZON.Number`), extending the dual-purpose pattern documented above for `BookingIntent` to a
+  third meaning. The dialog code hook tracks which meaning is current via the `rescheduleStage`
+  session attribute (`'select'` / `'day'` / `'time'`).
+- **The gotcha this creates:** by the time the dialog hook reaches the `day`/`time` stages,
+  `slots.selectedSlot` no longer holds the appointment position — it holds whatever the caller most
+  recently said. The old-appointment digit is captured into a `rescheduleApptSelection` session
+  attribute the first time it resolves (in the `select`/`confirm` stage), and every later stage
+  (including fulfillment) reads from that attribute instead of `slots.selectedSlot` to identify
+  which appointment is being rescheduled — see the plan's Critical Implementation Details for the
+  exact read pattern (`incoming.rescheduleApptSelection ? Number(...) : Number(slots.selectedSlot...)`),
+  which also lets the decline-reentry alias (`rescheduleStage === 'confirm'` routing back into the
+  same branch as `'select'`) work without re-listing appointments.
+- **Reset by:** nothing explicit — `rescheduleApptSelection` is set once and never cleared for the
+  rest of the call; a declined confirmation resets only `selectedSlot` (via
+  `RescheduleIntent`'s `declinationNextStep`), never `rescheduleApptSelection` or `rescheduleStage`,
+  which is what makes the decline-reentry alias work.
+- **Why it matters:** a future contributor extending `selectedSlot` reuse to a fourth meaning, or
+  reading `slots.selectedSlot` directly in the `day`/`time`/fulfillment stages instead of
+  `rescheduleApptSelection`, would silently resolve the wrong appointment. Nothing in the repo
+  enforces this; the Lex bot config is hand-built and outside IaC (see `infra/lib/infra-stack.ts`'s
+  `RescheduleIntent` definition).
+
 ## `selectedSlot`'s dual-purpose reuse (S-05, speech only)
 
 - **Set by:** the caller, once for the day choice and again for the time choice, both times as the

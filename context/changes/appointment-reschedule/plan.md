@@ -596,17 +596,17 @@ None — no schema change, no new HIS endpoint.
 
 #### Automated
 
-- [x] 3.1 Speech Lambda unit tests pass (new `RescheduleIntent` coverage)
-- [x] 3.2 `cdk synth` succeeds with the new Lex intent
-- [x] 3.3 Type checking and linting pass
+- [x] 3.1 Speech Lambda unit tests pass (new `RescheduleIntent` coverage) — 3df82a6
+- [x] 3.2 `cdk synth` succeeds with the new Lex intent — 3df82a6
+- [x] 3.3 Type checking and linting pass — 3df82a6
 
 ### Phase 4: Contact flow & hand-off
 
 #### Automated
 
-- [ ] 4.1 `cdk synth` succeeds with both menu flows' referenced Lambda ARNs resolvable
-- [ ] 4.2 Full test suite passes: repo-wide test command
-- [ ] 4.3 Linting and type checking pass repo-wide
+- [x] 4.1 `cdk synth` succeeds with both menu flows' referenced Lambda ARNs resolvable
+- [x] 4.2 Full test suite passes: repo-wide test command
+- [x] 4.3 Linting and type checking pass repo-wide
 
 #### Manual
 
