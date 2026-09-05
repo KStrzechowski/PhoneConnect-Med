@@ -3,7 +3,7 @@ project: "PhoneConnect Med"
 version: 1
 status: draft
 created: 2026-08-23
-updated: 2026-08-30
+updated: 2026-09-05
 prd_version: 1
 main_goal: market-feedback
 top_blocker: time
@@ -50,16 +50,17 @@ that produces evidence rather than infrastructure.
 | F-01 | `aws-deployment-baseline` | (foundation) a deployed, callable path from telephony to the mock exists | — | NFR (p95 < 2s), §Non-Goals | done |
 | F-02 | `call-measurement-substrate` | (foundation) every call and request emits a durable record | F-01 | FR-008, NFR (p95 < 2s), NFR (per-call record) | done |
 | F-03 | `lex-keypad-capture-spike` | (foundation) in-conversation keypad capture is confirmed or refuted | F-01 | FR-005, §Access Control L2 | done |
+| F-04 | `lex-language-detection-spike` | (foundation) automatic first-utterance language detection for Variant B is confirmed or refuted | F-01 | Thesis ch.3 §3.2.2, FR-009, FR-012 | in-progress |
 | S-01 | `facility-info-keypad` | get address and opening hours by pressing a key, and always reach a human | F-01, F-02 | FR-009, US-02, FR-001, FR-002, FR-003, FR-006, FR-007, FR-008 | done |
 | S-02 | `facility-info-speech` | get the same answer by saying what they want, no menu | S-01 | FR-009, US-01, FR-001, FR-003, FR-006, FR-008 | proposed |
 | S-03 | `caller-id-authentication` | prove identity by PESEL + phone when calling from their own number | S-02, F-03 | FR-005, §Access Control L2 | proposed |
 | S-04 | `otp-authentication-fallback` | prove identity by PESEL + phone plus a texted code, from any number | S-03 | FR-005, §Access Control L2 | proposed |
 | S-05 | `appointment-booking-both-variants` | book a visit by specialty and time of day, choosing from offered slots | S-03 | FR-012, §Business Logic | proposed |
 | S-06 | `appointment-list` | hear the list of their scheduled appointments | S-03 | FR-013 | in-progress |
-| S-07 | `appointment-cancel` | cancel a scheduled appointment, releasing the slot | S-06 | FR-014 | proposed |
-| S-08 | `appointment-reschedule` | move an appointment to a new slot, releasing the old one | S-05, S-07 | FR-015 | proposed |
+| S-07 | `appointment-cancel` | cancel a scheduled appointment, releasing the slot | S-06 | FR-014 | in-progress |
+| S-08 | `appointment-reschedule` | move an appointment to a new slot, releasing the old one | S-05, S-07 | FR-015 | in-progress |
 | S-09 | `intent-accuracy-measurement` | (measurement) the project can report intent accuracy on held-out Polish speech | S-05 | NFR-14, FR-009, FR-012 | proposed |
-| S-10 | `english-locale` | complete the same tasks in English, in both variants | S-05 | FR-009, FR-012, NFR (Polish primary) | proposed |
+| S-10 | `english-locale` | complete the same tasks in English, in both variants | S-05, F-04 | FR-009, FR-012, NFR (Polish primary) | proposed |
 | S-11 | `agent-call-handover` | reach an agent who already has the conversation and their patient record | S-01, S-03 | FR-018, FR-019, FR-020 | proposed |
 | S-12 | `agent-appointment-management` | have an agent create, cancel, or reschedule for them during the transfer | S-11, S-05, S-07, S-08 | FR-017 | proposed |
 
@@ -73,7 +74,7 @@ in the dependency graph below; this table is the proposed reading order across p
 | A | Skeleton & shared logic | `F-01` → `F-02` → `S-01` → `S-02` | The rig. Nothing is measurable until this lands; `S-01` is where the shared-logic contract is set. |
 | B | Identity | `F-03` → `S-03` → `S-04` | `F-03` runs parallel with Stream A; `S-03` joins after `S-02`. `S-04` is deferrable past the north star. |
 | C | Appointments | `S-05` → `S-06` → `S-07` → `S-08` | Joins Stream B at `S-03`. Contains the north star; `S-06`/`S-07` are cheap breadth over shared logic. |
-| D | Evidence | `S-09` → `S-10` | Joins Stream C at `S-05`. Produces the thesis's two remaining headline numbers. |
+| D | Evidence | `S-09` → `S-10` | Joins Stream C at `S-05`. Produces the thesis's two remaining headline numbers. `S-10` additionally needs `F-04` (parallel with Stream A/B/C). |
 | E | Agent handover | `S-11` → `S-12` | Joins Stream A at `S-01` and Stream B at `S-03`. Lowest priority — nothing measured depends on `S-12`. |
 
 ## Baseline
@@ -188,6 +189,39 @@ the number**: no bot, no contact flow, no deployed function.
   confirms a mechanism, it does not build authentication. Discard the artefact afterwards.
 - **Status:** done — verdict confirmed-with-constraints, teardown complete. Archived to
   `context/archive/2026-08-26-lex-keypad-capture-spike/`, findings there.
+
+### F-04: Automatic first-utterance language detection confirmed
+
+- **Outcome:** (foundation) it is known, on a throwaway bot and real calls, whether Variant B can
+  detect which language a caller is speaking from their first utterance alone — and carry that
+  utterance's content into the bot's first real turn — without a DTMF language menu.
+- **Change ID:** `lex-language-detection-spike`
+- **PRD refs:** Thesis chapter 3 §3.2.2 (states this explicitly, twice, as Variant B's key
+  distinguishing claim over Variant A's menu structure), FR-009, FR-012
+- **Unlocks:** S-10 — a DTMF language prompt in front of Variant B would directly contradict
+  chapter 3 §3.2.2, and the chapter's own worked example has the first utterance carrying a full
+  booking request, not just a language signal, so the detection mechanism and the
+  content-preserving hand-off both have to be proven before `english-locale` can be planned.
+- **Prerequisites:** F-01
+- **Parallel with:** S-03 through S-09 (independent of the authenticated/booking work)
+- **Blockers:** —
+- **Unknowns:**
+  - Does a Node.js/TypeScript path exist to consume Kinesis Video Streams audio and drive Amazon
+    Transcribe streaming with `IdentifyLanguage`? — Owner: spike Phase 1. Block: yes — the only
+    public reference implementation is Java and archived since March 2023; a refutation here stops
+    the spike before Phase 2.
+  - Does a `RecognizeText` call's Lex session carry forward into a subsequent Connect-native
+    `Get Customer Input (Lex)` block for the same contact? — Owner: spike Phase 4. Block: no —
+    S-10 can still proceed with a costlier, fully Lambda-driven design if this is refuted.
+- **Risk:** Two newer AWS capabilities (Amazon Connect's Agentic CX designer, GA'd September 2026;
+  Amazon Nova Sonic speech-to-speech) would solve this natively but were rejected — both require
+  replacing Lex V2's intent/slot model project-wide, which S-01–S-08 and the intent-accuracy
+  measurement protocol (`test-corpus-kit.md`) are built around, and both are too new/unproven for
+  this project's timeline. Kept to a spike deliberately, mirroring F-03: confirms a mechanism,
+  does not build `english-locale`'s menus or flows. A `Verdict: refuted` outcome is a recorded
+  deviation from the source thesis (§3.2.2), joining the caller-ID shortcut and two-step slot
+  presentation already recorded — see Open Roadmap Question 3.
+- **Status:** in-progress
 
 ## Slices
 
@@ -358,7 +392,7 @@ the number**: no bot, no contact flow, no deployed function.
   appointment, and hearing the list is how they do it. Kept in scope for the same marginal-cost
   reason as S-06, and because it is a MUST in the source thesis — dropping it without
   justification invites a question at the defence.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-08: Rescheduling an appointment
 
@@ -374,7 +408,7 @@ the number**: no bot, no contact flow, no deployed function.
   exist. The PRD names it the cheapest of the four appointment operations to omit if the week
   runs short. Sequenced here rather than dropped because its marginal cost is genuinely small —
   but it is a legitimate cut.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-09: Intent-accuracy measurement run
 
@@ -411,7 +445,7 @@ the number**: no bot, no contact flow, no deployed function.
 - **Change ID:** `english-locale`
 - **PRD refs:** FR-009, FR-012, NFR (conversation in Polish; English secondary),
   §Success Criteria → Secondary
-- **Prerequisites:** S-05
+- **Prerequisites:** S-05, F-04
 - **Parallel with:** S-08, S-09
 - **Blockers:** —
 - **Unknowns:**
@@ -500,7 +534,9 @@ the number**: no bot, no contact flow, no deployed function.
    amend the chapter, or frame the proof of concept as implementing a representative subset.
    A third deviation now joins them: contact flows are hand-built and not codified in
    infrastructure-as-code, so the deployed system is only partly reproducible from the
-   repository. (PRD Open Question 6, extended.)
+   repository. (PRD Open Question 6, extended.) A fourth is conditional on F-04's verdict: if
+   automatic first-utterance language detection (chapter 3 §3.2.2) is refuted, Variant B falls
+   back to DTMF language selection like Variant A, and that becomes a deviation to reconcile too.
 4. **What is the thesis submission date?** — Owner: user. Block: nothing directly, but with
    `top_blocker: time` this roadmap's cut line (everything below S-05) cannot be turned into a
    real decision until there is a date to work backward from. (PRD Open Question 1.)
