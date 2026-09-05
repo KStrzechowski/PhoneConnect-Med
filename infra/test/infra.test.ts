@@ -114,6 +114,15 @@ test('AppointmentList is named per convention and reaches the mock over the VPC'
   expect(appointmentList?.Properties.VpcConfig).toBeDefined();
 });
 
+test('AppointmentCancel is named per convention and reaches the mock over the VPC', () => {
+  const functions = template.findResources('AWS::Lambda::Function');
+  const appointmentCancel = Object.values(functions).find(
+    (fn) => fn.Properties.FunctionName === 'phoneconnect-med-appointment-cancel',
+  );
+  expect(appointmentCancel).toBeDefined();
+  expect(appointmentCancel?.Properties.VpcConfig).toBeDefined();
+});
+
 test('SendOtp and FacilityInfoSpeech may both publish to SNS', () => {
   const policies = template.findResources('AWS::IAM::Policy', {
     Properties: {

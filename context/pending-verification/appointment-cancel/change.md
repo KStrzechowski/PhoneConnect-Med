@@ -1,7 +1,7 @@
 ---
 change_id: appointment-cancel
 title: Appointment cancel
-status: implementing
+status: impl_reviewed
 created: 2026-09-05
 updated: 2026-09-05
 archived_at: null
