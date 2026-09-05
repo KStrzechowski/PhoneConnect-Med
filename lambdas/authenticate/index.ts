@@ -15,6 +15,7 @@ export const handler = measured(
           authenticated: 'true',
           patientId: String(result.patientId),
           firstName: result.firstName,
+          lastName: result.lastName,
         };
       }
       return {
@@ -25,6 +26,8 @@ export const handler = measured(
         code: result.code ?? '',
         phone: result.phone ?? '',
         patientId: result.patientId !== undefined ? String(result.patientId) : '',
+        firstName: result.firstName ?? '',
+        lastName: result.lastName ?? '',
       };
     } catch (error) {
       const message = String(error);

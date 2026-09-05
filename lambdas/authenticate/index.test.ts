@@ -25,7 +25,13 @@ test('returns authenticated true and stamps the caller-id auth path when the pai
   const result = await handler(sampleEvent);
   mock.restoreAll();
 
-  assert.deepEqual(result, { reachable: 'true', authenticated: 'true', patientId: '1', firstName: 'Jan' });
+  assert.deepEqual(result, {
+    reachable: 'true',
+    authenticated: 'true',
+    patientId: '1',
+    firstName: 'Jan',
+    lastName: 'Kowalski',
+  });
   assert.equal(records()[0].authPath, 'caller-id');
 });
 
@@ -52,6 +58,8 @@ test('starts an OTP challenge with a fresh code when the pair matches but the ca
   assert.equal(result.phone, '+48000000000');
   assert.equal(result.patientId, '1');
   assert.match(result.code, /^\d{6}$/);
+  assert.equal(result.firstName, 'Jan');
+  assert.equal(result.lastName, 'Kowalski');
   assert.equal('authPath' in records()[0], false);
   assert.equal(records()[0].outcome, 'ok');
 });
@@ -79,6 +87,8 @@ test('starts an OTP challenge with the fixed code and no phone for a demo match'
     code: '123456',
     phone: '',
     patientId: '2',
+    firstName: 'Anna',
+    lastName: 'Demo',
   });
 });
 
@@ -96,6 +106,8 @@ test('starts the same OTP challenge with an empty code when the pair matches no 
     code: '',
     phone: '',
     patientId: '',
+    firstName: '',
+    lastName: '',
   });
   assert.equal('authPath' in records()[0], false);
 });

@@ -11,7 +11,7 @@ test('authenticates when the pair matches and the caller dials from the declared
   const result = await authenticate('90010112345', '+48000000000', '+48000000000', AbortSignal.timeout(1000));
   mock.restoreAll();
 
-  assert.deepEqual(result, { authenticated: true, patientId: 1, firstName: 'Jan' });
+  assert.deepEqual(result, { authenticated: true, patientId: 1, firstName: 'Jan', lastName: 'Kowalski' });
 });
 
 test('does not authenticate when the pair matches but the caller dials from a different number', async () => {
@@ -47,7 +47,7 @@ test('beginOtpChallenge takes the shortcut when the caller dials from the declar
   const result = await beginOtpChallenge('90010112345', '+48000000000', '+48000000000', AbortSignal.timeout(1000));
   mock.restoreAll();
 
-  assert.deepEqual(result, { authenticated: true, patientId: 1, firstName: 'Jan' });
+  assert.deepEqual(result, { authenticated: true, patientId: 1, firstName: 'Jan', lastName: 'Kowalski' });
 });
 
 test('beginOtpChallenge issues a fresh code to the matched phone for a real, non-demo match', async () => {
@@ -60,6 +60,8 @@ test('beginOtpChallenge issues a fresh code to the matched phone for a real, non
   assert.equal(result.phone, '+48000000000');
   assert.equal(result.patientId, 1);
   assert.match(result.code ?? '', /^\d{6}$/);
+  assert.equal(result.firstName, 'Jan');
+  assert.equal(result.lastName, 'Kowalski');
 });
 
 test('beginOtpChallenge uses the seeded fixed code and sends nothing for a demo match', async () => {
@@ -67,7 +69,15 @@ test('beginOtpChallenge uses the seeded fixed code and sends nothing for a demo 
   const result = await beginOtpChallenge('85050512345', '+48999999999', '+48111111111', AbortSignal.timeout(1000));
   mock.restoreAll();
 
-  assert.deepEqual(result, { otpRequired: true, isDemo: true, code: '123456', phone: null, patientId: 2 });
+  assert.deepEqual(result, {
+    otpRequired: true,
+    isDemo: true,
+    code: '123456',
+    phone: null,
+    patientId: 2,
+    firstName: 'Anna',
+    lastName: 'Demo',
+  });
 });
 
 test('beginOtpChallenge poses the same challenge with a null code when the pair matches nothing', async () => {
@@ -75,7 +85,14 @@ test('beginOtpChallenge poses the same challenge with a null code when the pair 
   const result = await beginOtpChallenge('00000000000', '+48000000000', '+48000000000', AbortSignal.timeout(1000));
   mock.restoreAll();
 
-  assert.deepEqual(result, { otpRequired: true, isDemo: false, code: null, phone: null });
+  assert.deepEqual(result, {
+    otpRequired: true,
+    isDemo: false,
+    code: null,
+    phone: null,
+    firstName: null,
+    lastName: null,
+  });
 });
 
 test('verifyOtpCode matches an equal, non-null expected code', () => {

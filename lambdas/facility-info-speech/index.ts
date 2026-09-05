@@ -669,6 +669,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
             fallbackCount: '0',
             authenticated: 'true',
             patientId: String(result.patientId),
+            lastName: result.lastName,
           },
           message,
         );
@@ -700,6 +701,8 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
           code: result.code ?? '',
           phone: result.phone ?? '',
           patientId: result.patientId !== undefined ? String(result.patientId) : '',
+          firstName: result.firstName ?? '',
+          lastName: result.lastName ?? '',
         },
         message,
       );

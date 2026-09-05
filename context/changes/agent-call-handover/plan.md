@@ -490,12 +490,12 @@ convention for that case.
 
 #### Automated
 
-- [ ] 2.1 `lambdas/patient` typechecks
-- [ ] 2.2 `lambdas/patient` tests pass, including new `lastName`/`firstName` assertions
-- [ ] 2.3 `lambdas/authenticate` typechecks
-- [ ] 2.4 `lambdas/authenticate` tests pass, including new output-field assertions
-- [ ] 2.5 `lambdas/facility-info-speech` typechecks
-- [ ] 2.6 `lambdas/facility-info-speech` tests pass, including new session-attribute assertions
+- [x] 2.1 `lambdas/patient` typechecks
+- [x] 2.2 `lambdas/patient` tests pass, including new `lastName`/`firstName` assertions
+- [x] 2.3 `lambdas/authenticate` typechecks
+- [x] 2.4 `lambdas/authenticate` tests pass, including new output-field assertions
+- [x] 2.5 `lambdas/facility-info-speech` typechecks
+- [x] 2.6 `lambdas/facility-info-speech` tests pass, including new session-attribute assertions
 
 ### Phase 3: Keypad flow wiring
 
