@@ -9,6 +9,10 @@ only the JSON/Markdown source is version-controlled, not the import step itself.
 - `flows/` — standalone Contact Flows (imported via Flows → Create flow → Import).
 - `modules/` — Contact Flow Modules, reusable sub-flows invoked from a flow (imported via
   Flows → Create flow module → Import).
+- `views/` — Amazon Connect Views (step-by-step guides). Never importable JSON the way
+  flows/modules are — AWS-managed views are referenced by ARN and configured per-block, and
+  customer-managed views use a separate UI Builder tool outside this repo's flow-JSON
+  convention. Always hand-merge guides (`.md`), never `.json`.
 
 ## Naming
 
