@@ -105,3 +105,19 @@ export const cancelAppointment = async (
   const body = (await response.json()) as { cancelled: boolean };
   return body.cancelled;
 };
+
+export const rescheduleAppointment = async (
+  patientId: number,
+  oldDate: string,
+  oldTime: string,
+  specialty: string,
+  timeOfDay: string,
+  newDate: string,
+  newTime: string,
+  signal: AbortSignal,
+): Promise<{ rescheduled: boolean; oldSlotReleased: boolean }> => {
+  const booked = await bookAppointment(specialty, timeOfDay, newDate, newTime, patientId, signal);
+  if (!booked) return { rescheduled: false, oldSlotReleased: false };
+  const oldSlotReleased = await cancelAppointment(oldDate, oldTime, patientId, signal);
+  return { rescheduled: true, oldSlotReleased };
+};

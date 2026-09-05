@@ -9,10 +9,16 @@ import {
   listAppointments,
   resolveAppointment,
   cancelAppointment,
+  rescheduleAppointment,
 } from './index.ts';
 
 const mockJson = (body: object) => {
   mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify(body)));
+};
+
+const mockSequence = (bodies: object[]) => {
+  let i = 0;
+  mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify(bodies[i++])));
 };
 
 test('findAvailableDays returns the days from the mock', async () => {
@@ -133,4 +139,56 @@ test('cancelAppointment reports a failed cancellation', async () => {
   mock.restoreAll();
 
   assert.equal(cancelled, false);
+});
+
+test('rescheduleAppointment does not cancel the old slot when the new slot fails to book', async () => {
+  const fetchMock = mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ booked: false })));
+  const result = await rescheduleAppointment(
+    1,
+    '2026-09-04',
+    '08:00',
+    'kardiolog',
+    'rano',
+    '2026-09-07',
+    '09:30',
+    AbortSignal.timeout(1000),
+  );
+  mock.restoreAll();
+
+  assert.deepEqual(result, { rescheduled: false, oldSlotReleased: false });
+  assert.equal(fetchMock.mock.callCount(), 1);
+});
+
+test('rescheduleAppointment books the new slot then releases the old one', async () => {
+  mockSequence([{ booked: true }, { cancelled: true }]);
+  const result = await rescheduleAppointment(
+    1,
+    '2026-09-04',
+    '08:00',
+    'kardiolog',
+    'rano',
+    '2026-09-07',
+    '09:30',
+    AbortSignal.timeout(1000),
+  );
+  mock.restoreAll();
+
+  assert.deepEqual(result, { rescheduled: true, oldSlotReleased: true });
+});
+
+test('rescheduleAppointment reports the old slot as not released when its cancellation fails', async () => {
+  mockSequence([{ booked: true }, { cancelled: false }]);
+  const result = await rescheduleAppointment(
+    1,
+    '2026-09-04',
+    '08:00',
+    'kardiolog',
+    'rano',
+    '2026-09-07',
+    '09:30',
+    AbortSignal.timeout(1000),
+  );
+  mock.restoreAll();
+
+  assert.deepEqual(result, { rescheduled: true, oldSlotReleased: false });
 });
