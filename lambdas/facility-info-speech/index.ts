@@ -356,6 +356,12 @@ const handleCancelFulfillment = async (
   }
 
   const selectedSlot = Number(slots.selectedSlot?.value?.interpretedValue ?? '');
+  if (!incoming.patientId) {
+    const message = 'Przepraszam, mam teraz problem z odwołaniem wizyty. Łączę z konsultantem.';
+    record.outcome = 'error';
+    record.error = 'missing patientId';
+    return close('CancelIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+  }
   const patientId = Number(incoming.patientId);
   const abort = AbortSignal.timeout(1000);
 
@@ -736,7 +742,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
       const message = 'Wysłaliśmy nowy kod. Proszę wprowadzić go na klawiaturze telefonu.';
       return close(
         intentName,
-        { ...incoming, lastMessageText: message, fallbackCount: '0', code: freshCode },
+        { ...incoming, lastMessageText: message, fallbackCount: '0', code: freshCode, otpMismatch: '' },
         message,
       );
     }
@@ -746,7 +752,14 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
       const message = 'Dziękuję. Tożsamość została potwierdzona.';
       return close(
         intentName,
-        { ...incoming, lastMessageText: message, fallbackCount: '0', authenticated: 'true', patientId },
+        {
+          ...incoming,
+          lastMessageText: message,
+          fallbackCount: '0',
+          authenticated: 'true',
+          patientId,
+          otpRequired: '',
+        },
         message,
       );
     }

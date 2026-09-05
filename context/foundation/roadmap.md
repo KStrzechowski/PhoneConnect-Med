@@ -3,7 +3,7 @@ project: "PhoneConnect Med"
 version: 1
 status: draft
 created: 2026-08-23
-updated: 2026-09-05
+updated: 2026-09-06
 prd_version: 1
 main_goal: market-feedback
 top_blocker: time
@@ -61,7 +61,7 @@ that produces evidence rather than infrastructure.
 | S-08 | `appointment-reschedule` | move an appointment to a new slot, releasing the old one | S-05, S-07 | FR-015 | in-progress |
 | S-09 | `intent-accuracy-measurement` | (measurement) the project can report intent accuracy on held-out Polish speech | S-05 | NFR-14, FR-009, FR-012 | proposed |
 | S-10 | `english-locale` | complete the same tasks in English, in both variants | S-05, F-04 | FR-009, FR-012, NFR (Polish primary) | proposed |
-| S-11 | `agent-call-handover` | reach an agent who already has the conversation and their patient record | S-01, S-03 | FR-018, FR-019, FR-020 | proposed |
+| S-11 | `agent-call-handover` | reach an agent who already has the conversation and their patient record | S-01, S-03 | FR-018, FR-019, FR-020 | planning |
 | S-12 | `agent-appointment-management` | have an agent create, cancel, or reschedule for them during the transfer | S-11, S-05, S-07, S-08 | FR-017 | proposed |
 
 ## Streams
@@ -477,7 +477,7 @@ the number**: no bot, no contact flow, no deployed function.
   application or second login exists. Depends on S-03 because the patient record only exists once
   identity has been established. Generates no comparison data, so it sits below the north star
   despite being cheap.
-- **Status:** proposed
+- **Status:** planning
 
 ### S-12: Agent manages appointments during the transfer
 

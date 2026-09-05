@@ -315,7 +315,7 @@ test('OtpIntent resends a fresh code for a real challenge without consuming an a
   assert.match(result.sessionState.sessionAttributes.code, /^\d{6}$/);
   assert.notEqual(result.sessionState.sessionAttributes.code, '654321');
   assert.equal('authenticated' in result.sessionState.sessionAttributes, false);
-  assert.equal('otpMismatch' in result.sessionState.sessionAttributes, false);
+  assert.equal(result.sessionState.sessionAttributes.otpMismatch, '');
 });
 
 test('OtpIntent resend does not publish for a demo challenge', async () => {
@@ -325,6 +325,38 @@ test('OtpIntent resend does not publish for a demo challenge', async () => {
 
   assert.equal(send.mock.callCount(), 0);
   assert.equal(result.sessionState.sessionAttributes.code, '123456');
+});
+
+test('OtpIntent resend clears a stale mismatch flag from a previous wrong attempt', async () => {
+  const send = mock.method(SNSClient.prototype, 'send', async () => ({}));
+  const result = await handler(
+    otpIntentEvent('9', {
+      code: '654321',
+      isDemo: 'false',
+      phone: '+48000000000',
+      patientId: '1',
+      otpMismatch: 'true',
+    }),
+  );
+  mock.restoreAll();
+
+  assert.equal(send.mock.callCount(), 1);
+  assert.equal(result.sessionState.sessionAttributes.otpMismatch, '');
+});
+
+test('OtpIntent success clears a stale otpRequired flag so a later turn does not re-enter OTP', async () => {
+  const result = await handler(
+    otpIntentEvent('654321', {
+      code: '654321',
+      isDemo: 'false',
+      phone: '+48000000000',
+      patientId: '1',
+      otpRequired: 'true',
+    }),
+  );
+
+  assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
+  assert.equal(result.sessionState.sessionAttributes.otpRequired, '');
 });
 
 test('BookingIntent dialog hook needs auth before eliciting anything', async () => {
@@ -601,6 +633,15 @@ test('CancelIntent fulfillment needs auth before cancelling', async () => {
 
   assert.equal(result.sessionState.dialogAction.type, 'Close');
   assert.equal(result.sessionState.sessionAttributes.needsAuth, 'true');
+});
+
+test('CancelIntent fulfillment reports a clean failure when patientId is missing', async () => {
+  const result = await handler(
+    cancelIntentEvent('FulfillmentCodeHook', { selectedSlot: '1' }, { authenticated: 'true' }),
+  );
+
+  assert.equal(result.sessionState.dialogAction.type, 'Close');
+  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
 });
 
 test('CancelIntent fulfillment resolves the appointment and cancels it', async () => {

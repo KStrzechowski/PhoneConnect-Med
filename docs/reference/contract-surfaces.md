@@ -70,16 +70,57 @@ something that no test will catch.
   - **Set by:** `lambdas/facility-info-speech/index.ts`'s `AuthIntent` branch, on every
     non-shortcut outcome (`otpRequired: 'true'`; `code`/`phone` empty and `isDemo: 'false'` for a
     no-match pair, so nothing observable distinguishes it from a real match). `OtpIntent` updates
-    `code` again on a resend.
+    `code` again on a resend, and explicitly clears `otpRequired` to `''` on a correct code — this
+    stops the contact flow's `checkOtpRequired` branch from re-entering the OTP loop on every
+    later turn for the rest of the call, which it would otherwise do forever since Lex session
+    attributes are only ever overwritten explicitly, never reset between turns.
   - **Read by:** `OtpIntent`'s fulfillment, as the inputs to `@pcm/patient`'s `verifyOtpCode` and
     to the inline resend logic (fresh code generation and `sns:Publish`, when not a demo).
+    `otpRequired` is also read by the contact flow (`checkOtpRequired`, see below) to force-route
+    into `OtpIntent` immediately after a non-shortcut `AuthIntent` outcome.
 - **`otpMismatch`** (S-04)
-  - **Set by:** `OtpIntent`'s fulfillment, to `'true'` when the entered code doesn't match.
-  - **Read by:** the contact flow, via `$.Lex.SessionAttributes.otpMismatch`, to decide whether to
-    re-elicit `OtpIntent` or transfer, mirroring the keypad variant's attempt counter.
+  - **Set by:** `OtpIntent`'s fulfillment, to `'true'` when the entered code doesn't match; cleared
+    back to `''` on a resend, so a caller who resends after one wrong code isn't double-counted as
+    a second mismatch by the flow's attempt counter (see `otpMismatchCount` below).
+  - **Read by:** the contact flow, via `$.Lex.SessionAttributes.otpMismatch`
+    (`checkOtpMismatch`), to decide whether to bump the mismatch counter or check for success.
 - **Why it matters:** this is the speech variant's counterpart to the keypad variant's contact
   attributes and reserved digits — repeat and fallback/transfer state, carried in Lex session
   state instead. Nothing in the repo enforces this; flows are hand-built and outside IaC.
+
+## Speech contact flow routing: `checkOtpRequired`/`checkAuthTransfer`/OTP loop (S-03, S-04)
+
+- **What:** `speech-facility-info-flow.json` (committed) routes every turn's outcome through
+  `checkOtpRequired` → `checkAuthTransfer` → `checkFallback` before looping back to `elicitAgain`.
+  `checkOtpRequired`'s `true` branch force-starts `OtpIntent` (via the
+  `x-amz-lex:start-intent:<botAliasId>:pl_PL` request attribute — `OtpIntent` is never reachable by
+  a spoken utterance) and loops there (`elicitOtp` → `checkOtpMismatch` → `checkOtpSuccess`) until
+  either three mismatches transfer the call or a correct code returns to `elicitAgain`.
+  `checkAuthTransfer`'s `true` branch (a genuine downstream failure in `AuthIntent`) transfers
+  immediately. A successful shortcut or OTP authentication has no dedicated success branch — it
+  simply falls through both checks to `checkFallback` (which reads `fallbackCount`, reset to `'0'`
+  on every `AuthIntent`/`OtpIntent` outcome) and lands on `elicitAgain`, the same as any other
+  successfully-completed intent.
+- **Why it matters:** this flow file was, for a period, out of sync with the design described in
+  `speech-authintent-fragment.md`/`speech-otpintent-fragment.md` (now superseded — see those files)
+  — the fragments predate this flow's own commit and describe hand-merging directly in the
+  console. The committed flow now includes the full design directly. Nothing in the repo enforces
+  the flow stays in sync with the live console; flows are hand-built and outside IaC.
+
+## Speech contact attribute: `otpMismatchCount` (S-04)
+
+- **Set by:** `speech-facility-info-flow.json`'s `initOtpMismatch` (reset to `'0'` on first entry
+  into the OTP loop), `setOtpMismatch1`/`setOtpMismatch2` (bumped by `bumpOtpMismatch`, reached
+  from `checkOtpMismatch`'s `true` branch or directly from `elicitOtp`'s own errors — a timeout or
+  unrecognized turn counts as an attempt, the same as a wrong code).
+- **Read by:** `bumpOtpMismatch`, to decide whether to loop back into `elicitOtp` again or transfer
+  after the third attempt — the flow-level analogue of the keypad variant's `otpAttempts` contact
+  attribute (`keypad-otp-verify-module.json`'s `bumpAttempts`).
+- **Why it matters:** this is a **contact** attribute (`$.Attributes.otpMismatchCount`), not a Lex
+  session attribute — the mismatch count must survive across `OtpIntent` invocations the same way
+  the keypad module's attempt count does, and Lex session state alone doesn't carry the "this is
+  attempt 3" signal `OtpIntent`'s own fulfillment has no reason to track. Nothing in the repo
+  enforces this; flows are hand-built and outside IaC.
 
 ## Keypad contact attributes: `authenticated`, `patientId` (S-03)
 

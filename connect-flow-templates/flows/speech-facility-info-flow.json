@@ -4,18 +4,27 @@
   "Metadata": {
     "entryPointPosition": { "x": 40, "y": 40 },
     "ActionMetadata": {
-      "voice": { "position": { "x": 200, "y": 40 } },
-      "greet": { "position": { "x": 400, "y": 40 } },
-      "elicit": { "position": { "x": 620, "y": 40 } },
-      "elicitAgain": { "position": { "x": 860, "y": 40 } },
-      "checkFallback": { "position": { "x": 620, "y": 260 } },
-      "setWorkingQueue": { "position": { "x": 860, "y": 260 } },
-      "transferQueue": { "position": { "x": 1080, "y": 260 } },
-      "disconnect": { "position": { "x": 1300, "y": 260 } }
+      "voice": { "position": { "x": 40, "y": 40 } },
+      "greet": { "position": { "x": 240, "y": 40 } },
+      "elicit": { "position": { "x": 460, "y": 40 } },
+      "elicitAgain": { "position": { "x": 700, "y": 40 } },
+      "checkOtpRequired": { "position": { "x": 460, "y": 260 } },
+      "initOtpMismatch": { "position": { "x": 660, "y": 500 } },
+      "elicitOtp": { "position": { "x": 860, "y": 500 } },
+      "checkOtpMismatch": { "position": { "x": 1060, "y": 500 } },
+      "bumpOtpMismatch": { "position": { "x": 1260, "y": 620 } },
+      "setOtpMismatch1": { "position": { "x": 1460, "y": 560 } },
+      "setOtpMismatch2": { "position": { "x": 1460, "y": 680 } },
+      "checkOtpSuccess": { "position": { "x": 1260, "y": 440 } },
+      "checkAuthTransfer": { "position": { "x": 660, "y": 260 } },
+      "checkFallback": { "position": { "x": 860, "y": 260 } },
+      "setWorkingQueue": { "position": { "x": 1060, "y": 260 } },
+      "transferQueue": { "position": { "x": 1260, "y": 260 } },
+      "disconnect": { "position": { "x": 1460, "y": 260 } }
     },
     "Annotations": [],
-    "name": "Facility Info Speech (S-02)",
-    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is.",
+    "name": "Facility Info Speech (S-02, S-03, S-04)",
+    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; contract-surfaces.md and the relevant plans' prose walkthroughs are. Supersedes speech-authintent-fragment.md and speech-otpintent-fragment.md (folded in here).",
     "type": "contactFlow",
     "status": "published",
     "hash": {}
@@ -51,10 +60,14 @@
         "TextToSpeechType": "text",
         "LexV2Bot": {
           "AliasArn": "REPLACE_WITH_SPEECH_BOT_ALIAS_ARN"
-        }
+        },
+        "SessionAttributes": [
+          { "Key": "contactId", "Value": "$.ContactId" },
+          { "Key": "callerNumber", "Value": "$.CustomerEndpoint.Address" }
+        ]
       },
       "Transitions": {
-        "NextAction": "checkFallback",
+        "NextAction": "checkOtpRequired",
         "Conditions": [
           {
             "NextAction": "setWorkingQueue",
@@ -62,9 +75,9 @@
           }
         ],
         "Errors": [
-          { "NextAction": "checkFallback", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "checkFallback", "ErrorType": "NoMatchingError" },
-          { "NextAction": "checkFallback", "ErrorType": "InputTimeLimitExceeded" }
+          { "NextAction": "checkOtpRequired", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "checkOtpRequired", "ErrorType": "NoMatchingError" },
+          { "NextAction": "checkOtpRequired", "ErrorType": "InputTimeLimitExceeded" }
         ]
       }
     },
@@ -76,10 +89,14 @@
         "TextToSpeechType": "text",
         "LexV2Bot": {
           "AliasArn": "REPLACE_WITH_SPEECH_BOT_ALIAS_ARN"
-        }
+        },
+        "SessionAttributes": [
+          { "Key": "contactId", "Value": "$.ContactId" },
+          { "Key": "callerNumber", "Value": "$.CustomerEndpoint.Address" }
+        ]
       },
       "Transitions": {
-        "NextAction": "checkFallback",
+        "NextAction": "checkOtpRequired",
         "Conditions": [
           {
             "NextAction": "setWorkingQueue",
@@ -87,10 +104,134 @@
           }
         ],
         "Errors": [
-          { "NextAction": "checkFallback", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "checkFallback", "ErrorType": "NoMatchingError" },
-          { "NextAction": "checkFallback", "ErrorType": "InputTimeLimitExceeded" }
+          { "NextAction": "checkOtpRequired", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "checkOtpRequired", "ErrorType": "NoMatchingError" },
+          { "NextAction": "checkOtpRequired", "ErrorType": "InputTimeLimitExceeded" }
         ]
+      }
+    },
+    {
+      "Identifier": "checkOtpRequired",
+      "Type": "Compare",
+      "Parameters": {
+        "Attribute": "$.Lex.SessionAttributes.otpRequired"
+      },
+      "Transitions": {
+        "NextAction": "checkAuthTransfer",
+        "Conditions": [
+          { "NextAction": "initOtpMismatch", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+        ],
+        "Errors": [{ "NextAction": "checkAuthTransfer", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "checkAuthTransfer",
+      "Type": "Compare",
+      "Parameters": {
+        "Attribute": "$.Lex.SessionAttributes.transfer"
+      },
+      "Transitions": {
+        "NextAction": "checkFallback",
+        "Conditions": [
+          { "NextAction": "setWorkingQueue", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+        ],
+        "Errors": [{ "NextAction": "checkFallback", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "initOtpMismatch",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "otpMismatchCount": "0" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "elicitOtp",
+        "Errors": [{ "NextAction": "elicitOtp", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "elicitOtp",
+      "Type": "GetParticipantInput",
+      "Parameters": {
+        "Text": "$.Lex.Messages[0].content",
+        "TextToSpeechType": "text",
+        "LexV2Bot": {
+          "AliasArn": "REPLACE_WITH_SPEECH_BOT_ALIAS_ARN"
+        },
+        "SessionAttributes": [
+          { "Key": "contactId", "Value": "$.ContactId" },
+          { "Key": "callerNumber", "Value": "$.CustomerEndpoint.Address" }
+        ],
+        "RequestAttributes": [
+          { "Key": "x-amz-lex:start-intent:REPLACE_WITH_SPEECH_BOT_ALIAS_ID:pl_PL", "Value": "OtpIntent" }
+        ]
+      },
+      "Transitions": {
+        "NextAction": "checkOtpMismatch",
+        "Errors": [
+          { "NextAction": "bumpOtpMismatch", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "bumpOtpMismatch", "ErrorType": "NoMatchingError" },
+          { "NextAction": "bumpOtpMismatch", "ErrorType": "InputTimeLimitExceeded" }
+        ]
+      }
+    },
+    {
+      "Identifier": "checkOtpMismatch",
+      "Type": "Compare",
+      "Parameters": {
+        "Attribute": "$.Lex.SessionAttributes.otpMismatch"
+      },
+      "Transitions": {
+        "NextAction": "checkOtpSuccess",
+        "Conditions": [
+          { "NextAction": "bumpOtpMismatch", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+        ],
+        "Errors": [{ "NextAction": "checkOtpSuccess", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "checkOtpSuccess",
+      "Type": "Compare",
+      "Parameters": {
+        "Attribute": "$.Lex.SessionAttributes.authenticated"
+      },
+      "Transitions": {
+        "NextAction": "elicitOtp",
+        "Conditions": [
+          { "NextAction": "elicitAgain", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+        ],
+        "Errors": [{ "NextAction": "elicitOtp", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "bumpOtpMismatch",
+      "Type": "Compare",
+      "Parameters": {
+        "Attribute": "$.Attributes.otpMismatchCount"
+      },
+      "Transitions": {
+        "NextAction": "setOtpMismatch1",
+        "Conditions": [
+          { "NextAction": "setWorkingQueue", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
+          { "NextAction": "setOtpMismatch2", "Condition": { "Operator": "Equals", "Operands": ["1"] } }
+        ],
+        "Errors": [{ "NextAction": "setOtpMismatch1", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "setOtpMismatch1",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "otpMismatchCount": "1" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "elicitOtp",
+        "Errors": [{ "NextAction": "elicitOtp", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setOtpMismatch2",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "otpMismatchCount": "2" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "elicitOtp",
+        "Errors": [{ "NextAction": "elicitOtp", "ErrorType": "NoMatchingError" }]
       }
     },
     {
