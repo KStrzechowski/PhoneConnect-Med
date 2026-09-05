@@ -604,9 +604,9 @@ None — no schema change, no new HIS endpoint.
 
 #### Automated
 
-- [x] 4.1 `cdk synth` succeeds with both menu flows' referenced Lambda ARNs resolvable
-- [x] 4.2 Full test suite passes: repo-wide test command
-- [x] 4.3 Linting and type checking pass repo-wide
+- [x] 4.1 `cdk synth` succeeds with both menu flows' referenced Lambda ARNs resolvable — aa7aad0
+- [x] 4.2 Full test suite passes: repo-wide test command — aa7aad0
+- [x] 4.3 Linting and type checking pass repo-wide — aa7aad0
 
 #### Manual
 
