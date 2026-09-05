@@ -18,8 +18,11 @@
       "checkOtpSuccess": { "position": { "x": 1260, "y": 440 } },
       "checkAuthTransfer": { "position": { "x": 660, "y": 260 } },
       "checkFallback": { "position": { "x": 860, "y": 260 } },
-      "setWorkingQueue": { "position": { "x": 1060, "y": 260 } },
-      "transferQueue": { "position": { "x": 1260, "y": 260 } },
+      "setTransferReasonCallerRequest": { "position": { "x": 1060, "y": 40 } },
+      "setTransferReasonAuthError": { "position": { "x": 1060, "y": 160 } },
+      "setTransferReasonOtpExceeded": { "position": { "x": 1460, "y": 800 } },
+      "setTransferReasonFallback": { "position": { "x": 1060, "y": 380 } },
+      "invokeAgentHandoverModule": { "position": { "x": 1260, "y": 260 } },
       "disconnect": { "position": { "x": 1460, "y": 260 } }
     },
     "Annotations": [],
@@ -70,7 +73,7 @@
         "NextAction": "checkOtpRequired",
         "Conditions": [
           {
-            "NextAction": "setWorkingQueue",
+            "NextAction": "setTransferReasonCallerRequest",
             "Condition": { "Operator": "Equals", "Operands": ["Agenttransferintent"] }
           }
         ],
@@ -99,7 +102,7 @@
         "NextAction": "checkOtpRequired",
         "Conditions": [
           {
-            "NextAction": "setWorkingQueue",
+            "NextAction": "setTransferReasonCallerRequest",
             "Condition": { "Operator": "Equals", "Operands": ["Agenttransferintent"] }
           }
         ],
@@ -133,7 +136,7 @@
       "Transitions": {
         "NextAction": "checkFallback",
         "Conditions": [
-          { "NextAction": "setWorkingQueue", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+          { "NextAction": "setTransferReasonAuthError", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
         ],
         "Errors": [{ "NextAction": "checkFallback", "ErrorType": "NoMatchingCondition" }]
       }
@@ -210,7 +213,7 @@
       "Transitions": {
         "NextAction": "setOtpMismatch1",
         "Conditions": [
-          { "NextAction": "setWorkingQueue", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
+          { "NextAction": "setTransferReasonOtpExceeded", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
           { "NextAction": "setOtpMismatch2", "Condition": { "Operator": "Equals", "Operands": ["1"] } }
         ],
         "Errors": [{ "NextAction": "setOtpMismatch1", "ErrorType": "NoMatchingCondition" }]
@@ -244,7 +247,7 @@
         "NextAction": "elicitAgain",
         "Conditions": [
           {
-            "NextAction": "setWorkingQueue",
+            "NextAction": "setTransferReasonFallback",
             "Condition": { "Operator": "NumberGreaterOrEqualTo", "Operands": ["3"] }
           }
         ],
@@ -252,26 +255,60 @@
       }
     },
     {
-      "Identifier": "setWorkingQueue",
-      "Type": "UpdateContactTargetQueue",
+      "Identifier": "setTransferReasonCallerRequest",
+      "Type": "UpdateContactAttributes",
       "Parameters": {
-        "QueueId": "REPLACE_WITH_QUEUE_ARN"
+        "Attributes": { "transferReason": "Klient poprosił o kontakt z konsultantem." },
+        "TargetContact": "Current"
       },
       "Transitions": {
-        "NextAction": "transferQueue",
-        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
+        "NextAction": "invokeAgentHandoverModule",
+        "Errors": [{ "NextAction": "invokeAgentHandoverModule", "ErrorType": "NoMatchingError" }]
       }
     },
     {
-      "Identifier": "transferQueue",
-      "Type": "TransferContactToQueue",
-      "Parameters": {},
+      "Identifier": "setTransferReasonAuthError",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "transferReason": "Błąd systemu podczas weryfikacji tożsamości." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "invokeAgentHandoverModule",
+        "Errors": [{ "NextAction": "invokeAgentHandoverModule", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setTransferReasonOtpExceeded",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "transferReason": "Trzy nieudane próby wprowadzenia kodu." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "invokeAgentHandoverModule",
+        "Errors": [{ "NextAction": "invokeAgentHandoverModule", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setTransferReasonFallback",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "transferReason": "Trzy niezrozumiałe wypowiedzi." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "invokeAgentHandoverModule",
+        "Errors": [{ "NextAction": "invokeAgentHandoverModule", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "invokeAgentHandoverModule",
+      "Type": "InvokeFlowModule",
+      "Parameters": { "FlowModuleId": "REPLACE_WITH_AGENT_HANDOVER_MODULE_ARN" },
       "Transitions": {
         "NextAction": "disconnect",
-        "Errors": [
-          { "NextAction": "disconnect", "ErrorType": "QueueAtCapacity" },
-          { "NextAction": "disconnect", "ErrorType": "NoMatchingError" }
-        ]
+        "Errors": [{ "NextAction": "disconnect", "ErrorType": "NoMatchingError" }]
       }
     },
     {

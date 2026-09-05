@@ -56,10 +56,11 @@ something that no test will catch.
 - **`authenticated`** / **`patientId`** (S-03)
   - **Set by:** `lambdas/facility-info-speech/index.ts`'s `AuthIntent` branch, only on the
     caller-ID shortcut match (`authenticated: 'true'`, `patientId` the matched patient's id).
-    Never set on any other outcome.
+    Never set on any other outcome. The same branch also sets `lastName` alongside these (S-11).
   - **Read by:** a future slice's intent handler, to check identity was already established in
     this session without recapturing it. The Lex-session-scoped analogue of the keypad variant's
-    `authenticated` / `patientId` contact attributes below.
+    `authenticated` / `patientId` contact attributes below. `lastName` is read by the agent-side
+    handover View once S-03's speech auth flow reaches a real merged transfer point (S-11).
 - **`transfer`** (S-03)
   - **Set by:** `lambdas/facility-info-speech/index.ts`'s `AuthIntent` branch, to `'true'` only on
     a genuine downstream failure (the mock unreachable) — no longer set on a non-shortcut match or
@@ -126,14 +127,34 @@ something that no test will catch.
 
 - **Set by:** the keypad capture Contact Flow Module (console, not committed), from the
   `Authenticate` function's `authenticated` / `patientId` output fields, only when
-  `authenticated` equals `'true'`.
+  `authenticated` equals `'true'`. `keypad-authenticate-flow.json`'s `setAuthAttrs` (caller-ID
+  shortcut) and `storeOtpChallenge` (OTP-pending branch) also carry `firstName`/`lastName`
+  alongside these (S-11), sourced the same way from `$.External`.
 - **Read by:** any future slice's contact flow that needs to know identity was already
   established in this call without recapturing it — the contact-attribute analogue of the Lex
-  session attributes of the same name above.
+  session attributes of the same name above. `firstName`/`lastName` are read by the agent-side
+  handover View/Whisper Flow (S-11).
 - **Why it matters:** this is the keypad variant's persistence of the authenticated state across
   the rest of the call, set once by the Contact Flow Module so later flow blocks (and later
   slices) don't need to re-run verification. Nothing in the repo enforces this; flows are
   hand-built and outside IaC.
+
+## `transferReason` contact/session attribute (S-11)
+
+- **Set by:** a literal `UpdateContactAttributes` block immediately before every transfer trigger
+  point hands off to `agent-handover-module.json`, in both variants —
+  `keypad-facility-info-main-menu-flow.json` (caller request, three failed attempts, `FacilityInfo`
+  error), `keypad-authenticate-flow.json` (identity/OTP attempts exhausted, explicit bail during
+  confirm, `Authenticate` invocation error), and `speech-facility-info-flow.json`
+  (`AgentTransferIntent`, three fallback turns, `checkAuthTransfer`'s downstream failure, three OTP
+  mismatches). Each trigger point sets its own Polish-language literal describing why the call is
+  transferring — see the relevant flow's `Actions` for the exact wording per trigger.
+- **Read by:** the agent-side handover View, shown via the Agent Whisper Flow attached to the
+  destination queue (S-11) — see `connect-flow-templates/views/agent-handover-view.json`.
+- **Why it matters:** `agent-handover-module.json` itself sets no attributes and calls no Lambda —
+  it only knows where the queue is. Every caller into the module is responsible for setting
+  `transferReason` first; a trigger point that forgets to would leave the agent-facing View
+  blank for that call. Nothing in the repo enforces this; flows are hand-built and outside IaC.
 
 ## Keypad contact attributes: `otpRequired`, `isDemo`, `code`, `phone` (S-04)
 
