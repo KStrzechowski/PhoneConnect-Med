@@ -588,17 +588,17 @@ None — no schema change, no new HIS endpoint.
 
 #### Automated
 
-- [x] 2.1 Keypad Lambda unit tests pass: `cd lambdas/appointment-reschedule && npm test`
-- [x] 2.2 `cdk synth` succeeds with the new function and integration association
-- [x] 2.3 Type checking and linting pass
+- [x] 2.1 Keypad Lambda unit tests pass: `cd lambdas/appointment-reschedule && npm test` — 2a1a49a
+- [x] 2.2 `cdk synth` succeeds with the new function and integration association — 2a1a49a
+- [x] 2.3 Type checking and linting pass — 2a1a49a
 
 ### Phase 3: Speech intent
 
 #### Automated
 
-- [ ] 3.1 Speech Lambda unit tests pass (new `RescheduleIntent` coverage)
-- [ ] 3.2 `cdk synth` succeeds with the new Lex intent
-- [ ] 3.3 Type checking and linting pass
+- [x] 3.1 Speech Lambda unit tests pass (new `RescheduleIntent` coverage)
+- [x] 3.2 `cdk synth` succeeds with the new Lex intent
+- [x] 3.3 Type checking and linting pass
 
 ### Phase 4: Contact flow & hand-off
 

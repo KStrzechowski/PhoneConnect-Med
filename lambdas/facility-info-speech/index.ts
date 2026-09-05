@@ -11,6 +11,7 @@ import {
   listAppointments,
   resolveAppointment,
   cancelAppointment,
+  rescheduleAppointment,
   formatDayLabel,
 } from '@pcm/appointment';
 
@@ -18,6 +19,7 @@ const sns = new SNSClient({});
 const RESEND_DIGIT = '9';
 const BOOKING_ATTEMPT_LIMIT = 3;
 const CANCEL_ATTEMPT_LIMIT = 3;
+const RESCHEDULE_ATTEMPT_LIMIT = 3;
 
 type LexSlots = Record<string, { value?: { interpretedValue?: string } } | null>;
 
@@ -380,6 +382,251 @@ const handleCancelFulfillment = async (
   }
 };
 
+const handleRescheduleDialog = async (
+  slots: LexSlots,
+  incoming: Record<string, string>,
+  record: InvocationRecord,
+): Promise<LexResponse> => {
+  if (incoming.authenticated !== 'true') {
+    const message = 'Aby przełożyć wizytę, proszę się najpierw zidentyfikować.';
+    return close('RescheduleIntent', { ...incoming, lastMessageText: message, needsAuth: 'true' }, message);
+  }
+
+  const timeOfDay = slots.timeOfDay?.value?.interpretedValue;
+  if (!timeOfDay) {
+    return delegate('RescheduleIntent', slots, incoming);
+  }
+
+  const stage = incoming.rescheduleStage ?? '';
+  const attempts = Number(incoming.rescheduleAttempts ?? '0');
+  const abort = AbortSignal.timeout(1000);
+  const patientId = Number(incoming.patientId);
+
+  const giveUp = async (): Promise<LexResponse> => {
+    const message = 'Nie udało się przełożyć wizyty. Łączę z konsultantem.';
+    return close('RescheduleIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+  };
+
+  if (stage === '') {
+    try {
+      const appointments = await downstream(record, () => listAppointments(patientId, abort));
+      if (appointments.length === 0) {
+        const message = 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.';
+        return close('RescheduleIntent', { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
+      }
+      const options = appointments
+        .slice(0, 3)
+        .map((a, i) => `${i + 1} - ${a.specialty}, ${formatDayLabel(a.date)}, godzina ${a.time}`)
+        .join('. ');
+      const message = `Którą wizytę Pani/Pan chce przełożyć? ${options}. Proszę podać numer.`;
+      return elicitSlot(
+        'RescheduleIntent',
+        'selectedSlot',
+        { ...slots, selectedSlot: null },
+        { ...incoming, lastMessageText: message, rescheduleStage: 'select', rescheduleAttempts: '0' },
+        message,
+      );
+    } catch (error) {
+      record.outcome = 'error';
+      record.error = String(error);
+      const message = 'Przepraszam, mam teraz problem z pobraniem listy wizyt. Łączę z konsultantem.';
+      return close('RescheduleIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    }
+  }
+
+  if (stage === 'select' || stage === 'confirm') {
+    const apptChoice = incoming.rescheduleApptSelection
+      ? Number(incoming.rescheduleApptSelection)
+      : Number(slots.selectedSlot?.value?.interpretedValue ?? '');
+    try {
+      const appointment = await downstream(record, () => resolveAppointment(patientId, apptChoice, abort));
+      if (appointment === null) {
+        if (attempts + 1 >= RESCHEDULE_ATTEMPT_LIMIT) return giveUp();
+        const message = 'Nie rozpoznałem podanego numeru wizyty. Proszę spróbować jeszcze raz.';
+        return elicitSlot(
+          'RescheduleIntent',
+          'selectedSlot',
+          { ...slots, selectedSlot: null },
+          { ...incoming, lastMessageText: message, rescheduleAttempts: String(attempts + 1) },
+          message,
+        );
+      }
+      const days = await downstream(record, () => findAvailableDays(appointment.specialty, timeOfDay, abort));
+      if (days.length === 0) {
+        if (attempts + 1 >= RESCHEDULE_ATTEMPT_LIMIT) return giveUp();
+        const message = 'Brak wolnych terminów dla wybranej pory dnia. Proszę podać inną porę dnia.';
+        return elicitSlot(
+          'RescheduleIntent',
+          'timeOfDay',
+          { ...slots, timeOfDay: null },
+          {
+            ...incoming,
+            lastMessageText: message,
+            rescheduleApptSelection: String(apptChoice),
+            rescheduleAttempts: String(attempts + 1),
+          },
+          message,
+        );
+      }
+      const options = days.map((d, i) => `${i + 1} - ${formatDayLabel(d)}`).join(', ');
+      const message = `Mam wolne terminy: ${options}. Który termin Pani/Panu odpowiada? Proszę podać numer.`;
+      return elicitSlot(
+        'RescheduleIntent',
+        'selectedSlot',
+        { ...slots, selectedSlot: null },
+        {
+          ...incoming,
+          lastMessageText: message,
+          rescheduleApptSelection: String(apptChoice),
+          rescheduleStage: 'day',
+          rescheduleAttempts: '0',
+        },
+        message,
+      );
+    } catch (error) {
+      record.outcome = 'error';
+      record.error = String(error);
+      const message = 'Przepraszam, mam teraz problem z wyszukaniem terminów. Łączę z konsultantem.';
+      return close('RescheduleIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    }
+  }
+
+  if (stage === 'day') {
+    const apptChoice = Number(incoming.rescheduleApptSelection ?? '');
+    const dayChoice = Number(slots.selectedSlot?.value?.interpretedValue ?? '');
+    try {
+      const appointment = await downstream(record, () => resolveAppointment(patientId, apptChoice, abort));
+      if (appointment === null) return giveUp();
+      const { date } = await downstream(record, () =>
+        resolveDay(appointment.specialty, timeOfDay, dayChoice, abort),
+      );
+      if (date === null) {
+        if (attempts + 1 >= RESCHEDULE_ATTEMPT_LIMIT) return giveUp();
+        const message = 'Nie rozpoznałem podanego numeru terminu. Proszę spróbować jeszcze raz.';
+        return elicitSlot(
+          'RescheduleIntent',
+          'selectedSlot',
+          { ...slots, selectedSlot: null },
+          { ...incoming, lastMessageText: message, rescheduleAttempts: String(attempts + 1) },
+          message,
+        );
+      }
+      const times = await downstream(record, () => findAvailableTimes(appointment.specialty, timeOfDay, date, abort));
+      const options = times.map((t, i) => `${i + 1} - godzina ${t}`).join(', ');
+      const message = `${formatDayLabel(date)}: ${options}. Którą godzinę Pani/Pan wybiera?`;
+      return elicitSlot(
+        'RescheduleIntent',
+        'selectedSlot',
+        { ...slots, selectedSlot: null },
+        {
+          ...incoming,
+          lastMessageText: message,
+          rescheduleStage: 'time',
+          rescheduleDate: date,
+          rescheduleAttempts: '0',
+        },
+        message,
+      );
+    } catch (error) {
+      record.outcome = 'error';
+      record.error = String(error);
+      const message = 'Przepraszam, mam teraz problem z wyszukaniem terminów. Łączę z konsultantem.';
+      return close('RescheduleIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    }
+  }
+
+  const apptChoice = Number(incoming.rescheduleApptSelection ?? '');
+  const timeChoice = Number(slots.selectedSlot?.value?.interpretedValue ?? '');
+  const date = incoming.rescheduleDate ?? '';
+  try {
+    const appointment = await downstream(record, () => resolveAppointment(patientId, apptChoice, abort));
+    if (appointment === null) return giveUp();
+    const { time } = await downstream(record, () =>
+      resolveTime(appointment.specialty, timeOfDay, date, timeChoice, abort),
+    );
+    if (time === null) {
+      if (attempts + 1 >= RESCHEDULE_ATTEMPT_LIMIT) return giveUp();
+      const message = 'Nie rozpoznałem podanej godziny. Proszę spróbować jeszcze raz.';
+      return elicitSlot(
+        'RescheduleIntent',
+        'selectedSlot',
+        { ...slots, selectedSlot: null },
+        { ...incoming, lastMessageText: message, rescheduleAttempts: String(attempts + 1) },
+        message,
+      );
+    }
+    const message =
+      `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${appointment.time}, ` +
+      `na ${formatDayLabel(date)}, godzina ${time}. Czy się zgadza?`;
+    return confirmIntent(
+      'RescheduleIntent',
+      slots,
+      { ...incoming, lastMessageText: message, rescheduleStage: 'confirm', rescheduleTime: time },
+      message,
+    );
+  } catch (error) {
+    record.outcome = 'error';
+    record.error = String(error);
+    const message = 'Przepraszam, mam teraz problem z wyszukaniem terminów. Łączę z konsultantem.';
+    return close('RescheduleIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+  }
+};
+
+const handleRescheduleFulfillment = async (
+  slots: LexSlots,
+  incoming: Record<string, string>,
+  record: InvocationRecord,
+): Promise<LexCloseResponse> => {
+  if (incoming.authenticated !== 'true') {
+    const message = 'Aby przełożyć wizytę, proszę się najpierw zidentyfikować.';
+    return close('RescheduleIntent', { ...incoming, lastMessageText: message, needsAuth: 'true' }, message);
+  }
+
+  const timeOfDay = slots.timeOfDay?.value?.interpretedValue ?? '';
+  const date = incoming.rescheduleDate ?? '';
+  const time = incoming.rescheduleTime ?? '';
+  if (!incoming.patientId) {
+    const message = 'Przepraszam, mam teraz problem z przełożeniem wizyty. Łączę z konsultantem.';
+    record.outcome = 'error';
+    record.error = 'missing patientId';
+    return close('RescheduleIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+  }
+  const patientId = Number(incoming.patientId);
+  const apptChoice = Number(incoming.rescheduleApptSelection ?? '');
+  const abort = AbortSignal.timeout(1000);
+
+  try {
+    const appointment = await downstream(record, () => resolveAppointment(patientId, apptChoice, abort));
+    if (appointment === null) {
+      const message = 'Nie udało się przełożyć wizyty. Łączę z konsultantem.';
+      record.outcome = 'error';
+      record.error = 'appointment not found at fulfillment';
+      return close('RescheduleIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    }
+    const result = await downstream(record, () =>
+      rescheduleAppointment(
+        patientId,
+        appointment.date,
+        appointment.time,
+        appointment.specialty,
+        timeOfDay,
+        date,
+        time,
+        abort,
+      ),
+    );
+    const message = result.rescheduled
+      ? 'Wizyta została przełożona. Dziękuję.'
+      : 'Niestety ten termin został już zajęty. Proszę spróbować ponownie.';
+    return close('RescheduleIntent', { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
+  } catch (error) {
+    record.outcome = 'error';
+    record.error = String(error);
+    const message = 'Przepraszam, mam teraz problem z przełożeniem wizyty. Łączę z konsultantem.';
+    return close('RescheduleIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+  }
+};
+
 const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexResponse> => {
   const intentName = event.sessionState.intent.name;
   const incoming = event.sessionState.sessionAttributes ?? {};
@@ -526,6 +773,14 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
       return handleCancelDialog(slots, incoming, record);
     }
     return handleCancelFulfillment(slots, incoming, record);
+  }
+
+  if (intentName === 'RescheduleIntent') {
+    const slots = event.sessionState.intent.slots ?? {};
+    if (event.invocationSource === 'DialogCodeHook') {
+      return handleRescheduleDialog(slots, incoming, record);
+    }
+    return handleRescheduleFulfillment(slots, incoming, record);
   }
 
   if (intentName === 'ListAppointmentsIntent') {

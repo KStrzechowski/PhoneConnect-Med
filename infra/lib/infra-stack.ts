@@ -153,6 +153,18 @@ const cancelUtterances = [
   'chcę zrezygnować z wizyty',
 ];
 
+const rescheduleUtterances = [
+  'chcę przełożyć wizytę',
+  'chcę przesunąć wizytę',
+  'chcę zmienić termin',
+  'zmień termin',
+  'zmiana terminu',
+  'chcę zmienić datę wizyty',
+  'przenieś moją wizytę',
+  'nie mogę w tym terminie, chcę inny',
+  'czy można przełożyć',
+];
+
 const agentTransferUtterances = [
   'połącz z agentem',
   'połącz mnie z rejestracją',
@@ -811,6 +823,62 @@ volumes:
                 },
                 declinationResponse: {
                   messageGroupsList: [say('Dobrze, zostawiam tę wizytę bez zmian.')],
+                },
+                declinationNextStep: {
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
+                  intent: {
+                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                  },
+                },
+              },
+            },
+            {
+              name: 'RescheduleIntent',
+              sampleUtterances: rescheduleUtterances.map((utterance) => ({ utterance })),
+              dialogCodeHook: { enabled: true },
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [
+                { slotName: 'timeOfDay', priority: 1 },
+                { slotName: 'selectedSlot', priority: 2 },
+              ],
+              slots: [
+                {
+                  name: 'timeOfDay',
+                  slotTypeName: 'TimeOfDay',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say(
+                          'Jaka pora dnia Pani/Panu odpowiada: rano, przed południem, po południu, czy wieczorem?',
+                        ),
+                      ],
+                    },
+                  },
+                },
+                {
+                  name: 'selectedSlot',
+                  slotTypeName: 'AMAZON.Number',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Który numer Pani/Pan wybiera?')],
+                    },
+                  },
+                },
+              ],
+              intentConfirmationSetting: {
+                promptSpecification: {
+                  maxRetries: 2,
+                  allowInterrupt: false,
+                  messageGroupsList: [say('Czy się zgadza? Powiedz tak albo nie.')],
+                },
+                declinationResponse: {
+                  messageGroupsList: [say('Dobrze, wybierzmy inny termin.')],
                 },
                 declinationNextStep: {
                   dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
