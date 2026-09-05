@@ -172,24 +172,33 @@
           "y": 340
         }
       },
-      "SetTargetQueue": {
+      "SetTransferReasonCallerRequest": {
+        "position": {
+          "x": 1474.4,
+          "y": 40
+        }
+      },
+      "SetTransferReasonFailedAttempts": {
         "position": {
           "x": 1474.4,
           "y": 197.6
-        },
-        "parameters": {
-          "QueueId": {
-            "displayName": "BasicQueue"
-          }
-        },
-        "queue": {
-          "text": "BasicQueue"
         }
       },
-      "d5e8061d-9bfd-4e54-8b6a-73e1082541b7": {
+      "SetTransferReasonFacilityError": {
+        "position": {
+          "x": 1474.4,
+          "y": 360
+        }
+      },
+      "InvokeAgentHandoverModule": {
         "position": {
           "x": 1748,
           "y": 183.2
+        },
+        "parameters": {
+          "FlowModuleId": {
+            "displayName": "REPLACE_WITH_AGENT_HANDOVER_MODULE_ARN"
+          }
         }
       },
       "DisconnectFallback": {
@@ -352,7 +361,7 @@
         "NextAction": "SetAttempts1",
         "Conditions": [
           {
-            "NextAction": "SetTargetQueue",
+            "NextAction": "SetTransferReasonFailedAttempts",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -396,7 +405,7 @@
         "NextAction": "SetFacilityAnswer",
         "Errors": [
           {
-            "NextAction": "SetTargetQueue",
+            "NextAction": "SetTransferReasonFacilityError",
             "ErrorType": "NoMatchingError"
           }
         ]
@@ -459,7 +468,7 @@
             }
           },
           {
-            "NextAction": "SetTargetQueue",
+            "NextAction": "SetTransferReasonCallerRequest",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -683,31 +692,70 @@
     },
     {
       "Parameters": {
-        "QueueId": "REPLACE_WITH_QUEUE_ARN"
+        "Attributes": {
+          "transferReason": "Klient poprosił o kontakt z konsultantem."
+        },
+        "TargetContact": "Current"
       },
-      "Identifier": "SetTargetQueue",
-      "Type": "UpdateContactTargetQueue",
+      "Identifier": "SetTransferReasonCallerRequest",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
-        "NextAction": "d5e8061d-9bfd-4e54-8b6a-73e1082541b7",
+        "NextAction": "InvokeAgentHandoverModule",
         "Errors": [
           {
-            "NextAction": "d5e8061d-9bfd-4e54-8b6a-73e1082541b7",
+            "NextAction": "InvokeAgentHandoverModule",
             "ErrorType": "NoMatchingError"
           }
         ]
       }
     },
     {
-      "Parameters": {},
-      "Identifier": "d5e8061d-9bfd-4e54-8b6a-73e1082541b7",
-      "Type": "TransferContactToQueue",
+      "Parameters": {
+        "Attributes": {
+          "transferReason": "Trzy nieudane próby wprowadzenia danych."
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "SetTransferReasonFailedAttempts",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "InvokeAgentHandoverModule",
+        "Errors": [
+          {
+            "NextAction": "InvokeAgentHandoverModule",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "transferReason": "Błąd systemu podczas pobierania informacji o placówce."
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "SetTransferReasonFacilityError",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "InvokeAgentHandoverModule",
+        "Errors": [
+          {
+            "NextAction": "InvokeAgentHandoverModule",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowModuleId": "REPLACE_WITH_AGENT_HANDOVER_MODULE_ARN"
+      },
+      "Identifier": "InvokeAgentHandoverModule",
+      "Type": "InvokeFlowModule",
       "Transitions": {
         "NextAction": "DisconnectFallback",
         "Errors": [
-          {
-            "NextAction": "DisconnectFallback",
-            "ErrorType": "QueueAtCapacity"
-          },
           {
             "NextAction": "DisconnectFallback",
             "ErrorType": "NoMatchingError"

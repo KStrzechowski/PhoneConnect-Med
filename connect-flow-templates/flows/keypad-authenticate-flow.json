@@ -26,6 +26,11 @@
       "setAttempts1": { "position": { "x": 640, "y": 320 } },
       "setAttempts2": { "position": { "x": 640, "y": 500 } },
       "giveUpMsg": { "position": { "x": 1040, "y": 320 } },
+      "setTransferReasonAuth": { "position": { "x": 1040, "y": 140 } },
+      "setTransferReasonOtp": { "position": { "x": 3040, "y": 500 } },
+      "setTransferReasonConfirmBail": { "position": { "x": 940, "y": 500 } },
+      "setTransferReasonAuthError": { "position": { "x": 2440, "y": 620 } },
+      "invokeAgentHandover": { "position": { "x": 1240, "y": 320 } },
       "storeOtpChallenge": { "position": { "x": 2440, "y": 320 } },
       "invokeSendOtp": { "position": { "x": 2440, "y": 440 } },
       "saveSentCode": { "position": { "x": 2540, "y": 440 } },
@@ -35,7 +40,6 @@
       "checkOtpAuth": { "position": { "x": 3240, "y": 320 } },
       "setNeutralMsgBail": { "position": { "x": 1040, "y": 500 } },
       "neutralMsgBail": { "position": { "x": 1240, "y": 500 } },
-      "transferQueue": { "position": { "x": 1240, "y": 320 } },
       "disconnectEnd": { "position": { "x": 1440, "y": 320 } }
     },
     "Annotations": [],
@@ -188,7 +192,7 @@
         "Conditions": [
           { "NextAction": "invokeAuth", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
           { "NextAction": "bumpAttempts", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setNeutralMsgBail", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
+          { "NextAction": "setTransferReasonConfirmBail", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
           { "NextAction": "repeatConfirm", "Condition": { "Operator": "Equals", "Operands": ["*"] } }
         ],
         "Errors": [
@@ -222,7 +226,7 @@
       },
       "Transitions": {
         "NextAction": "checkAuth",
-        "Errors": [{ "NextAction": "setNeutralMsgBail", "ErrorType": "NoMatchingError" }]
+        "Errors": [{ "NextAction": "setTransferReasonAuthError", "ErrorType": "NoMatchingError" }]
       }
     },
     {
@@ -241,7 +245,12 @@
       "Identifier": "setAuthAttrs",
       "Type": "UpdateContactAttributes",
       "Parameters": {
-        "Attributes": { "authenticated": "true", "patientId": "$.External.patientId" },
+        "Attributes": {
+          "authenticated": "true",
+          "patientId": "$.External.patientId",
+          "firstName": "$.External.firstName",
+          "lastName": "$.External.lastName"
+        },
         "TargetContact": "Current"
       },
       "Transitions": {
@@ -277,7 +286,7 @@
       "Transitions": {
         "NextAction": "setAttempts1",
         "Conditions": [
-          { "NextAction": "giveUpMsg", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
+          { "NextAction": "setTransferReasonAuth", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
           { "NextAction": "setAttempts2", "Condition": { "Operator": "Equals", "Operands": ["1"] } }
         ],
         "Errors": [{ "NextAction": "setAttempts1", "ErrorType": "NoMatchingCondition" }]
@@ -302,6 +311,30 @@
       }
     },
     {
+      "Identifier": "setTransferReasonAuth",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "transferReason": "Trzy nieudane próby weryfikacji tożsamości." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "giveUpMsg",
+        "Errors": [{ "NextAction": "giveUpMsg", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setTransferReasonOtp",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "transferReason": "Trzy nieudane próby wprowadzenia kodu." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "giveUpMsg",
+        "Errors": [{ "NextAction": "giveUpMsg", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
       "Identifier": "giveUpMsg",
       "Type": "MessageParticipant",
       "Parameters": {
@@ -309,8 +342,32 @@
         "Text": "Nie udało się wprowadzić poprawnych danych. Łączę z konsultantem."
       },
       "Transitions": {
-        "NextAction": "transferQueue",
-        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
+        "NextAction": "invokeAgentHandover",
+        "Errors": [{ "NextAction": "invokeAgentHandover", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setTransferReasonConfirmBail",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "transferReason": "Klient poprosił o kontakt z konsultantem." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "setNeutralMsgBail",
+        "Errors": [{ "NextAction": "setNeutralMsgBail", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setTransferReasonAuthError",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "transferReason": "Błąd systemu podczas weryfikacji tożsamości." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "setNeutralMsgBail",
+        "Errors": [{ "NextAction": "setNeutralMsgBail", "ErrorType": "NoMatchingError" }]
       }
     },
     {
@@ -330,8 +387,8 @@
       "Type": "MessageParticipant",
       "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
       "Transitions": {
-        "NextAction": "transferQueue",
-        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
+        "NextAction": "invokeAgentHandover",
+        "Errors": [{ "NextAction": "invokeAgentHandover", "ErrorType": "NoMatchingError" }]
       }
     },
     {
@@ -342,7 +399,9 @@
           "isDemo": "$.External.isDemo",
           "code": "$.External.code",
           "phone": "$.External.phone",
-          "patientId": "$.External.patientId"
+          "patientId": "$.External.patientId",
+          "firstName": "$.External.firstName",
+          "lastName": "$.External.lastName"
         },
         "TargetContact": "Current"
       },
@@ -414,23 +473,20 @@
       "Type": "Compare",
       "Parameters": { "Attribute": "$.Attributes.authenticated" },
       "Transitions": {
-        "NextAction": "giveUpMsg",
+        "NextAction": "setTransferReasonOtp",
         "Conditions": [
           { "NextAction": "confirmMsg", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
         ],
-        "Errors": [{ "NextAction": "giveUpMsg", "ErrorType": "NoMatchingCondition" }]
+        "Errors": [{ "NextAction": "setTransferReasonOtp", "ErrorType": "NoMatchingCondition" }]
       }
     },
     {
-      "Identifier": "transferQueue",
-      "Type": "TransferContactToQueue",
-      "Parameters": {},
+      "Identifier": "invokeAgentHandover",
+      "Type": "InvokeFlowModule",
+      "Parameters": { "FlowModuleId": "REPLACE_WITH_AGENT_HANDOVER_MODULE_ARN" },
       "Transitions": {
         "NextAction": "disconnectEnd",
-        "Errors": [
-          { "NextAction": "disconnectEnd", "ErrorType": "QueueAtCapacity" },
-          { "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }
-        ]
+        "Errors": [{ "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }]
       }
     },
     {
