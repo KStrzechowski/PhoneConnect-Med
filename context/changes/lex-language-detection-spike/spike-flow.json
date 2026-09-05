@@ -1,0 +1,155 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "startStreaming",
+  "Metadata": {
+    "entryPointPosition": { "x": 40, "y": 40 },
+    "ActionMetadata": {
+      "startStreaming": { "position": { "x": 200, "y": 40 } },
+      "greet": { "position": { "x": 400, "y": 40 } },
+      "invokeDetect": { "position": { "x": 600, "y": 40 } },
+      "waitForDetection": { "position": { "x": 800, "y": 40 } },
+      "loadResult": { "position": { "x": 1000, "y": 40 } },
+      "elicit": { "position": { "x": 1200, "y": 40 } },
+      "readback": { "position": { "x": 1400, "y": 40 } },
+      "unmatched": { "position": { "x": 1200, "y": 260 } },
+      "stopStreaming": { "position": { "x": 1600, "y": 40 } },
+      "disconnect": { "position": { "x": 1800, "y": 40 } }
+    }
+  },
+  "Actions": [
+    {
+      "Identifier": "startStreaming",
+      "Type": "StartMediaStreaming",
+      "Parameters": {
+        "MediaStreamTypes": ["Audio"],
+        "Track": "FROM_CUSTOMER"
+      },
+      "Transitions": {
+        "NextAction": "greet",
+        "Errors": [{ "NextAction": "disconnect", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "greet",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "Text": "Proszę powiedzieć, w czym możemy pomóc. Please tell us how we can help.",
+        "TextToSpeechType": "text"
+      },
+      "Transitions": {
+        "NextAction": "invokeDetect",
+        "Errors": [{ "NextAction": "disconnect", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "invokeDetect",
+      "Type": "InvokeLambdaFunction",
+      "Parameters": {
+        "LambdaFunctionARN": "REPLACE_WITH_LANGUAGE_DETECT_SPIKE_FUNCTION_ARN",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "ASYNCHRONOUS",
+        "ResponseValidation": { "ResponseType": "JSON" },
+        "LambdaInvocationAttributes": {
+          "streamArn": "$.MediaStreams.Customer.Audio.StreamARN",
+          "startFragmentNumber": "$.MediaStreams.Customer.Audio.StartFragmentNumber"
+        }
+      },
+      "Transitions": {
+        "NextAction": "waitForDetection",
+        "Errors": [{ "NextAction": "unmatched", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "waitForDetection",
+      "Type": "Wait",
+      "Parameters": { "TimeLimitSeconds": "6" },
+      "Transitions": {
+        "NextAction": "loadResult",
+        "Errors": [],
+        "Conditions": [{ "NextAction": "loadResult", "Condition": { "Operator": "Equals", "Operands": ["DTMF"] } }]
+      }
+    },
+    {
+      "Identifier": "loadResult",
+      "Type": "InvokeLambdaFunction",
+      "Parameters": {
+        "LambdaInvocationId": "$.LambdaInvocation.InvocationId"
+      },
+      "Transitions": {
+        "NextAction": "elicit",
+        "Errors": [{ "NextAction": "unmatched", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "elicit",
+      "Type": "GetParticipantInput",
+      "Parameters": {
+        "Text": "$.External.lexMessage",
+        "TextToSpeechType": "text",
+        "LexV2Bot": {
+          "AliasArn": "REPLACE_WITH_SPIKE_BOT_ALIAS_ARN"
+        }
+      },
+      "Transitions": {
+        "NextAction": "unmatched",
+        "Conditions": [
+          {
+            "NextAction": "readback",
+            "Condition": { "Operator": "Equals", "Operands": ["AuthIntent"] }
+          }
+        ],
+        "Errors": [
+          { "NextAction": "unmatched", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "unmatched", "ErrorType": "NoMatchingError" },
+          { "NextAction": "unmatched", "ErrorType": "InputTimeLimitExceeded" }
+        ]
+      }
+    },
+    {
+      "Identifier": "readback",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "Text": "Detected language: $.External.languageCode. Second turn reached the same session.",
+        "TextToSpeechType": "text"
+      },
+      "Transitions": {
+        "NextAction": "stopStreaming",
+        "Errors": [{ "NextAction": "stopStreaming", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "unmatched",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "Text": "Nie udało się rozpoznać wypowiedzi. Kończę test. Could not recognize the utterance. Ending the test.",
+        "TextToSpeechType": "text"
+      },
+      "Transitions": {
+        "NextAction": "stopStreaming",
+        "Errors": [{ "NextAction": "stopStreaming", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "stopStreaming",
+      "Type": "StopMediaStreaming",
+      "Parameters": {},
+      "Transitions": {
+        "NextAction": "disconnect",
+        "Errors": [{ "NextAction": "disconnect", "ErrorType": "NoMatchingError" }],
+        "Conditions": []
+      }
+    },
+    {
+      "Identifier": "disconnect",
+      "Type": "DisconnectParticipant",
+      "Parameters": {},
+      "Transitions": {}
+    }
+  ]
+}

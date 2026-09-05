@@ -1,0 +1,22 @@
+{
+  "name": "language-detect-spike",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@types/ebml": "^3.0.5",
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.28.2",
+    "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-kinesis-video": "^3.1126.0",
+    "@aws-sdk/client-kinesis-video-media": "^3.1126.0",
+    "@aws-sdk/client-lex-runtime-v2": "^3.1126.0",
+    "@aws-sdk/client-transcribe-streaming": "^3.1126.0",
+    "ebml": "^3.0.0"
+  }
+}
