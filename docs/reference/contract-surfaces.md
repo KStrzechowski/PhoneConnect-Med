@@ -56,11 +56,14 @@ something that no test will catch.
 - **`authenticated`** / **`patientId`** (S-03)
   - **Set by:** `lambdas/facility-info-speech/index.ts`'s `AuthIntent` branch, only on the
     caller-ID shortcut match (`authenticated: 'true'`, `patientId` the matched patient's id).
-    Never set on any other outcome. The same branch also sets `lastName` alongside these (S-11).
+    Never set on any other outcome. The same branch also sets `firstName`/`lastName`/`pesel`/
+    `phone` alongside these (S-11) — `pesel`/`phone` are the raw slot values, not round-tripped
+    through `@pcm/patient`.
   - **Read by:** a future slice's intent handler, to check identity was already established in
     this session without recapturing it. The Lex-session-scoped analogue of the keypad variant's
-    `authenticated` / `patientId` contact attributes below. `lastName` is read by the agent-side
-    handover View once S-03's speech auth flow reaches a real merged transfer point (S-11).
+    `authenticated` / `patientId` contact attributes below. `speech-facility-info-flow.json`'s
+    `storeIdentityAttrs` also copies all of these onto the contact (S-11) — see the speech contact
+    attributes entry below.
 - **`transfer`** (S-03)
   - **Set by:** `lambdas/facility-info-speech/index.ts`'s `AuthIntent` branch, to `'true'` only on
     a genuine downstream failure (the mock unreachable) — no longer set on a non-shortcut match or
@@ -138,6 +141,20 @@ something that no test will catch.
   the rest of the call, set once by the Contact Flow Module so later flow blocks (and later
   slices) don't need to re-run verification. Nothing in the repo enforces this; flows are
   hand-built and outside IaC.
+
+## Speech contact attributes: `authenticated`, `patientId`, `firstName`, `lastName`, `pesel`, `phone` (S-11)
+
+- **Set by:** `speech-facility-info-flow.json`'s `storeIdentityAttrs`, from the Lex session
+  attributes of the same names, on every turn that isn't itself the OTP-pending turn (runs before
+  `checkAuthTransfer`, downstream of `checkOtpRequired`'s `false`/no-match branch). Idempotent — it
+  re-copies the same values (or empty, if the caller never authenticated) on every later turn,
+  since Lex session attributes only carry forward, never reset.
+- **Read by:** the agent-side handover View, the speech variant's counterpart to the keypad
+  contact attributes above — see `connect-flow-templates/views/agent-handover-view.md`.
+- **Why it matters:** an impl review of S-11 found the speech variant transferring to an agent
+  without ever persisting identity onto the contact — Lex session attributes were read for
+  branching but never copied to `$.Attributes.*`, so the View could never show them. This block is
+  the fix. Nothing in the repo enforces this; flows are hand-built and outside IaC.
 
 ## `transferReason` contact/session attribute (S-11)
 

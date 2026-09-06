@@ -36,7 +36,7 @@
   - Tradeoff: Touches several transition points in an already-branchy flow file, and needs a follow-up Lambda change to surface `pesel`/`phone` if those are wanted too (the plan's own Desired End State asks for them).
   - Confidence: HIGH — verified by reading the full flow file; no `Attributes` write for any identity field exists anywhere in it.
   - Blind spot: Haven't verified whether `pesel`/`phone` are recoverable another way in the speech flow (e.g. already on the contact from an earlier flow) — if they are, the Lambda change may be unnecessary.
-- **Decision**: FIXED — added `storeIdentityAttrs` (`UpdateContactAttributes`) between `checkOtpRequired` and `checkAuthTransfer` in `speech-facility-info-flow.json`, copying `authenticated`/`patientId`/`firstName`/`lastName` from Lex session attributes onto the contact on every non-OTP-pending turn (idempotent; picks up the persisted values by the time any of the four transfer points fires). `pesel`/`phone` deferred — queued in `follow-ups/review-fixes.md` since they require a `facility-info-speech` Lambda change first.
+- **Decision**: FIXED — added `storeIdentityAttrs` (`UpdateContactAttributes`) between `checkOtpRequired` and `checkAuthTransfer` in `speech-facility-info-flow.json`, copying `authenticated`/`patientId`/`firstName`/`lastName`/`pesel`/`phone` from Lex session attributes onto the contact on every non-OTP-pending turn (idempotent; picks up the persisted values by the time any of the four transfer points fires). `pesel`/`phone` required a follow-up `facility-info-speech` Lambda change (`AuthIntent` now returns them as raw slot values) — done, see `follow-ups/review-fixes.md`.
 
 ### F2 — `AuthIntent` caller-ID-shortcut branch omits `firstName` from its own session attributes
 

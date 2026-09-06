@@ -136,7 +136,9 @@
           "authenticated": "$.Lex.SessionAttributes.authenticated",
           "patientId": "$.Lex.SessionAttributes.patientId",
           "firstName": "$.Lex.SessionAttributes.firstName",
-          "lastName": "$.Lex.SessionAttributes.lastName"
+          "lastName": "$.Lex.SessionAttributes.lastName",
+          "pesel": "$.Lex.SessionAttributes.pesel",
+          "phone": "$.Lex.SessionAttributes.phone"
         },
         "TargetContact": "Current"
       },

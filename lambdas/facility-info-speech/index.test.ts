@@ -193,6 +193,8 @@ test('AuthIntent confirms and sets session attributes when the pair matches from
   assert.equal(result.sessionState.sessionAttributes.patientId, '1');
   assert.equal(result.sessionState.sessionAttributes.firstName, 'Jan');
   assert.equal(result.sessionState.sessionAttributes.lastName, 'Kowalski');
+  assert.equal(result.sessionState.sessionAttributes.pesel, '90010112345');
+  assert.equal(result.sessionState.sessionAttributes.phone, '+48000000000');
 });
 
 test('AuthIntent sends the code and starts an OTP challenge when the pair matches no record', async () => {
@@ -207,6 +209,7 @@ test('AuthIntent sends the code and starts an OTP challenge when the pair matche
   assert.equal(result.sessionState.sessionAttributes.code, '');
   assert.equal(result.sessionState.sessionAttributes.firstName, '');
   assert.equal(result.sessionState.sessionAttributes.lastName, '');
+  assert.equal(result.sessionState.sessionAttributes.pesel, '00000000000');
   assert.equal('authenticated' in result.sessionState.sessionAttributes, false);
   assert.equal(send.mock.callCount(), 1);
 });
@@ -232,6 +235,7 @@ test('AuthIntent sends a fresh code and speaks the byte-identical neutral messag
   assert.match(result.sessionState.sessionAttributes.code, /^\d{6}$/);
   assert.equal(result.sessionState.sessionAttributes.firstName, 'Jan');
   assert.equal(result.sessionState.sessionAttributes.lastName, 'Kowalski');
+  assert.equal(result.sessionState.sessionAttributes.pesel, '90010112345');
   assert.equal(send.mock.callCount(), 1);
 });
 
@@ -253,6 +257,7 @@ test('AuthIntent uses the seeded fixed code and sends nothing for a demo match',
   assert.equal(result.sessionState.sessionAttributes.phone, '');
   assert.equal(result.sessionState.sessionAttributes.firstName, 'Anna');
   assert.equal(result.sessionState.sessionAttributes.lastName, 'Demo');
+  assert.equal(result.sessionState.sessionAttributes.pesel, '85050512345');
   assert.equal(send.mock.callCount(), 0);
 });
 
