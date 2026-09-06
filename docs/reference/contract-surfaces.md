@@ -460,3 +460,50 @@ something that no test will catch.
   loudly. The speech variant (`CancelIntent` in `lambdas/facility-info-speech/index.ts`) reaches
   the identical `resolveAppointment`/`cancelAppointment` calls but drives its own dialog-stage
   state machine rather than reading these three fields directly — see L-03.
+
+## `Details.Parameters.operation` / `.step` (S-12, `agent-appointment` Lambda)
+
+- **Set by:** each **Invoke AWS Lambda function** block in the `agent-handover-guide-flow`
+  extension (`connect-flow-templates/flows/agent-appointment-guide-fragment.md`), invoking
+  `agent-appointment` — `operation` is a literal (`create` / `cancel` / `reschedule`) fixed by
+  which chooser branch the call is in; `step` is a literal per block, mirroring the step names
+  each precedent Lambda already uses (`days`/`times`/`confirm`/`book` for create;
+  `list`/`confirm`/`cancel` for cancel; `list`/`days`/`times`/`confirm`/`reschedule` for
+  reschedule).
+- **Read by:** `lambdas/agent-appointment/index.ts`'s top-level dispatch, which branches first on
+  `operation` then on `step` before calling the identical `@pcm/appointment` function its
+  precedent Lambda (`booking`/`appointment-cancel`/`appointment-reschedule`) already calls for
+  that step.
+- **Why it matters:** same class of gap as `Details.Parameters.step` above — one Lambda now
+  serves three operations' worth of steps, so a hand-built block that gets either parameter wrong
+  (or omits one) falls through to the Lambda's `unknown step` fallback rather than failing loudly.
+  Nothing in the repo enforces this; flows are hand-built and outside IaC.
+
+## `$.Views.ViewResultData.selection` / `.action` (S-12, agent-appointment Views)
+
+- **Set by:** the agent's submission of a **Show view** block using
+  `connect-flow-templates/views/agent-appointment-picker-view.md` (`selection`, a 1-based index
+  into that screen's `items`) or `agent-appointment-confirm-view.md` (`action`, `'yes'`/`'no'` in
+  confirm mode, `'ok'` in message mode).
+- **Read by:** the next block in the guide-flow extension — a **Compare** on `selection` to route
+  to the chosen operation or picked item, or on `action` to decide whether to proceed with a
+  mutation, decline back to a fresh list/picker, or simply advance past a message screen.
+- **Why it matters:** this is the whole interaction mechanism for S-12 — a View has no invalid
+  digit or timeout the way a keypad menu does (L-05 explicitly does not apply here, see the
+  plan's Critical Implementation Details), so every submission is trusted at face value. A
+  hand-built **Compare** block checking the wrong field name silently fails to route the agent
+  anywhere. Nothing in the repo enforces this; flows and views are hand-built and outside IaC.
+
+## `appt1`-`appt4` surfacing divergence (S-12, agent-appointment `list` step)
+
+- **What:** `lambdas/agent-appointment/index.ts`'s `list` step (shared by `cancel` and
+  `reschedule`) returns `appt1`-`appt4` — all rows `listAppointments` returns — with no
+  `hasMore` field, unlike the caller-facing `appointment-list`/`appointment-cancel`/
+  `appointment-reschedule` Lambdas, which cap what they surface at `appt1`-`appt3` (see
+  `hasAppointments` / `hasMore` / `appt1` / `appt2` / `appt3` above) because a spoken menu can't
+  offer a fourth item cleanly.
+- **Why it matters:** the caller-facing cap and `findAppointmentsForPatient`'s own `limit(4)` in
+  `his/src/appointment/appointment.service.ts` are both untouched — this is a presentation-layer
+  divergence, not a data-model one. A future contributor adding a fourth caller-facing menu slot
+  (or reading `hasMore` from `agent-appointment`'s output, which does not exist) would be working
+  from a false assumption that all three list-producing Lambdas share one output shape.
