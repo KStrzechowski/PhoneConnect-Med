@@ -425,9 +425,9 @@ over already-existing, already-tested shared functions.
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npm test` in `lambdas/agent-appointment`
-- [x] 1.2 Type checking passes
-- [x] 1.3 CDK synth succeeds with the new function
+- [x] 1.1 Unit tests pass: `npm test` in `lambdas/agent-appointment` — 593084e
+- [x] 1.2 Type checking passes — 593084e
+- [x] 1.3 CDK synth succeeds with the new function — 593084e
 
 #### Manual
 
