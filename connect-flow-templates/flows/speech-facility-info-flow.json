@@ -17,6 +17,7 @@
       "setOtpMismatch2": { "position": { "x": 1460, "y": 680 } },
       "checkOtpSuccess": { "position": { "x": 1260, "y": 440 } },
       "checkAuthTransfer": { "position": { "x": 660, "y": 260 } },
+      "storeIdentityAttrs": { "position": { "x": 560, "y": 260 } },
       "checkFallback": { "position": { "x": 860, "y": 260 } },
       "setTransferReasonCallerRequest": { "position": { "x": 1060, "y": 40 } },
       "setTransferReasonAuthError": { "position": { "x": 1060, "y": 160 } },
@@ -120,11 +121,28 @@
         "Attribute": "$.Lex.SessionAttributes.otpRequired"
       },
       "Transitions": {
-        "NextAction": "checkAuthTransfer",
+        "NextAction": "storeIdentityAttrs",
         "Conditions": [
           { "NextAction": "initOtpMismatch", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
         ],
-        "Errors": [{ "NextAction": "checkAuthTransfer", "ErrorType": "NoMatchingCondition" }]
+        "Errors": [{ "NextAction": "storeIdentityAttrs", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "storeIdentityAttrs",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": {
+          "authenticated": "$.Lex.SessionAttributes.authenticated",
+          "patientId": "$.Lex.SessionAttributes.patientId",
+          "firstName": "$.Lex.SessionAttributes.firstName",
+          "lastName": "$.Lex.SessionAttributes.lastName"
+        },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "checkAuthTransfer",
+        "Errors": [{ "NextAction": "checkAuthTransfer", "ErrorType": "NoMatchingError" }]
       }
     },
     {

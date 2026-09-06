@@ -191,6 +191,7 @@ test('AuthIntent confirms and sets session attributes when the pair matches from
   assert.equal(messageOf(result), 'Dziękuję. Tożsamość została potwierdzona.');
   assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
   assert.equal(result.sessionState.sessionAttributes.patientId, '1');
+  assert.equal(result.sessionState.sessionAttributes.firstName, 'Jan');
   assert.equal(result.sessionState.sessionAttributes.lastName, 'Kowalski');
 });
 

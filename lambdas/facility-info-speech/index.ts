@@ -669,6 +669,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
             fallbackCount: '0',
             authenticated: 'true',
             patientId: String(result.patientId),
+            firstName: result.firstName,
             lastName: result.lastName,
           },
           message,

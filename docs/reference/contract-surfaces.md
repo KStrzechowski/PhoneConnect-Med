@@ -149,8 +149,9 @@ something that no test will catch.
   (`AgentTransferIntent`, three fallback turns, `checkAuthTransfer`'s downstream failure, three OTP
   mismatches). Each trigger point sets its own Polish-language literal describing why the call is
   transferring — see the relevant flow's `Actions` for the exact wording per trigger.
-- **Read by:** the agent-side handover View, shown via the Agent Whisper Flow attached to the
-  destination queue (S-11) — see `connect-flow-templates/views/agent-handover-view.json`.
+- **Read by:** the agent-side handover View, shown via a **Set event flow** into a guide Inbound
+  flow (not a classic Agent Whisper Flow — that flow type can't run a **Show view** block) (S-11)
+  — see `connect-flow-templates/views/agent-handover-view.md`.
 - **Why it matters:** `agent-handover-module.json` itself sets no attributes and calls no Lambda —
   it only knows where the queue is. Every caller into the module is responsible for setting
   `transferReason` first; a trigger point that forgets to would leave the agent-facing View
