@@ -1,7 +1,7 @@
 ---
 change_id: english-locale
 title: English locale over unchanged shared business logic
-status: implementing
+status: implemented
 created: 2026-09-05
 updated: 2026-09-06
 archived_at: null
