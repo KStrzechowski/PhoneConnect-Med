@@ -27,6 +27,11 @@ A doc that isn't itself importable (a hand-merge guide for an existing console f
 the same prefix and lives alongside the flow/module it documents — see
 `flows/speech-authintent-fragment.md`.
 
+A locale variant of an existing flow appends `-en` (or the relevant locale code) before the
+extension, e.g. `keypad-booking-flow-en.json` alongside `keypad-booking-flow.json` — this keeps the
+locale sibling alphabetically next to the original and leaves the `<variant>-<name>-<flow|module>`
+prefix undisturbed (S-10).
+
 ## Real ARNs (`REPLACE_WITH_*` placeholders)
 
 Every ARN specific to a deployed resource (Lambda function, Contact Flow Module, Lex bot alias,

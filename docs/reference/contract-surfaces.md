@@ -494,6 +494,21 @@ something that no test will catch.
   hand-built **Compare** block checking the wrong field name silently fails to route the agent
   anywhere. Nothing in the repo enforces this; flows and views are hand-built and outside IaC.
 
+## `Details.Parameters.locale` (S-10)
+
+- **Set by:** the four `InvokeExternalResource` blocks in `keypad-booking-flow-en.json` (`invokeDays`,
+  `invokeTimes`, `invokeConfirm`, `invokeBook`), as a literal `"en"` alongside the existing
+  `specialty`/`timeOfDay`/`dayChoice`/`timeChoice`/`authenticated`/`patientId` parameters.
+  `keypad-booking-flow.json`'s own four blocks never send this parameter, so the Polish flow's
+  behavior is unaffected by its existence.
+- **Read by:** `lambdas/booking/index.ts`, defaulting to `'pl'` when absent, to choose between the
+  Polish and English day-label formatter, specialty display-name table, and confirmation-message
+  template — never passed to or read by `@pcm/appointment`.
+- **Why it matters:** same class of gap as `Details.Parameters.variant` above — a hand-built
+  `InvokeExternalResource` block that forgets this parameter silently falls back to Polish output
+  for a caller who selected English. Nothing in the repo enforces this; flows are hand-built and
+  outside IaC.
+
 ## `appt1`-`appt4` surfacing divergence (S-12, agent-appointment `list` step)
 
 - **What:** `lambdas/agent-appointment/index.ts`'s `list` step (shared by `cancel` and
