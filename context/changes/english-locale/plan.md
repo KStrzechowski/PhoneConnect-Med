@@ -479,9 +479,9 @@ optional; every existing caller (the Polish flow) is unaffected by its addition.
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npm test` in `lambdas/booking`
-- [x] 1.2 Type checking passes
-- [x] 1.3 Full test suite passes: repo-wide test command
+- [x] 1.1 Unit tests pass: `npm test` in `lambdas/booking` — f1a1028
+- [x] 1.2 Type checking passes — f1a1028
+- [x] 1.3 Full test suite passes: repo-wide test command — f1a1028
 
 ### Phase 2: Language-select entry flow + English facility-info
 

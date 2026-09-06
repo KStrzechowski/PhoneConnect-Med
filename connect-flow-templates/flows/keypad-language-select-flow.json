@@ -1,0 +1,153 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "logging",
+  "Metadata": {
+    "entryPointPosition": { "x": 40, "y": 40 },
+    "ActionMetadata": {
+      "logging": { "position": { "x": 40, "y": 40 } },
+      "languagePrompt": { "position": { "x": 240, "y": 40 } },
+      "transferToPolishMainMenu": { "position": { "x": 440, "y": -80 } },
+      "transferToEnglishMainMenu": { "position": { "x": 440, "y": 40 } },
+      "IncrementFailedAttempts": {
+        "position": { "x": 440, "y": 260 },
+        "conditions": [],
+        "conditionMetadata": [
+          { "id": "8ce9c1a1-1a2e-4a1a-9a1a-1a2e4a1a9a1a", "operator": { "name": "Equals", "value": "Equals", "shortDisplay": "=" }, "value": "2" },
+          { "id": "7bd8b090-0a1d-3909-8909-0a1d3909891d", "operator": { "name": "Equals", "value": "Equals", "shortDisplay": "=" }, "value": "1" }
+        ]
+      },
+      "setAttempts1": { "position": { "x": 240, "y": 380 } },
+      "setAttempts2": { "position": { "x": 240, "y": 500 } },
+      "errorMsg": { "position": { "x": 640, "y": 440 } },
+      "setTransferReason": { "position": { "x": 840, "y": 260 } },
+      "invokeAgentHandoverModule": {
+        "position": { "x": 1040, "y": 260 },
+        "parameters": { "FlowModuleId": { "displayName": "REPLACE_WITH_AGENT_HANDOVER_MODULE_ARN" } }
+      },
+      "disconnectFallback": { "position": { "x": 640, "y": -80 } }
+    },
+    "Annotations": [],
+    "name": "Language Select (S-10)",
+    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is. New entry point ahead of the Polish and English main menus.",
+    "type": "contactFlow",
+    "status": "SAVED",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Identifier": "logging",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Parameters": { "FlowLoggingBehavior": "Enabled" },
+      "Transitions": { "NextAction": "languagePrompt" }
+    },
+    {
+      "Identifier": "languagePrompt",
+      "Type": "GetParticipantInput",
+      "Parameters": {
+        "Text": "Naciśnij jeden, aby kontynuować po polsku. Press two to continue in English.",
+        "StoreInput": "False",
+        "InputTimeLimitSeconds": "5"
+      },
+      "Transitions": {
+        "NextAction": "IncrementFailedAttempts",
+        "Conditions": [
+          { "NextAction": "transferToPolishMainMenu", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
+          { "NextAction": "transferToEnglishMainMenu", "Condition": { "Operator": "Equals", "Operands": ["2"] } }
+        ],
+        "Errors": [
+          { "NextAction": "IncrementFailedAttempts", "ErrorType": "InputTimeLimitExceeded" },
+          { "NextAction": "IncrementFailedAttempts", "ErrorType": "NoMatchingCondition" },
+          { "NextAction": "IncrementFailedAttempts", "ErrorType": "NoMatchingError" }
+        ]
+      }
+    },
+    {
+      "Identifier": "transferToPolishMainMenu",
+      "Type": "TransferToFlow",
+      "Parameters": { "ContactFlowId": "REPLACE_WITH_MAIN_MENU_FLOW_ARN" },
+      "Transitions": {
+        "NextAction": "disconnectFallback",
+        "Errors": [{ "NextAction": "disconnectFallback", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "transferToEnglishMainMenu",
+      "Type": "TransferToFlow",
+      "Parameters": { "ContactFlowId": "REPLACE_WITH_MAIN_MENU_FLOW_EN_ARN" },
+      "Transitions": {
+        "NextAction": "disconnectFallback",
+        "Errors": [{ "NextAction": "disconnectFallback", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "IncrementFailedAttempts",
+      "Type": "Compare",
+      "Parameters": { "Attribute": "$.Attributes.failedAttempts" },
+      "Transitions": {
+        "NextAction": "setAttempts1",
+        "Conditions": [
+          { "NextAction": "setTransferReason", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
+          { "NextAction": "setAttempts2", "Condition": { "Operator": "Equals", "Operands": ["1"] } }
+        ],
+        "Errors": [{ "NextAction": "setAttempts1", "ErrorType": "NoMatchingCondition" }]
+      }
+    },
+    {
+      "Identifier": "setAttempts1",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "failedAttempts": "1" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "errorMsg",
+        "Errors": [{ "NextAction": "errorMsg", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setAttempts2",
+      "Type": "UpdateContactAttributes",
+      "Parameters": { "Attributes": { "failedAttempts": "2" }, "TargetContact": "Current" },
+      "Transitions": {
+        "NextAction": "errorMsg",
+        "Errors": [{ "NextAction": "errorMsg", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "errorMsg",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Nie otrzymaliśmy poprawnego inputu. Spróbuj ponownie. We didn't receive valid input. Please try again."
+      },
+      "Transitions": {
+        "NextAction": "languagePrompt",
+        "Errors": [{ "NextAction": "languagePrompt", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "setTransferReason",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": { "transferReason": "Trzy nieudane próby wyboru języka." },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "invokeAgentHandoverModule",
+        "Errors": [{ "NextAction": "invokeAgentHandoverModule", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "invokeAgentHandoverModule",
+      "Type": "InvokeFlowModule",
+      "Parameters": { "FlowModuleId": "REPLACE_WITH_AGENT_HANDOVER_MODULE_ARN" },
+      "Transitions": {
+        "NextAction": "disconnectFallback",
+        "Errors": [{ "NextAction": "disconnectFallback", "ErrorType": "NoMatchingError" }]
+      }
+    },
+    {
+      "Identifier": "disconnectFallback",
+      "Type": "DisconnectParticipant",
+      "Parameters": {},
+      "Transitions": {}
+    }
+  ]
+}
