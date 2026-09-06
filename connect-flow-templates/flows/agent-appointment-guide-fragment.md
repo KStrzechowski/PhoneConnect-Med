@@ -16,7 +16,7 @@ existing placeholder screen, unchanged.
 Each sub-sequence alternates **Invoke AWS Lambda function** (`agent-appointment`, passing
 `operation`, `step`, `patientId`, `authenticated`, and every parameter accumulated from earlier
 screens in that sub-sequence) and **Show view** blocks, mirroring the step order the equivalent
-precedent Lambda already proved (see `context/changes/agent-appointment-management/plan.md` →
+precedent Lambda already proved (see `context/pending-verification/agent-appointment-management/plan.md` →
 "Critical Implementation Details").
 
 ### Create sub-sequence (`operation: 'create'`)
@@ -74,4 +74,4 @@ A second request in the same call means re-triggering the guide, not looping ins
   the two View templates every screen above reuses.
 - `agent-handover-whisper-flow.md` for where this extension attaches and why Show view blocks can
   only run from this flow.
-- `context/changes/agent-appointment-management/plan.md` for the Lambda's full per-step contract.
+- `context/pending-verification/agent-appointment-management/plan.md` for the Lambda's full per-step contract.
