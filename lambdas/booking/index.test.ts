@@ -76,6 +76,36 @@ test('confirm step resolves day and time and returns a read-back message', async
   assert.ok(result.message.includes('09:30'));
 });
 
+test('days step returns English day labels when locale is en', async () => {
+  mockSequence([{ days: ['2026-09-04', '2026-09-07', '2026-09-08'] }]);
+  const result = await handler(withParams({ step: 'days', locale: 'en' }));
+  mock.restoreAll();
+
+  assert.equal(result.reachable, 'true');
+  assert.equal(result.available, 'true');
+  assert.match(result.day1, /Friday/);
+});
+
+test('confirm step returns an English message and specialty name when locale is en', async () => {
+  mockSequence([{ days: ['2026-09-04'] }, { times: ['08:00', '09:30'] }]);
+  const result = await handler(
+    withParams({ step: 'confirm', dayChoice: '1', timeChoice: '2', specialty: 'kardiolog', locale: 'en' }),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.reachable, 'true');
+  assert.equal(result.available, 'true');
+  assert.equal(result.message, 'Booking: Cardiology, Friday, September 4, at 09:30.');
+});
+
+test('confirm step keeps Polish output when locale is omitted', async () => {
+  mockSequence([{ days: ['2026-09-04'] }, { times: ['08:00', '09:30'] }]);
+  const result = await handler(withParams({ step: 'confirm', dayChoice: '1', timeChoice: '2', specialty: 'kardiolog' }));
+  mock.restoreAll();
+
+  assert.equal(result.message, 'Umawiam wizytę: kardiolog, piątek, 4 września, godzina 09:30.');
+});
+
 test('confirm step reports no availability when the day no longer resolves', async () => {
   mockSequence([{ days: [] }]);
   const result = await handler(withParams({ step: 'confirm', dayChoice: '1', timeChoice: '1' }));

@@ -8,6 +8,30 @@ import {
   formatDayLabel,
 } from '@pcm/appointment';
 
+const specialtyDisplayNamesEn: Record<string, string> = {
+  kardiolog: 'Cardiology',
+  dermatolog: 'Dermatology',
+  okulista: 'Ophthalmology',
+  laryngolog: 'ENT',
+  neurolog: 'Neurology',
+  ortopeda: 'Orthopedics',
+  internista: 'Internal Medicine',
+  ginekolog: 'Gynecology',
+  pediatra: 'Pediatrics',
+  endokrynolog: 'Endocrinology',
+  chirurg: 'Surgery',
+  urolog: 'Urology',
+  psychiatra: 'Psychiatry',
+  alergolog: 'Allergology',
+  reumatolog: 'Rheumatology',
+};
+
+const formatDayLabelEn = (dateStr: string): string => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return new Intl.DateTimeFormat('en-US', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
+};
+
 export const handler = measured(
   'booking',
   async (event, record): Promise<Record<string, string>> => {
@@ -19,7 +43,10 @@ export const handler = measured(
       timeChoice = '',
       authenticated = '',
       patientId = '',
+      locale = 'pl',
     } = event.Details?.Parameters ?? {};
+
+    const dayLabel = locale === 'en' ? formatDayLabelEn : formatDayLabel;
 
     if (authenticated !== 'true') return { needsAuth: 'true' };
 
@@ -31,9 +58,9 @@ export const handler = measured(
         return {
           reachable: 'true',
           available: 'true',
-          day1: days[0] ? formatDayLabel(days[0]) : '',
-          day2: days[1] ? formatDayLabel(days[1]) : '',
-          day3: days[2] ? formatDayLabel(days[2]) : '',
+          day1: days[0] ? dayLabel(days[0]) : '',
+          day2: days[1] ? dayLabel(days[1]) : '',
+          day3: days[2] ? dayLabel(days[2]) : '',
         };
       }
 
@@ -59,12 +86,16 @@ export const handler = measured(
           resolveTime(specialty, timeOfDay, date, Number(timeChoice), abort),
         );
         if (time === null) return { reachable: 'true', available: 'false' };
+        const message =
+          locale === 'en'
+            ? `Booking: ${specialtyDisplayNamesEn[specialty] ?? specialty}, ${dayLabel(date)}, at ${time}.`
+            : `Umawiam wizytę: ${specialty}, ${dayLabel(date)}, godzina ${time}.`;
         return {
           reachable: 'true',
           available: 'true',
           date,
           time,
-          message: `Umawiam wizytę: ${specialty}, ${formatDayLabel(date)}, godzina ${time}.`,
+          message,
         };
       }
 
