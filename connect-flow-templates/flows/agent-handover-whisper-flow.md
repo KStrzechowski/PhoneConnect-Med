@@ -25,6 +25,11 @@ Per the plan's own contingency: skip this file's mechanism entirely and rely on 
 "Additional attributes" panel, which shows contact attributes with no extra build. Phase 5's
 manual verification checks this first and records which path was actually used.
 
+## Extended by S-12
+
+For an authenticated transfer, the guide flow continues past the existing screen-pop into the
+interactive appointment-management sequence — see `agent-appointment-guide-fragment.md`.
+
 ## Reference
 
 - AWS docs: "Show view" flow block → "Flow types" table (Inbound flow: Yes; every other type:
