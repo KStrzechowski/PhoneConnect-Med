@@ -110,6 +110,22 @@ test('cancel step reports not found for an out-of-range selection', async () => 
   assert.deepEqual(result, { reachable: 'true', found: 'false' });
 });
 
+test('list step returns English-formatted appointments when locale is en', async () => {
+  mockJson({ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] });
+  const result = await handler(withParams({ step: 'list', locale: 'en' }));
+  mock.restoreAll();
+
+  assert.match(result.appt1, /Cardiology.*at 09:30/);
+});
+
+test('confirm step returns an English read-back message when locale is en', async () => {
+  mockJson({ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] });
+  const result = await handler(withParams({ step: 'confirm', selectedSlot: '1', locale: 'en' }));
+  mock.restoreAll();
+
+  assert.match(result.message, /Cardiology.*at 09:30/);
+});
+
 test('list step returns a handled error when the mock is unreachable', async () => {
   mock.method(globalThis, 'fetch', async () => {
     throw new Error('connect ECONNREFUSED');

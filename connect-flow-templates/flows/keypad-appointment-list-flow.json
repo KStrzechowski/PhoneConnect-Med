@@ -1,105 +1,350 @@
 {
   "Version": "2019-10-30",
-  "StartAction": "voice",
+  "StartAction": "copyPrompts",
   "Metadata": {
-    "entryPointPosition": { "x": 40, "y": 40 },
+    "entryPointPosition": {
+      "x": 40,
+      "y": 40
+    },
     "ActionMetadata": {
-      "voice": { "position": { "x": 40, "y": 40 } },
-      "invokeAppointmentList": { "position": { "x": 240, "y": 40 } },
-      "checkNeedsAuth": { "position": { "x": 440, "y": 40 } },
-      "checkReachable": { "position": { "x": 640, "y": 40 } },
-      "checkHasAppointments": { "position": { "x": 840, "y": 40 } },
-      "checkHasMore": { "position": { "x": 1040, "y": 40 } },
-      "setNeedsAuthMsg": { "position": { "x": 640, "y": -180 } },
-      "setEmptyMsg": { "position": { "x": 1040, "y": 220 } },
-      "setPopulatedMsgWithMore": { "position": { "x": 1240, "y": -80 } },
-      "setPopulatedMsgNoMore": { "position": { "x": 1240, "y": 40 } },
-      "playMsg": { "position": { "x": 1440, "y": -20 } },
-      "transferToAuthenticatedMenu": { "position": { "x": 1640, "y": -20 } },
-      "transferQueue": { "position": { "x": 840, "y": 400 } },
-      "disconnectEnd": { "position": { "x": 1840, "y": 200 } }
+      "copyPrompts": {
+        "position": {
+          "x": 140,
+          "y": 40
+        }
+      },
+      "checkLocaleForVoice": {
+        "position": {
+          "x": 190,
+          "y": 40
+        }
+      },
+      "setVoiceEn": {
+        "position": {
+          "x": 220,
+          "y": -40
+        }
+      },
+      "setVoicePl": {
+        "position": {
+          "x": 220,
+          "y": 100
+        }
+      },
+      "invokeAppointmentList": {
+        "position": {
+          "x": 240,
+          "y": 40
+        }
+      },
+      "checkNeedsAuth": {
+        "position": {
+          "x": 440,
+          "y": 40
+        }
+      },
+      "checkReachable": {
+        "position": {
+          "x": 640,
+          "y": 40
+        }
+      },
+      "checkHasAppointments": {
+        "position": {
+          "x": 840,
+          "y": 40
+        }
+      },
+      "checkHasMore": {
+        "position": {
+          "x": 1040,
+          "y": 40
+        }
+      },
+      "setNeedsAuthMsg": {
+        "position": {
+          "x": 640,
+          "y": -180
+        }
+      },
+      "setEmptyMsg": {
+        "position": {
+          "x": 1040,
+          "y": 220
+        }
+      },
+      "setPopulatedMsgWithMore": {
+        "position": {
+          "x": 1240,
+          "y": -80
+        }
+      },
+      "setPopulatedMsgNoMore": {
+        "position": {
+          "x": 1240,
+          "y": 40
+        }
+      },
+      "playMsg": {
+        "position": {
+          "x": 1440,
+          "y": -20
+        }
+      },
+      "transferToAuthenticatedMenu": {
+        "position": {
+          "x": 1640,
+          "y": -20
+        }
+      },
+      "transferQueue": {
+        "position": {
+          "x": 840,
+          "y": 400
+        }
+      },
+      "disconnectEnd": {
+        "position": {
+          "x": 1840,
+          "y": 200
+        }
+      }
     },
     "Annotations": [],
     "name": "Appointment List (S-06, keypad)",
-    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is. Only reachable once $.Attributes.authenticated is 'true' (gated by the caller before transferring here).",
+    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is. Only reachable once $.Attributes.authenticated is 'true' (gated by the caller before transferring here). Single flow shared by both locales via $.Attributes.locale, forwarded as the 'locale' parameter on the Appointment List Lambda invoke so its own locale branch (day labels, specialty display name) fires correctly. MANUAL STEP (not expressible in this JSON - the Data Table block has no published Flow Language schema): after importing, insert a Data Table block as the true first action, Evaluate action, table 'AppointmentListPrompts', one query named 'AppointmentListPrompts', Primary Attribute locale=$.Attributes.locale, Query Attributes = every column listed in connect-flow-templates/data-tables.md's AppointmentListPrompts section. Set this flow's StartAction to your new block's Identifier, and its Success transition to 'copyPrompts' (currently the StartAction as a placeholder).",
     "type": "contactFlow",
     "status": "SAVED",
     "hash": {}
   },
   "Actions": [
     {
-      "Identifier": "voice",
+      "Identifier": "copyPrompts",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": {
+          "needsAuthMsg": "$.DataTables.AppointmentListPrompts.needsAuthMsg",
+          "emptyMsg": "$.DataTables.AppointmentListPrompts.emptyMsg",
+          "populatedPrefix": "$.DataTables.AppointmentListPrompts.populatedPrefix",
+          "populatedFrag2": "$.DataTables.AppointmentListPrompts.populatedFrag2",
+          "populatedFrag3": "$.DataTables.AppointmentListPrompts.populatedFrag3",
+          "populatedSuffixMore": "$.DataTables.AppointmentListPrompts.populatedSuffixMore",
+          "populatedSuffixNoMore": "$.DataTables.AppointmentListPrompts.populatedSuffixNoMore"
+        },
+        "TargetContact": "Current"
+      },
+      "Transitions": {
+        "NextAction": "checkLocaleForVoice",
+        "Errors": [
+          {
+            "NextAction": "checkLocaleForVoice",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Identifier": "checkLocaleForVoice",
+      "Type": "Compare",
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.locale"
+      },
+      "Transitions": {
+        "NextAction": "setVoicePl",
+        "Conditions": [
+          {
+            "NextAction": "setVoiceEn",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "en"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setVoicePl",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Identifier": "setVoiceEn",
       "Type": "UpdateContactTextToSpeechVoice",
-      "Parameters": { "TextToSpeechEngine": "Neural", "TextToSpeechVoice": "Ola" },
+      "Parameters": {
+        "TextToSpeechEngine": "Neural",
+        "TextToSpeechVoice": "Joanna"
+      },
       "Transitions": {
         "NextAction": "invokeAppointmentList",
-        "Errors": [{ "NextAction": "invokeAppointmentList", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "invokeAppointmentList",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Identifier": "setVoicePl",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Parameters": {
+        "TextToSpeechEngine": "Neural",
+        "TextToSpeechVoice": "Ola"
+      },
+      "Transitions": {
+        "NextAction": "invokeAppointmentList",
+        "Errors": [
+          {
+            "NextAction": "invokeAppointmentList",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
       "Identifier": "invokeAppointmentList",
-      "Type": "InvokeExternalResource",
+      "Type": "InvokeLambdaFunction",
       "Parameters": {
-        "FunctionArn": "REPLACE_WITH_APPOINTMENT_LIST_FUNCTION_ARN",
+        "LambdaFunctionARN": "REPLACE_WITH_APPOINTMENT_LIST_FUNCTION_ARN",
+        "InvocationType": "SYNCHRONOUS",
         "InvocationTimeLimitSeconds": "8",
         "LambdaInvocationAttributes": {
           "authenticated": "$.Attributes.authenticated",
-          "patientId": "$.Attributes.patientId"
+          "patientId": "$.Attributes.patientId",
+          "locale": "$.Attributes.locale"
         },
-        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
       },
       "Transitions": {
         "NextAction": "checkNeedsAuth",
-        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
       "Identifier": "checkNeedsAuth",
       "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.needsAuth" },
+      "Parameters": {
+        "ComparisonValue": "$.External.needsAuth"
+      },
       "Transitions": {
         "NextAction": "checkReachable",
         "Conditions": [
-          { "NextAction": "setNeedsAuthMsg", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+          {
+            "NextAction": "setNeedsAuthMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
         ],
-        "Errors": [{ "NextAction": "checkReachable", "ErrorType": "NoMatchingCondition" }]
+        "Errors": [
+          {
+            "NextAction": "checkReachable",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
       }
     },
     {
       "Identifier": "checkReachable",
       "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.reachable" },
+      "Parameters": {
+        "ComparisonValue": "$.External.reachable"
+      },
       "Transitions": {
         "NextAction": "transferQueue",
         "Conditions": [
-          { "NextAction": "checkHasAppointments", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+          {
+            "NextAction": "checkHasAppointments",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
         ],
-        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingCondition" }]
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
       }
     },
     {
       "Identifier": "checkHasAppointments",
       "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.hasAppointments" },
+      "Parameters": {
+        "ComparisonValue": "$.External.hasAppointments"
+      },
       "Transitions": {
         "NextAction": "transferQueue",
         "Conditions": [
-          { "NextAction": "checkHasMore", "Condition": { "Operator": "Equals", "Operands": ["true"] } },
-          { "NextAction": "setEmptyMsg", "Condition": { "Operator": "Equals", "Operands": ["false"] } }
+          {
+            "NextAction": "checkHasMore",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          },
+          {
+            "NextAction": "setEmptyMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "false"
+              ]
+            }
+          }
         ],
-        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingCondition" }]
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
       }
     },
     {
       "Identifier": "checkHasMore",
       "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.hasMore" },
+      "Parameters": {
+        "ComparisonValue": "$.External.hasMore"
+      },
       "Transitions": {
         "NextAction": "setPopulatedMsgNoMore",
         "Conditions": [
-          { "NextAction": "setPopulatedMsgWithMore", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+          {
+            "NextAction": "setPopulatedMsgWithMore",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
         ],
-        "Errors": [{ "NextAction": "setPopulatedMsgNoMore", "ErrorType": "NoMatchingCondition" }]
+        "Errors": [
+          {
+            "NextAction": "setPopulatedMsgNoMore",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
       }
     },
     {
@@ -107,13 +352,18 @@
       "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Aby usłyszeć listę wizyt, proszę się najpierw zidentyfikować."
+          "lastMessageText": "$.Attributes.needsAuthMsg"
         },
         "TargetContact": "Current"
       },
       "Transitions": {
         "NextAction": "playMsg",
-        "Errors": [{ "NextAction": "playMsg", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "playMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
@@ -121,13 +371,18 @@
       "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Nie ma Pani/Pan żadnych zaplanowanych wizyt."
+          "lastMessageText": "$.Attributes.emptyMsg"
         },
         "TargetContact": "Current"
       },
       "Transitions": {
         "NextAction": "playMsg",
-        "Errors": [{ "NextAction": "playMsg", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "playMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
@@ -135,13 +390,18 @@
       "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Najbliższe wizyty: $.External.appt1. $.External.appt2. $.External.appt3. Ma Pani/Pan więcej zaplanowanych wizyt."
+          "lastMessageText": "$.Attributes.populatedPrefix$.External.appt1$.Attributes.populatedFrag2$.External.appt2$.Attributes.populatedFrag3$.External.appt3$.Attributes.populatedSuffixMore"
         },
         "TargetContact": "Current"
       },
       "Transitions": {
         "NextAction": "playMsg",
-        "Errors": [{ "NextAction": "playMsg", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "playMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
@@ -149,31 +409,51 @@
       "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Najbliższe wizyty: $.External.appt1. $.External.appt2. $.External.appt3."
+          "lastMessageText": "$.Attributes.populatedPrefix$.External.appt1$.Attributes.populatedFrag2$.External.appt2$.Attributes.populatedFrag3$.External.appt3$.Attributes.populatedSuffixNoMore"
         },
         "TargetContact": "Current"
       },
       "Transitions": {
         "NextAction": "playMsg",
-        "Errors": [{ "NextAction": "playMsg", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "playMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
       "Identifier": "playMsg",
       "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.lastMessageText"
+      },
       "Transitions": {
         "NextAction": "transferToAuthenticatedMenu",
-        "Errors": [{ "NextAction": "transferToAuthenticatedMenu", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "transferToAuthenticatedMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
       "Identifier": "transferToAuthenticatedMenu",
       "Type": "TransferToFlow",
-      "Parameters": { "ContactFlowId": "REPLACE_WITH_AUTHENTICATED_MENU_FLOW_ARN" },
+      "Parameters": {
+        "ContactFlowId": "REPLACE_WITH_AUTHENTICATED_MENU_FLOW_ARN"
+      },
       "Transitions": {
         "NextAction": "disconnectEnd",
-        "Errors": [{ "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
@@ -183,8 +463,14 @@
       "Transitions": {
         "NextAction": "disconnectEnd",
         "Errors": [
-          { "NextAction": "disconnectEnd", "ErrorType": "QueueAtCapacity" },
-          { "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "QueueAtCapacity"
+          },
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },

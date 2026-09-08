@@ -8,10 +8,17 @@ import {
   findAvailableTimes,
   rescheduleAppointment,
   formatDayLabel,
+  formatDayLabelEn,
+  specialtyDisplayNamesEn,
 } from '@pcm/appointment';
 
-const formatAppointment = (appointment: { specialty: string; date: string; time: string }): string =>
-  `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${appointment.time}`;
+const formatAppointment = (
+  appointment: { specialty: string; date: string; time: string },
+  locale: string,
+): string =>
+  locale === 'en'
+    ? `${specialtyDisplayNamesEn[appointment.specialty] ?? appointment.specialty}, ${formatDayLabelEn(appointment.date)}, at ${appointment.time}`
+    : `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${appointment.time}`;
 
 export const handler = measured(
   'appointment-reschedule',
@@ -24,9 +31,12 @@ export const handler = measured(
       timeChoice = '',
       authenticated = '',
       patientId = '',
+      locale = 'pl',
     } = event.Details?.Parameters ?? {};
 
     if (authenticated !== 'true') return { needsAuth: 'true' };
+
+    const dayLabel = locale === 'en' ? formatDayLabelEn : formatDayLabel;
 
     const abort = AbortSignal.timeout(1000);
     try {
@@ -36,9 +46,9 @@ export const handler = measured(
         return {
           reachable: 'true',
           hasAppointments: 'true',
-          appt1: appointments[0] ? formatAppointment(appointments[0]) : '',
-          appt2: appointments[1] ? formatAppointment(appointments[1]) : '',
-          appt3: appointments[2] ? formatAppointment(appointments[2]) : '',
+          appt1: appointments[0] ? formatAppointment(appointments[0], locale) : '',
+          appt2: appointments[1] ? formatAppointment(appointments[1], locale) : '',
+          appt3: appointments[2] ? formatAppointment(appointments[2], locale) : '',
         };
       }
 
@@ -53,9 +63,9 @@ export const handler = measured(
           reachable: 'true',
           found: 'true',
           available: 'true',
-          day1: days[0] ? formatDayLabel(days[0]) : '',
-          day2: days[1] ? formatDayLabel(days[1]) : '',
-          day3: days[2] ? formatDayLabel(days[2]) : '',
+          day1: days[0] ? dayLabel(days[0]) : '',
+          day2: days[1] ? dayLabel(days[1]) : '',
+          day3: days[2] ? dayLabel(days[2]) : '',
         };
       }
 
@@ -94,13 +104,17 @@ export const handler = measured(
           resolveTime(appointment.specialty, timeOfDay, date, Number(timeChoice), abort),
         );
         if (time === null) return { reachable: 'true', found: 'true', available: 'false' };
+        const message =
+          locale === 'en'
+            ? `${formatAppointment(appointment, locale)}, to ${dayLabel(date)}, at ${time}`
+            : `${formatAppointment(appointment, locale)}, na ${dayLabel(date)}, godzina ${time}`;
         return {
           reachable: 'true',
           found: 'true',
           available: 'true',
           date,
           time,
-          message: `${formatAppointment(appointment)}, na ${formatDayLabel(date)}, godzina ${time}`,
+          message,
         };
       }
 

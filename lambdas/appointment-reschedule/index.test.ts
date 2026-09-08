@@ -191,6 +191,32 @@ test('reschedule step still reports success when the old slot fails to release',
   assert.deepEqual(result, { reachable: 'true', found: 'true', available: 'true', rescheduled: 'true' });
 });
 
+test('list step returns English-formatted appointments when locale is en', async () => {
+  mockJson({ appointments: [appt] });
+  const result = await handler(withParams({ step: 'list', locale: 'en' }));
+  mock.restoreAll();
+
+  assert.match(result.appt1, /Cardiology.*at 09:30/);
+});
+
+test('days step returns English day labels when locale is en', async () => {
+  mockSequence([{ appointments: [appt] }, { days: ['2026-09-08'] }]);
+  const result = await handler(withParams({ step: 'days', selectedSlot: '1', timeOfDay: 'rano', locale: 'en' }));
+  mock.restoreAll();
+
+  assert.match(result.day1, /Tuesday/);
+});
+
+test('confirm step returns an English combined read-back message when locale is en', async () => {
+  mockSequence([{ appointments: [appt] }, { days: ['2026-09-08'] }, { times: ['08:00'] }]);
+  const result = await handler(
+    withParams({ step: 'confirm', selectedSlot: '1', timeOfDay: 'rano', dayChoice: '1', timeChoice: '1', locale: 'en' }),
+  );
+  mock.restoreAll();
+
+  assert.match(result.message, /Cardiology.*at 09:30.*to.*at 08:00/);
+});
+
 for (const step of ['list', 'days', 'times', 'confirm', 'reschedule']) {
   test(`${step} step returns a handled error when the mock is unreachable`, async () => {
     mock.method(globalThis, 'fetch', async () => {

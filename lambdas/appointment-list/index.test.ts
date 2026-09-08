@@ -58,6 +58,14 @@ test('caps at three appointments and flags overflow when a fourth exists', async
   assert.match(result.appt3, /urolog/);
 });
 
+test('returns English-formatted appointments when locale is en', async () => {
+  mockAppointments([{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }]);
+  const result = await handler(withParams({ locale: 'en' }));
+  mock.restoreAll();
+
+  assert.match(result.appt1, /Cardiology.*at 09:30/);
+});
+
 test('returns a handled error when the mock is unreachable', async () => {
   mock.method(globalThis, 'fetch', async () => {
     throw new Error('connect ECONNREFUSED');

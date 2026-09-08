@@ -6,31 +6,9 @@ import {
   resolveTime,
   bookAppointment,
   formatDayLabel,
+  formatDayLabelEn,
+  specialtyDisplayNamesEn,
 } from '@pcm/appointment';
-
-const specialtyDisplayNamesEn: Record<string, string> = {
-  kardiolog: 'Cardiology',
-  dermatolog: 'Dermatology',
-  okulista: 'Ophthalmology',
-  laryngolog: 'ENT',
-  neurolog: 'Neurology',
-  ortopeda: 'Orthopedics',
-  internista: 'Internal Medicine',
-  ginekolog: 'Gynecology',
-  pediatra: 'Pediatrics',
-  endokrynolog: 'Endocrinology',
-  chirurg: 'Surgery',
-  urolog: 'Urology',
-  psychiatra: 'Psychiatry',
-  alergolog: 'Allergology',
-  reumatolog: 'Rheumatology',
-};
-
-const formatDayLabelEn = (dateStr: string): string => {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
-  return new Intl.DateTimeFormat('en-US', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
-};
 
 export const handler = measured(
   'booking',
