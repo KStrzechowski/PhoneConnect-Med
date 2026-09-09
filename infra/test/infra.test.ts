@@ -47,7 +47,7 @@ test('the mock is reachable only from the function security group', () => {
 test('the function is pinned to a runtime and a sub-budget timeout', () => {
   template.hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs24.x',
-    Timeout: 2,
+    Timeout: 8,
   });
 });
 

@@ -291,7 +291,7 @@ volumes:
       securityGroups: [functionSecurityGroup],
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -307,7 +307,7 @@ volumes:
       securityGroups: [functionSecurityGroup],
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -353,7 +353,7 @@ volumes:
       securityGroups: [functionSecurityGroup],
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -375,7 +375,7 @@ volumes:
       projectRoot: repoRoot,
       depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
       runtime: lambda.Runtime.NODEJS_24_X,
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -401,7 +401,7 @@ volumes:
       projectRoot: repoRoot,
       depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
       runtime: lambda.Runtime.NODEJS_24_X,
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -428,7 +428,7 @@ volumes:
       securityGroups: [functionSecurityGroup],
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -455,7 +455,7 @@ volumes:
       securityGroups: [functionSecurityGroup],
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -482,7 +482,7 @@ volumes:
       securityGroups: [functionSecurityGroup],
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -509,7 +509,7 @@ volumes:
       securityGroups: [functionSecurityGroup],
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -536,7 +536,7 @@ volumes:
       securityGroups: [functionSecurityGroup],
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
@@ -563,7 +563,7 @@ volumes:
       securityGroups: [functionSecurityGroup],
       allowPublicSubnet: true,
       environment: { MOCK_BASE_URL: `http://${instance.instancePrivateIp}:${mockPort}` },
-      timeout: cdk.Duration.seconds(2),
+      timeout: cdk.Duration.seconds(8),
       logGroup: measurements,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
