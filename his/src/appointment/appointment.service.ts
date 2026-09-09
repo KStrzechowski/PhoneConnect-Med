@@ -20,6 +20,7 @@ export class AppointmentService {
       .where('doctor.specialty = :specialty', { specialty })
       .andWhere('slot.timeOfDay = :timeOfDay', { timeOfDay })
       .andWhere('slot.taken = false')
+      .andWhere('slot.date >= CURRENT_DATE')
       .select('slot.date::text', 'date')
       .distinct(true)
       .orderBy('slot.date::text', 'ASC')

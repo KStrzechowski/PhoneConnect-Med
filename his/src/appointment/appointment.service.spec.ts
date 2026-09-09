@@ -60,6 +60,22 @@ describe('AppointmentService', () => {
     expect(days).toEqual([]);
   });
 
+  it('excludes a past-dated slot from available days even when unbooked', async () => {
+    const [{ id: doctorId }] = await dataSource.query(
+      `SELECT id FROM doctor WHERE specialty = $1 LIMIT 1`,
+      ['endokrynolog'],
+    );
+    await dataSource.query(
+      `INSERT INTO slot ("doctorId", date, time, "timeOfDay", taken) VALUES ($1, CURRENT_DATE - INTERVAL '1 day', '10:00', 'rano', false)`,
+      [doctorId],
+    );
+    const [{ today }] = await dataSource.query(`SELECT CURRENT_DATE::text AS today`);
+
+    const days = await service.findAvailableDays('endokrynolog', 'rano');
+
+    expect(days.every((date) => date >= today)).toBe(true);
+  });
+
   it('books a free slot and it stops appearing as available', async () => {
     const [date] = await service.findAvailableDays('okulista', 'wieczorem');
     const [time] = await service.findAvailableTimes(
