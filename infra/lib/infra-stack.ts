@@ -14,6 +14,7 @@ import { Construct } from 'constructs';
 const mockPort = 3000;
 const githubRepository = 'KStrzechowski@57865141/PhoneConnect-Med@1339987698';
 const speechLocale = 'pl_PL';
+const speechLocaleEn = 'en_US';
 
 function globalIntent(name: string, utterances: string[]): lex.CfnBot.IntentProperty {
   return {
@@ -180,6 +181,140 @@ const agentTransferUtterances = [
   'operator',
   'konsultant',
   'pomoc',
+];
+
+const mainMenuUtterancesEn = [
+  'hello',
+  'hi',
+  'hello, I am calling the clinic',
+  'what can I do here',
+  'what can I do with you',
+  'what are my options',
+  'menu',
+  'main menu',
+  'go back to the menu',
+  'let us start over',
+  'from the beginning',
+  'how can you help me',
+  'I do not know what to choose',
+  'what is next',
+];
+
+const infoUtterancesEn = [
+  'what are your opening hours',
+  'when do you open',
+  'when do you close',
+  'what hours are you open',
+  'is the clinic open today',
+  'are you open on Saturday',
+  'where are you located',
+  'what is your address',
+  'give me your address',
+  'where can I find you',
+  'what street is the clinic on',
+  'how do I get to you',
+  'information about the clinic',
+  'I want to know about the facility',
+];
+
+const repeatUtterancesEn = [
+  'repeat',
+  'repeat please',
+  'say that again',
+  'again',
+  'sorry?',
+  'I did not catch that',
+  'I did not hear that',
+  'I did not understand',
+  'can you repeat that',
+  'could you repeat that',
+  'what did you say',
+  'sorry, I did not hear you',
+];
+
+const authUtterancesEn = [
+  'I want to log in',
+  'log me in',
+  'I want to identify myself',
+  'I want to confirm my identity',
+  'I want to authenticate',
+  'I will give my details',
+  'I can give my PESEL number',
+  'do I give my PESEL number',
+  'how do I log in',
+];
+
+const otpUtterancesEn = ['I want to give the code', 'I have a verification code', 'I will give the code from the text message'];
+
+const bookingUtterancesEn = [
+  'I want to book an appointment',
+  'I want to see a doctor',
+  'I would like to make an appointment',
+  'I need an appointment',
+  'I need a time slot',
+  'I want to book with a {specialty}',
+  'I want an appointment with a {specialty}',
+  'book me with a {specialty}',
+  'register me with a {specialty}',
+  'I need a slot with a {specialty}',
+  'is there a free slot with a {specialty}',
+  'I want to get in with a {specialty}',
+  'I want to book with a {specialty} {timeOfDay}',
+  'I want to get in with a {specialty} {timeOfDay}',
+  'book me with a {specialty} {timeOfDay}',
+  'I am looking for a {timeOfDay} slot',
+  'book me {timeOfDay}',
+];
+
+const listAppointmentsUtterancesEn = [
+  'I want to hear my appointments',
+  'what appointments do I have',
+  'what are my scheduled appointments',
+  'check my appointments',
+  'remind me of my appointments',
+  'when is my appointment',
+  'do I have any appointments booked',
+  'list my appointments',
+];
+
+const cancelUtterancesEn = [
+  'cancel my appointment',
+  'I want to cancel my appointment',
+  'I want to cancel',
+  'I need to cancel my appointment',
+  'cancel my booking',
+  'please remove my appointment',
+  'I will not be coming to my appointment',
+  'I want to give up my appointment',
+];
+
+const rescheduleUtterancesEn = [
+  'I want to reschedule my appointment',
+  'I want to move my appointment',
+  'I want to change my appointment time',
+  'change the time',
+  'change of appointment',
+  'I want to change the date of my appointment',
+  'move my appointment',
+  'I cannot make that time, I want another one',
+  'can I reschedule',
+];
+
+const agentTransferUtterancesEn = [
+  'connect me to an agent',
+  'connect me to reception',
+  'transfer me to reception',
+  'I want to talk to a human',
+  'I want to talk to a person',
+  'I want to speak with someone',
+  'I do not want to talk to a machine',
+  'a human please',
+  'can I speak to a representative',
+  'give me someone from support',
+  'I need help from a staff member',
+  'operator',
+  'representative',
+  'help',
 ];
 
 export class InfraStack extends cdk.Stack {
@@ -823,7 +958,7 @@ volumes:
               },
             },
             {
-              name: 'CancelIntent',
+              name: 'CancelAppointmentIntent',
               sampleUtterances: cancelUtterances.map((utterance) => ({ utterance })),
               dialogCodeHook: { enabled: true },
               fulfillmentCodeHook: { enabled: true },
@@ -922,6 +1057,335 @@ volumes:
             },
           ],
         },
+        {
+          localeId: speechLocaleEn,
+          nluConfidenceThreshold: 0.4,
+          voiceSettings: { voiceId: 'Joanna', engine: 'neural' },
+          slotTypes: [
+            {
+              name: 'KeyedPesel',
+              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
+              slotTypeValues: [{ sampleValue: { value: '00000000000' } }],
+            },
+            {
+              name: 'KeyedPhone',
+              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
+              slotTypeValues: [{ sampleValue: { value: '000000000' } }],
+            },
+            {
+              name: 'KeyedOtpCode',
+              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
+              slotTypeValues: [{ sampleValue: { value: '000000' } }],
+            },
+            {
+              name: 'Specialty',
+              valueSelectionSetting: { resolutionStrategy: 'TOP_RESOLUTION' },
+              slotTypeValues: [
+                slotValue('kardiolog', ['cardiologist', 'heart doctor', 'cardiology', 'heart']),
+                slotValue('dermatolog', ['dermatologist', 'skin doctor', 'dermatology', 'skin']),
+                slotValue('okulista', ['ophthalmologist', 'eye doctor', 'ophthalmology', 'eyes', 'vision']),
+                slotValue('laryngolog', ['ent doctor', 'ent', 'ear nose and throat doctor', 'throat doctor']),
+                slotValue('neurolog', ['neurologist', 'neurology']),
+                slotValue('ortopeda', ['orthopedist', 'orthopedics', 'bones', 'joint']),
+                slotValue('internista', ['family doctor', 'general practitioner', 'internal medicine']),
+                slotValue('ginekolog', ['gynecologist', 'gynecology']),
+                slotValue('pediatra', ['pediatrician', 'pediatrics', 'child doctor']),
+                slotValue('endokrynolog', ['endocrinologist', 'endocrinology', 'hormones', 'thyroid']),
+                slotValue('chirurg', ['surgeon', 'surgery']),
+                slotValue('urolog', ['urologist', 'urology']),
+                slotValue('psychiatra', ['psychiatrist', 'psychiatry']),
+                slotValue('alergolog', ['allergist', 'allergy', 'allergology']),
+                slotValue('reumatolog', ['rheumatologist', 'rheumatology']),
+              ],
+            },
+            {
+              name: 'TimeOfDay',
+              valueSelectionSetting: { resolutionStrategy: 'TOP_RESOLUTION' },
+              slotTypeValues: [
+                slotValue('rano', ['morning', 'early morning', 'early']),
+                slotValue('przed południem', ['late morning', 'before noon', 'before midday']),
+                slotValue('po południu', ['afternoon', 'in the afternoon']),
+                slotValue('wieczorem', ['evening', 'in the evening', 'late']),
+              ],
+            },
+          ],
+          intents: [
+            globalIntent('MainMenuIntent', mainMenuUtterancesEn),
+            globalIntent('InfoIntent', infoUtterancesEn),
+            globalIntent('RepeatLastMessageIntent', repeatUtterancesEn),
+            globalIntent('AgentTransferIntent', agentTransferUtterancesEn),
+            globalIntent('ListAppointmentsIntent', listAppointmentsUtterancesEn),
+            {
+              name: 'AuthIntent',
+              sampleUtterances: authUtterancesEn.map((utterance) => ({ utterance })),
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [
+                { slotName: 'pesel', priority: 1 },
+                { slotName: 'phone', priority: 2 },
+              ],
+              slots: [
+                {
+                  name: 'pesel',
+                  slotTypeName: 'KeyedPesel',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say('Enter your PESEL number on the keypad, then press the pound key.'),
+                      ],
+                      promptAttemptsSpecification: {
+                        Initial: keypadOnlyAttempt(11),
+                        Retry1: keypadOnlyAttempt(11),
+                        Retry2: keypadOnlyAttempt(11),
+                      },
+                    },
+                  },
+                },
+                {
+                  name: 'phone',
+                  slotTypeName: 'KeyedPhone',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say('Enter your phone number on the keypad, then press the pound key.'),
+                      ],
+                      promptAttemptsSpecification: {
+                        Initial: keypadOnlyAttempt(15),
+                        Retry1: keypadOnlyAttempt(15),
+                        Retry2: keypadOnlyAttempt(15),
+                      },
+                    },
+                  },
+                },
+              ],
+              intentConfirmationSetting: {
+                promptSpecification: {
+                  maxRetries: 2,
+                  allowInterrupt: false,
+                  messageGroupsList: [
+                    say(
+                      'You entered PESEL number {pesel} and phone number {phone}. Is that correct? Please say yes or no.',
+                    ),
+                  ],
+                },
+                declinationResponse: {
+                  messageGroupsList: [say('Please enter your details again.')],
+                },
+                declinationNextStep: {
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'pesel' },
+                  intent: {
+                    slots: [
+                      { slotName: 'pesel', slotValueOverride: {} },
+                      { slotName: 'phone', slotValueOverride: {} },
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              name: 'OtpIntent',
+              sampleUtterances: otpUtterancesEn.map((utterance) => ({ utterance })),
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [{ slotName: 'otpCode', priority: 1 }],
+              slots: [
+                {
+                  name: 'otpCode',
+                  slotTypeName: 'KeyedOtpCode',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say(
+                          'Enter the code you received on the keypad, then press the pound key. ' +
+                            'To get a new code, press nine.',
+                        ),
+                      ],
+                      promptAttemptsSpecification: {
+                        Initial: keypadOnlyAttempt(6),
+                        Retry1: keypadOnlyAttempt(6),
+                        Retry2: keypadOnlyAttempt(6),
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              name: 'BookingIntent',
+              sampleUtterances: bookingUtterancesEn.map((utterance) => ({ utterance })),
+              dialogCodeHook: { enabled: true },
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [
+                { slotName: 'specialty', priority: 1 },
+                { slotName: 'timeOfDay', priority: 2 },
+                { slotName: 'selectedSlot', priority: 3 },
+              ],
+              slots: [
+                {
+                  name: 'specialty',
+                  slotTypeName: 'Specialty',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Which specialist would you like to see?')],
+                    },
+                  },
+                },
+                {
+                  name: 'timeOfDay',
+                  slotTypeName: 'TimeOfDay',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say(
+                          'What time of day works for you: morning, late morning, afternoon, or evening?',
+                        ),
+                      ],
+                    },
+                  },
+                },
+                {
+                  name: 'selectedSlot',
+                  slotTypeName: 'AMAZON.Number',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Which number would you like to choose?')],
+                    },
+                  },
+                },
+              ],
+              intentConfirmationSetting: {
+                promptSpecification: {
+                  maxRetries: 2,
+                  allowInterrupt: false,
+                  messageGroupsList: [say('Is that correct? Please say yes or no.')],
+                },
+                declinationResponse: {
+                  messageGroupsList: [say("Okay, let's choose another time.")],
+                },
+                declinationNextStep: {
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
+                  intent: {
+                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                  },
+                },
+              },
+            },
+            {
+              name: 'CancelAppointmentIntent',
+              sampleUtterances: cancelUtterancesEn.map((utterance) => ({ utterance })),
+              dialogCodeHook: { enabled: true },
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [{ slotName: 'selectedSlot', priority: 1 }],
+              slots: [
+                {
+                  name: 'selectedSlot',
+                  slotTypeName: 'AMAZON.Number',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Which number would you like to choose?')],
+                    },
+                  },
+                },
+              ],
+              intentConfirmationSetting: {
+                promptSpecification: {
+                  maxRetries: 2,
+                  allowInterrupt: false,
+                  messageGroupsList: [say('Is that correct? Please say yes or no.')],
+                },
+                declinationResponse: {
+                  messageGroupsList: [say("Okay, I'll leave that appointment unchanged.")],
+                },
+                declinationNextStep: {
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
+                  intent: {
+                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                  },
+                },
+              },
+            },
+            {
+              name: 'RescheduleIntent',
+              sampleUtterances: rescheduleUtterancesEn.map((utterance) => ({ utterance })),
+              dialogCodeHook: { enabled: true },
+              fulfillmentCodeHook: { enabled: true },
+              slotPriorities: [
+                { slotName: 'timeOfDay', priority: 1 },
+                { slotName: 'selectedSlot', priority: 2 },
+              ],
+              slots: [
+                {
+                  name: 'timeOfDay',
+                  slotTypeName: 'TimeOfDay',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [
+                        say(
+                          'What time of day works for you: morning, late morning, afternoon, or evening?',
+                        ),
+                      ],
+                    },
+                  },
+                },
+                {
+                  name: 'selectedSlot',
+                  slotTypeName: 'AMAZON.Number',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Which number would you like to choose?')],
+                    },
+                  },
+                },
+              ],
+              intentConfirmationSetting: {
+                promptSpecification: {
+                  maxRetries: 2,
+                  allowInterrupt: false,
+                  messageGroupsList: [say('Is that correct? Please say yes or no.')],
+                },
+                declinationResponse: {
+                  messageGroupsList: [say("Okay, let's choose another time.")],
+                },
+                declinationNextStep: {
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
+                  intent: {
+                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                  },
+                },
+              },
+            },
+            {
+              name: 'FallbackIntent',
+              parentIntentSignature: 'AMAZON.FallbackIntent',
+              fulfillmentCodeHook: { enabled: true },
+            },
+          ],
+        },
       ],
     });
 
@@ -929,6 +1393,7 @@ volumes:
       botId: speechBot.attrId,
       botVersionLocaleSpecification: [
         { localeId: speechLocale, botVersionLocaleDetails: { sourceBotVersion: 'DRAFT' } },
+        { localeId: speechLocaleEn, botVersionLocaleDetails: { sourceBotVersion: 'DRAFT' } },
       ],
     });
 
@@ -939,6 +1404,18 @@ volumes:
       botAliasLocaleSettings: [
         {
           localeId: speechLocale,
+          botAliasLocaleSetting: {
+            enabled: true,
+            codeHookSpecification: {
+              lambdaCodeHook: {
+                lambdaArn: facilityInfoSpeech.functionArn,
+                codeHookInterfaceVersion: '1.0',
+              },
+            },
+          },
+        },
+        {
+          localeId: speechLocaleEn,
           botAliasLocaleSetting: {
             enabled: true,
             codeHookSpecification: {

@@ -92,7 +92,7 @@ const cancelIntentEvent = (
     sessionAttributes: { contactId: 'contact-1', ...sessionAttributes },
     intent: {
       ...sampleEvent.sessionState.intent,
-      name: 'CancelIntent',
+      name: 'CancelAppointmentIntent',
       slots: Object.fromEntries(
         Object.entries(slots).map(([key, value]) => [key, value === null ? null : { value: { interpretedValue: value } }]),
       ),
@@ -561,14 +561,14 @@ test('BookingIntent fulfillment reports a clean failure when the slot was taken 
   assert.equal('transfer' in result.sessionState.sessionAttributes, false);
 });
 
-test('CancelIntent dialog hook needs auth before listing anything', async () => {
+test('CancelAppointmentIntent dialog hook needs auth before listing anything', async () => {
   const result = await handler(cancelIntentEvent('DialogCodeHook', {}, { authenticated: 'false' }));
 
   assert.equal(result.sessionState.dialogAction.type, 'Close');
   assert.equal(result.sessionState.sessionAttributes.needsAuth, 'true');
 });
 
-test('CancelIntent dialog hook closes with the empty message for a patient with no appointments', async () => {
+test('CancelAppointmentIntent dialog hook closes with the empty message for a patient with no appointments', async () => {
   mockFetchSequence([{ appointments: [] }]);
   const result = await handler(
     cancelIntentEvent('DialogCodeHook', {}, { authenticated: 'true', patientId: '1' }),
@@ -579,7 +579,7 @@ test('CancelIntent dialog hook closes with the empty message for a patient with 
   assert.equal(messageOf(result), 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.');
 });
 
-test('CancelIntent dialog hook lists appointments and elicits a selection', async () => {
+test('CancelAppointmentIntent dialog hook lists appointments and elicits a selection', async () => {
   mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
   const result = await handler(
     cancelIntentEvent('DialogCodeHook', {}, { authenticated: 'true', patientId: '1' }),
@@ -592,7 +592,7 @@ test('CancelIntent dialog hook lists appointments and elicits a selection', asyn
   assert.match(messageOf(result), /kardiolog/);
 });
 
-test('CancelIntent dialog hook resolves the chosen appointment and asks for confirmation', async () => {
+test('CancelAppointmentIntent dialog hook resolves the chosen appointment and asks for confirmation', async () => {
   mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
   const result = await handler(
     cancelIntentEvent(
@@ -608,7 +608,7 @@ test('CancelIntent dialog hook resolves the chosen appointment and asks for conf
   assert.match(messageOf(result), /09:30/);
 });
 
-test('CancelIntent dialog hook re-elicits the selection when it does not resolve', async () => {
+test('CancelAppointmentIntent dialog hook re-elicits the selection when it does not resolve', async () => {
   mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
   const result = await handler(
     cancelIntentEvent(
@@ -624,7 +624,7 @@ test('CancelIntent dialog hook re-elicits the selection when it does not resolve
   assert.equal(result.sessionState.sessionAttributes.cancelAttempts, '1');
 });
 
-test('CancelIntent dialog hook transfers after the third consecutive unresolved selection', async () => {
+test('CancelAppointmentIntent dialog hook transfers after the third consecutive unresolved selection', async () => {
   mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
   const result = await handler(
     cancelIntentEvent(
@@ -639,7 +639,7 @@ test('CancelIntent dialog hook transfers after the third consecutive unresolved 
   assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
 });
 
-test('CancelIntent fulfillment needs auth before cancelling', async () => {
+test('CancelAppointmentIntent fulfillment needs auth before cancelling', async () => {
   const result = await handler(
     cancelIntentEvent('FulfillmentCodeHook', { selectedSlot: '1' }, { authenticated: 'false', patientId: '1' }),
   );
@@ -648,7 +648,7 @@ test('CancelIntent fulfillment needs auth before cancelling', async () => {
   assert.equal(result.sessionState.sessionAttributes.needsAuth, 'true');
 });
 
-test('CancelIntent fulfillment reports a clean failure when patientId is missing', async () => {
+test('CancelAppointmentIntent fulfillment reports a clean failure when patientId is missing', async () => {
   const result = await handler(
     cancelIntentEvent('FulfillmentCodeHook', { selectedSlot: '1' }, { authenticated: 'true' }),
   );
@@ -657,7 +657,7 @@ test('CancelIntent fulfillment reports a clean failure when patientId is missing
   assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
 });
 
-test('CancelIntent fulfillment resolves the appointment and cancels it', async () => {
+test('CancelAppointmentIntent fulfillment resolves the appointment and cancels it', async () => {
   mockFetchSequence([
     { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
     { cancelled: true },
@@ -671,7 +671,7 @@ test('CancelIntent fulfillment resolves the appointment and cancels it', async (
   assert.match(messageOf(result), /odwołana/);
 });
 
-test('CancelIntent fulfillment reports a clean failure when the cancellation does not go through', async () => {
+test('CancelAppointmentIntent fulfillment reports a clean failure when the cancellation does not go through', async () => {
   mockFetchSequence([
     { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
     { cancelled: false },
@@ -685,7 +685,7 @@ test('CancelIntent fulfillment reports a clean failure when the cancellation doe
   assert.equal('transfer' in result.sessionState.sessionAttributes, false);
 });
 
-test('CancelIntent fulfillment transfers when the appointment no longer resolves', async () => {
+test('CancelAppointmentIntent fulfillment transfers when the appointment no longer resolves', async () => {
   mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
   const result = await handler(
     cancelIntentEvent('FulfillmentCodeHook', { selectedSlot: '9' }, { authenticated: 'true', patientId: '1' }),

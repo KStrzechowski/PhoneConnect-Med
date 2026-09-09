@@ -281,7 +281,7 @@ const handleCancelDialog = async (
 ): Promise<LexResponse> => {
   if (incoming.authenticated !== 'true') {
     const message = 'Aby odwołać wizytę, proszę się najpierw zidentyfikować.';
-    return close('CancelIntent', { ...incoming, lastMessageText: message, needsAuth: 'true' }, message);
+    return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, needsAuth: 'true' }, message);
   }
 
   const stage = incoming.cancelStage ?? '';
@@ -291,7 +291,7 @@ const handleCancelDialog = async (
 
   const giveUp = async (): Promise<LexResponse> => {
     const message = 'Nie udało się odwołać wizyty. Łączę z konsultantem.';
-    return close('CancelIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
   };
 
   if (stage === '') {
@@ -299,7 +299,7 @@ const handleCancelDialog = async (
       const appointments = await downstream(record, () => listAppointments(patientId, abort));
       if (appointments.length === 0) {
         const message = 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.';
-        return close('CancelIntent', { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
+        return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
       }
       const options = appointments
         .slice(0, 3)
@@ -307,7 +307,7 @@ const handleCancelDialog = async (
         .join('. ');
       const message = `Które wizyty Pani/Pan chce odwołać? ${options}. Proszę podać numer.`;
       return elicitSlot(
-        'CancelIntent',
+        'CancelAppointmentIntent',
         'selectedSlot',
         { ...slots, selectedSlot: null },
         { ...incoming, lastMessageText: message, cancelStage: 'select', cancelAttempts: '0' },
@@ -317,7 +317,7 @@ const handleCancelDialog = async (
       record.outcome = 'error';
       record.error = String(error);
       const message = 'Przepraszam, mam teraz problem z pobraniem listy wizyt. Łączę z konsultantem.';
-      return close('CancelIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+      return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
     }
   }
 
@@ -328,7 +328,7 @@ const handleCancelDialog = async (
       if (attempts + 1 >= CANCEL_ATTEMPT_LIMIT) return giveUp();
       const message = 'Nie rozpoznałem podanego numeru wizyty. Proszę spróbować jeszcze raz.';
       return elicitSlot(
-        'CancelIntent',
+        'CancelAppointmentIntent',
         'selectedSlot',
         { ...slots, selectedSlot: null },
         { ...incoming, lastMessageText: message, cancelAttempts: String(attempts + 1) },
@@ -336,12 +336,12 @@ const handleCancelDialog = async (
       );
     }
     const message = `Odwołuję wizytę: ${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${appointment.time}. Czy się zgadza?`;
-    return confirmIntent('CancelIntent', slots, { ...incoming, lastMessageText: message }, message);
+    return confirmIntent('CancelAppointmentIntent', slots, { ...incoming, lastMessageText: message }, message);
   } catch (error) {
     record.outcome = 'error';
     record.error = String(error);
     const message = 'Przepraszam, mam teraz problem z wyszukaniem wizyty. Łączę z konsultantem.';
-    return close('CancelIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
   }
 };
 
@@ -352,7 +352,7 @@ const handleCancelFulfillment = async (
 ): Promise<LexCloseResponse> => {
   if (incoming.authenticated !== 'true') {
     const message = 'Aby odwołać wizytę, proszę się najpierw zidentyfikować.';
-    return close('CancelIntent', { ...incoming, lastMessageText: message, needsAuth: 'true' }, message);
+    return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, needsAuth: 'true' }, message);
   }
 
   const selectedSlot = Number(slots.selectedSlot?.value?.interpretedValue ?? '');
@@ -360,7 +360,7 @@ const handleCancelFulfillment = async (
     const message = 'Przepraszam, mam teraz problem z odwołaniem wizyty. Łączę z konsultantem.';
     record.outcome = 'error';
     record.error = 'missing patientId';
-    return close('CancelIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
   }
   const patientId = Number(incoming.patientId);
   const abort = AbortSignal.timeout(1000);
@@ -371,7 +371,7 @@ const handleCancelFulfillment = async (
       const message = 'Nie udało się odwołać wizyty. Łączę z konsultantem.';
       record.outcome = 'error';
       record.error = 'appointment not found at fulfillment';
-      return close('CancelIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+      return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
     }
     const cancelled = await downstream(record, () =>
       cancelAppointment(appointment.date, appointment.time, patientId, abort),
@@ -379,12 +379,12 @@ const handleCancelFulfillment = async (
     const message = cancelled
       ? 'Wizyta została odwołana. Dziękuję.'
       : 'Niestety nie udało się odwołać tej wizyty. Proszę spróbować ponownie.';
-    return close('CancelIntent', { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
+    return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
   } catch (error) {
     record.outcome = 'error';
     record.error = String(error);
     const message = 'Przepraszam, mam teraz problem z odwołaniem wizyty. Łączę z konsultantem.';
-    return close('CancelIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
+    return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
   }
 };
 
@@ -787,7 +787,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
     return handleBookingFulfillment(slots, incoming, record);
   }
 
-  if (intentName === 'CancelIntent') {
+  if (intentName === 'CancelAppointmentIntent') {
     const slots = event.sessionState.intent.slots ?? {};
     if (event.invocationSource === 'DialogCodeHook') {
       return handleCancelDialog(slots, incoming, record);
