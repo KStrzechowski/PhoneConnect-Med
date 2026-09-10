@@ -3,7 +3,7 @@ import { measured, downstream } from '@pcm/measure';
 export const handler = measured(
   'connect-health',
   async (_event, record): Promise<Record<string, string>> => {
-    const abort = AbortSignal.timeout(1000);
+    const abort = AbortSignal.timeout(7000);
     try {
       const response = await downstream(record, () =>
         fetch(`${process.env.MOCK_BASE_URL}/health`, { signal: abort }),

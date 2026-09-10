@@ -5,7 +5,7 @@ export const handler = measured(
   'authenticate',
   async (event, record): Promise<Record<string, string>> => {
     const { pesel = '', phone = '', callerNumber = '' } = event.Details?.Parameters ?? {};
-    const abort = AbortSignal.timeout(1000);
+    const abort = AbortSignal.timeout(7000);
     try {
       const result = await downstream(record, () => beginOtpChallenge(pesel, phone, callerNumber, abort));
       if ('authenticated' in result) {

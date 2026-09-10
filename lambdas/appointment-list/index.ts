@@ -16,7 +16,7 @@ export const handler = measured(
 
     if (authenticated !== 'true') return { needsAuth: 'true' };
 
-    const abort = AbortSignal.timeout(1000);
+    const abort = AbortSignal.timeout(7000);
     try {
       const appointments = await downstream(record, () => listAppointments(Number(patientId), abort));
       if (appointments.length === 0) return { reachable: 'true', hasAppointments: 'false' };

@@ -139,7 +139,7 @@ const handleBookingDialog = async (
 
   const stage = incoming.bookingStage ?? '';
   const attempts = Number(incoming.bookingAttempts ?? '0');
-  const abort = AbortSignal.timeout(1000);
+  const abort = AbortSignal.timeout(7000);
 
   const giveUp = async (): Promise<LexResponse> => {
     const message = 'Nie udało się umówić wizyty. Łączę z konsultantem.';
@@ -260,7 +260,7 @@ const handleBookingFulfillment = async (
 
   try {
     const booked = await downstream(record, () =>
-      bookAppointment(specialty, timeOfDay, date, time, patientId, AbortSignal.timeout(1000)),
+      bookAppointment(specialty, timeOfDay, date, time, patientId, AbortSignal.timeout(7000)),
     );
     const message = booked
       ? 'Wizyta została umówiona. Dziękuję.'
@@ -286,7 +286,7 @@ const handleCancelDialog = async (
 
   const stage = incoming.cancelStage ?? '';
   const attempts = Number(incoming.cancelAttempts ?? '0');
-  const abort = AbortSignal.timeout(1000);
+  const abort = AbortSignal.timeout(7000);
   const patientId = Number(incoming.patientId);
 
   const giveUp = async (): Promise<LexResponse> => {
@@ -363,7 +363,7 @@ const handleCancelFulfillment = async (
     return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
   }
   const patientId = Number(incoming.patientId);
-  const abort = AbortSignal.timeout(1000);
+  const abort = AbortSignal.timeout(7000);
 
   try {
     const appointment = await downstream(record, () => resolveAppointment(patientId, selectedSlot, abort));
@@ -405,7 +405,7 @@ const handleRescheduleDialog = async (
 
   const stage = incoming.rescheduleStage ?? '';
   const attempts = Number(incoming.rescheduleAttempts ?? '0');
-  const abort = AbortSignal.timeout(1000);
+  const abort = AbortSignal.timeout(7000);
   const patientId = Number(incoming.patientId);
 
   const giveUp = async (): Promise<LexResponse> => {
@@ -599,7 +599,7 @@ const handleRescheduleFulfillment = async (
   }
   const patientId = Number(incoming.patientId);
   const apptChoice = Number(incoming.rescheduleApptSelection ?? '');
-  const abort = AbortSignal.timeout(1000);
+  const abort = AbortSignal.timeout(7000);
 
   try {
     const appointment = await downstream(record, () => resolveAppointment(patientId, apptChoice, abort));
@@ -639,7 +639,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
 
   if (intentName === 'InfoIntent') {
     try {
-      const facility = await downstream(record, () => fetchFacility(AbortSignal.timeout(1000)));
+      const facility = await downstream(record, () => fetchFacility(AbortSignal.timeout(7000)));
       const message = `Nasz adres to ${facility.address}. Jesteśmy czynni od ${facility.opensAt} do ${facility.closesAt}, ${facility.openDays}.`;
       return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
     } catch (error) {
@@ -656,7 +656,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
     const callerNumber = incoming.callerNumber ?? '';
     try {
       const result = await downstream(record, () =>
-        beginOtpChallenge(pesel, phone, callerNumber, AbortSignal.timeout(1000)),
+        beginOtpChallenge(pesel, phone, callerNumber, AbortSignal.timeout(7000)),
       );
       if ('authenticated' in result) {
         record.authPath = 'caller-id';
@@ -810,7 +810,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
     }
     try {
       const appointments = await downstream(record, () =>
-        listAppointments(Number(incoming.patientId), AbortSignal.timeout(1000)),
+        listAppointments(Number(incoming.patientId), AbortSignal.timeout(7000)),
       );
       if (appointments.length === 0) {
         const message = 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.';

@@ -4,7 +4,7 @@ import { fetchFacility } from '@pcm/facility';
 export const handler = measured(
   'facility-info',
   async (_event, record): Promise<Record<string, string>> => {
-    const abort = AbortSignal.timeout(1000);
+    const abort = AbortSignal.timeout(7000);
     try {
       const facility = await downstream(record, () => fetchFacility(abort));
       return {
