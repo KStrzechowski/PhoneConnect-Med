@@ -17,7 +17,7 @@ export class CreateFacility1756500000000 implements MigrationInterface {
     `);
     await queryRunner.query(`
       INSERT INTO "facility" ("name", "address", "opensAt", "closesAt", "openDays")
-      VALUES ('Przychodnia Zdrowie', 'ul. Kwiatowa 12, 00-001 Warszawa', '08:00', '18:00', 'monday-friday')
+      VALUES ('Przychodnia Zdrowie', 'ul. Kwiatowa 12, 00-001 Warszawa', '08:00', '18:00', 'poniedziałek-piątek')
     `);
   }
 
