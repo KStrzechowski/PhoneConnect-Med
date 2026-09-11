@@ -48,6 +48,20 @@ function keypadOnlyAttempt(maxLength: number): lex.CfnBot.PromptAttemptSpecifica
   };
 }
 
+function voiceAttempt(): lex.CfnBot.PromptAttemptSpecificationProperty {
+  return {
+    allowedInputTypes: { allowAudioInput: true, allowDtmfInput: false },
+    allowInterrupt: false,
+    audioAndDtmfInputSpecification: {
+      startTimeoutMs: 8000,
+      audioSpecification: {
+        endTimeoutMs: 1500,
+        maxLengthMs: 20000,
+      },
+    },
+  };
+}
+
 const mainMenuUtterances = [
   'dzień dobry',
   'halo',
@@ -843,6 +857,11 @@ volumes:
                       'Podano numer PESEL {pesel} oraz numer telefonu {phone}. Czy dane są poprawne? Powiedz tak albo nie.',
                     ),
                   ],
+                  promptAttemptsSpecification: {
+                    Initial: voiceAttempt(),
+                    Retry1: voiceAttempt(),
+                    Retry2: voiceAttempt(),
+                  },
                 },
                 declinationResponse: {
                   messageGroupsList: [say('Proszę podać dane jeszcze raz.')],
@@ -908,6 +927,11 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('Do jakiego specjalisty chce się Pani/Pan umówić?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -924,6 +948,11 @@ volumes:
                           'Jaka pora dnia Pani/Panu odpowiada: rano, przed południem, po południu, czy wieczorem?',
                         ),
                       ],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -936,6 +965,11 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('Który numer Pani/Pan wybiera?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -945,6 +979,11 @@ volumes:
                   maxRetries: 2,
                   allowInterrupt: false,
                   messageGroupsList: [say('Czy się zgadza? Powiedz tak albo nie.')],
+                  promptAttemptsSpecification: {
+                    Initial: voiceAttempt(),
+                    Retry1: voiceAttempt(),
+                    Retry2: voiceAttempt(),
+                  },
                 },
                 declinationResponse: {
                   messageGroupsList: [say('Dobrze, wybierzmy inny termin.')],
@@ -973,6 +1012,11 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('Który numer Pani/Pan wybiera?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -982,6 +1026,11 @@ volumes:
                   maxRetries: 2,
                   allowInterrupt: false,
                   messageGroupsList: [say('Czy się zgadza? Powiedz tak albo nie.')],
+                  promptAttemptsSpecification: {
+                    Initial: voiceAttempt(),
+                    Retry1: voiceAttempt(),
+                    Retry2: voiceAttempt(),
+                  },
                 },
                 declinationResponse: {
                   messageGroupsList: [say('Dobrze, zostawiam tę wizytę bez zmian.')],
@@ -1017,6 +1066,11 @@ volumes:
                           'Jaka pora dnia Pani/Panu odpowiada: rano, przed południem, po południu, czy wieczorem?',
                         ),
                       ],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -1029,6 +1083,11 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('Który numer Pani/Pan wybiera?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -1038,6 +1097,11 @@ volumes:
                   maxRetries: 2,
                   allowInterrupt: false,
                   messageGroupsList: [say('Czy się zgadza? Powiedz tak albo nie.')],
+                  promptAttemptsSpecification: {
+                    Initial: voiceAttempt(),
+                    Retry1: voiceAttempt(),
+                    Retry2: voiceAttempt(),
+                  },
                 },
                 declinationResponse: {
                   messageGroupsList: [say('Dobrze, wybierzmy inny termin.')],
@@ -1172,6 +1236,11 @@ volumes:
                       'You entered PESEL number {pesel} and phone number {phone}. Is that correct? Please say yes or no.',
                     ),
                   ],
+                  promptAttemptsSpecification: {
+                    Initial: voiceAttempt(),
+                    Retry1: voiceAttempt(),
+                    Retry2: voiceAttempt(),
+                  },
                 },
                 declinationResponse: {
                   messageGroupsList: [say('Please enter your details again.')],
@@ -1237,6 +1306,11 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('Which specialist would you like to see?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -1253,6 +1327,11 @@ volumes:
                           'What time of day works for you: morning, late morning, afternoon, or evening?',
                         ),
                       ],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -1265,6 +1344,11 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('Which number would you like to choose?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -1274,6 +1358,11 @@ volumes:
                   maxRetries: 2,
                   allowInterrupt: false,
                   messageGroupsList: [say('Is that correct? Please say yes or no.')],
+                  promptAttemptsSpecification: {
+                    Initial: voiceAttempt(),
+                    Retry1: voiceAttempt(),
+                    Retry2: voiceAttempt(),
+                  },
                 },
                 declinationResponse: {
                   messageGroupsList: [say("Okay, let's choose another time.")],
@@ -1302,6 +1391,11 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('Which number would you like to choose?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -1311,6 +1405,11 @@ volumes:
                   maxRetries: 2,
                   allowInterrupt: false,
                   messageGroupsList: [say('Is that correct? Please say yes or no.')],
+                  promptAttemptsSpecification: {
+                    Initial: voiceAttempt(),
+                    Retry1: voiceAttempt(),
+                    Retry2: voiceAttempt(),
+                  },
                 },
                 declinationResponse: {
                   messageGroupsList: [say("Okay, I'll leave that appointment unchanged.")],
@@ -1346,6 +1445,11 @@ volumes:
                           'What time of day works for you: morning, late morning, afternoon, or evening?',
                         ),
                       ],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -1358,6 +1462,11 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('Which number would you like to choose?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
                     },
                   },
                 },
@@ -1367,6 +1476,11 @@ volumes:
                   maxRetries: 2,
                   allowInterrupt: false,
                   messageGroupsList: [say('Is that correct? Please say yes or no.')],
+                  promptAttemptsSpecification: {
+                    Initial: voiceAttempt(),
+                    Retry1: voiceAttempt(),
+                    Retry2: voiceAttempt(),
+                  },
                 },
                 declinationResponse: {
                   messageGroupsList: [say("Okay, let's choose another time.")],

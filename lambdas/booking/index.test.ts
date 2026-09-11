@@ -28,9 +28,7 @@ test('days step returns speakable day labels when slots are available', async ()
 
   assert.equal(result.reachable, 'true');
   assert.equal(result.available, 'true');
-  assert.ok(result.day1.length > 0);
-  assert.ok(result.day2.length > 0);
-  assert.ok(result.day3.length > 0);
+  assert.match(result.daysList, /^1 - .+, 2 - .+, 3 - .+$/);
 });
 
 test('days step reports no availability when the search is empty', async () => {
@@ -50,9 +48,7 @@ test('times step re-derives the chosen day and returns its times', async () => {
     reachable: 'true',
     available: 'true',
     date: '2026-09-07',
-    time1: '08:00',
-    time2: '09:30',
-    time3: '',
+    timesList: '1 - 08:00, 2 - 09:30',
   });
 });
 
@@ -83,7 +79,7 @@ test('days step returns English day labels when locale is en', async () => {
 
   assert.equal(result.reachable, 'true');
   assert.equal(result.available, 'true');
-  assert.match(result.day1, /Friday/);
+  assert.match(result.daysList, /Friday/);
 });
 
 test('confirm step returns an English message and specialty name when locale is en', async () => {

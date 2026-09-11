@@ -39,9 +39,7 @@ test('returns up to three formatted appointments without an overflow flag when u
   assert.equal(result.reachable, 'true');
   assert.equal(result.hasAppointments, 'true');
   assert.equal(result.hasMore, 'false');
-  assert.match(result.appt1, /kardiolog.*godzina 09:30/);
-  assert.match(result.appt2, /okulista.*godzina 10:00/);
-  assert.equal(result.appt3, '');
+  assert.match(result.apptsList, /kardiolog.*godzina 09:30\. okulista.*godzina 10:00$/);
 });
 
 test('caps at three appointments and flags overflow when a fourth exists', async () => {
@@ -55,7 +53,8 @@ test('caps at three appointments and flags overflow when a fourth exists', async
   mock.restoreAll();
 
   assert.equal(result.hasMore, 'true');
-  assert.match(result.appt3, /urolog/);
+  assert.match(result.apptsList, /urolog/);
+  assert.doesNotMatch(result.apptsList, /dermatolog/);
 });
 
 test('returns English-formatted appointments when locale is en', async () => {
@@ -63,7 +62,7 @@ test('returns English-formatted appointments when locale is en', async () => {
   const result = await handler(withParams({ locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.appt1, /Cardiology.*at 09:30/);
+  assert.match(result.apptsList, /Cardiology.*at 09:30/);
 });
 
 test('returns a handled error when the mock is unreachable', async () => {

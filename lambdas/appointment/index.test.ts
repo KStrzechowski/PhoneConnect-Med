@@ -10,6 +10,8 @@ import {
   resolveAppointment,
   cancelAppointment,
   rescheduleAppointment,
+  joinNumbered,
+  joinList,
 } from './index.ts';
 
 const mockJson = (body: object) => {
@@ -174,6 +176,18 @@ test('rescheduleAppointment books the new slot then releases the old one', async
   mock.restoreAll();
 
   assert.deepEqual(result, { rescheduled: true, oldSlotReleased: true });
+});
+
+test('joinNumbered numbers each item and stops at however many are given', () => {
+  assert.equal(joinNumbered(['poniedziałek']), '1 - poniedziałek');
+  assert.equal(joinNumbered(['poniedziałek', 'wtorek']), '1 - poniedziałek, 2 - wtorek');
+  assert.equal(joinNumbered([]), '');
+});
+
+test('joinList joins items with a period and no trailing separator', () => {
+  assert.equal(joinList(['a']), 'a');
+  assert.equal(joinList(['a', 'b']), 'a. b');
+  assert.equal(joinList([]), '');
 });
 
 test('rescheduleAppointment reports the old slot as not released when its cancellation fails', async () => {

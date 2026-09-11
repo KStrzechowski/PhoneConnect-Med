@@ -849,7 +849,11 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
 
   if (intentName === 'AgentTransferIntent') {
     const message = 'Już łączę z konsultantem.';
-    return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
+    return close(
+      intentName,
+      { ...incoming, lastMessageText: message, fallbackCount: '0', agentRequested: 'true' },
+      message,
+    );
   }
 
   const count = Number(incoming.fallbackCount ?? '0') + 1;

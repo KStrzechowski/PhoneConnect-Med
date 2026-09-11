@@ -15,7 +15,7 @@ const sampleFacility = {
   address: 'ul. Kwiatowa 12, 00-001 Warszawa',
   opensAt: '08:00',
   closesAt: '18:00',
-  openDays: 'monday-friday',
+  openDays: 'poniedziałek-piątek',
 };
 
 const eventFor = (intentName: string, sessionAttributes: Record<string, string> = {}) => ({
@@ -138,7 +138,7 @@ test('InfoIntent returns the byte-identical facility sentence', async () => {
 
   assert.equal(
     messageOf(result),
-    'Nasz adres to ul. Kwiatowa 12, 00-001 Warszawa. Jesteśmy czynni od 08:00 do 18:00, monday-friday.',
+    'Nasz adres to ul. Kwiatowa 12, 00-001 Warszawa. Jesteśmy czynni od 08:00 do 18:00, poniedziałek-piątek.',
   );
   assert.equal(result.sessionState.dialogAction.type, 'Close');
   assert.equal(result.sessionState.intent.name, 'InfoIntent');
@@ -155,6 +155,7 @@ test('AgentTransferIntent returns a connecting message', async () => {
   const result = await handler(eventFor('AgentTransferIntent'));
 
   assert.equal(messageOf(result), 'Już łączę z konsultantem.');
+  assert.equal(result.sessionState.sessionAttributes.agentRequested, 'true');
 });
 
 test('FallbackIntent escalates across three consecutive invocations', async () => {

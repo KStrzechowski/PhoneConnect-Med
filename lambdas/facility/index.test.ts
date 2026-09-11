@@ -7,7 +7,7 @@ const sampleFacility = {
   address: 'ul. Kwiatowa 12, 00-001 Warszawa',
   opensAt: '08:00',
   closesAt: '18:00',
-  openDays: 'monday-friday',
+  openDays: 'poniedziałek-piątek',
 };
 
 test('returns the parsed facility payload', async () => {

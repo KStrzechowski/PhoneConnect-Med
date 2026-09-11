@@ -6,6 +6,7 @@ import {
   formatDayLabel,
   formatDayLabelEn,
   specialtyDisplayNamesEn,
+  joinNumbered,
 } from '@pcm/appointment';
 
 const formatAppointment = (
@@ -37,9 +38,7 @@ export const handler = measured(
         return {
           reachable: 'true',
           hasAppointments: 'true',
-          appt1: appointments[0] ? formatAppointment(appointments[0], locale) : '',
-          appt2: appointments[1] ? formatAppointment(appointments[1], locale) : '',
-          appt3: appointments[2] ? formatAppointment(appointments[2], locale) : '',
+          apptsList: joinNumbered(appointments.slice(0, 3).map((a) => formatAppointment(a, locale))),
         };
       }
 

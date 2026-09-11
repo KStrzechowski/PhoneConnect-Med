@@ -1,5 +1,5 @@
 import { measured, downstream } from '@pcm/measure';
-import { listAppointments, formatDayLabel, formatDayLabelEn, specialtyDisplayNamesEn } from '@pcm/appointment';
+import { listAppointments, formatDayLabel, formatDayLabelEn, specialtyDisplayNamesEn, joinList } from '@pcm/appointment';
 
 const formatAppointment = (
   appointment: { specialty: string; date: string; time: string },
@@ -24,9 +24,7 @@ export const handler = measured(
         reachable: 'true',
         hasAppointments: 'true',
         hasMore: String(appointments.length > 3),
-        appt1: appointments[0] ? formatAppointment(appointments[0], locale) : '',
-        appt2: appointments[1] ? formatAppointment(appointments[1], locale) : '',
-        appt3: appointments[2] ? formatAppointment(appointments[2], locale) : '',
+        apptsList: joinList(appointments.slice(0, 3).map((a) => formatAppointment(a, locale))),
       };
     } catch (error) {
       const message = String(error);

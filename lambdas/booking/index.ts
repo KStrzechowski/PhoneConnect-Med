@@ -8,6 +8,7 @@ import {
   formatDayLabel,
   formatDayLabelEn,
   specialtyDisplayNamesEn,
+  joinNumbered,
 } from '@pcm/appointment';
 
 export const handler = measured(
@@ -36,9 +37,7 @@ export const handler = measured(
         return {
           reachable: 'true',
           available: 'true',
-          day1: days[0] ? dayLabel(days[0]) : '',
-          day2: days[1] ? dayLabel(days[1]) : '',
-          day3: days[2] ? dayLabel(days[2]) : '',
+          daysList: joinNumbered(days.slice(0, 3).map(dayLabel)),
         };
       }
 
@@ -51,9 +50,7 @@ export const handler = measured(
           reachable: 'true',
           available: 'true',
           date,
-          time1: times[0] ?? '',
-          time2: times[1] ?? '',
-          time3: times[2] ?? '',
+          timesList: joinNumbered(times.slice(0, 3)),
         };
       }
 

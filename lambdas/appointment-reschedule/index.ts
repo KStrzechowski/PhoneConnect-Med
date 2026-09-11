@@ -10,6 +10,7 @@ import {
   formatDayLabel,
   formatDayLabelEn,
   specialtyDisplayNamesEn,
+  joinNumbered,
 } from '@pcm/appointment';
 
 const formatAppointment = (
@@ -46,9 +47,7 @@ export const handler = measured(
         return {
           reachable: 'true',
           hasAppointments: 'true',
-          appt1: appointments[0] ? formatAppointment(appointments[0], locale) : '',
-          appt2: appointments[1] ? formatAppointment(appointments[1], locale) : '',
-          appt3: appointments[2] ? formatAppointment(appointments[2], locale) : '',
+          apptsList: joinNumbered(appointments.slice(0, 3).map((a) => formatAppointment(a, locale))),
         };
       }
 
@@ -63,9 +62,7 @@ export const handler = measured(
           reachable: 'true',
           found: 'true',
           available: 'true',
-          day1: days[0] ? dayLabel(days[0]) : '',
-          day2: days[1] ? dayLabel(days[1]) : '',
-          day3: days[2] ? dayLabel(days[2]) : '',
+          daysList: joinNumbered(days.slice(0, 3).map(dayLabel)),
         };
       }
 
@@ -85,9 +82,7 @@ export const handler = measured(
           found: 'true',
           available: 'true',
           date,
-          time1: times[0] ?? '',
-          time2: times[1] ?? '',
-          time3: times[2] ?? '',
+          timesList: joinNumbered(times.slice(0, 3)),
         };
       }
 

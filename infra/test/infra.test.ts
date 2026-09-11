@@ -77,11 +77,11 @@ test('the telephony instance may invoke the function', () => {
   });
 });
 
-test('all nine keypad-invoked functions may be invoked by the telephony instance', () => {
+test('all ten keypad-invoked functions may be invoked by the telephony instance', () => {
   const permissions = template.findResources('AWS::Lambda::Permission', {
     Properties: { Principal: 'connect.amazonaws.com' },
   });
-  expect(Object.keys(permissions)).toHaveLength(9);
+  expect(Object.keys(permissions)).toHaveLength(10);
 });
 
 test('SendOtp and OtpVerify are not attached to the VPC', () => {
@@ -240,12 +240,12 @@ test('the bot association custom resource may associate and disassociate the bot
   });
 });
 
-test('all nine keypad-invoked functions are associated with the telephony instance', () => {
+test('all ten keypad-invoked functions are associated with the telephony instance', () => {
   const associations = template.findResources('AWS::Connect::IntegrationAssociation');
   const targets = Object.values(associations).map(
     (assoc) => (assoc.Properties.IntegrationArn as { 'Fn::GetAtt': [string, string] })['Fn::GetAtt'][0],
   );
-  expect(targets).toHaveLength(9);
+  expect(targets).toHaveLength(10);
   expect(targets.some((t) => t.startsWith('ConnectHealth'))).toBe(true);
   expect(targets.some((t) => t.startsWith('FacilityInfo'))).toBe(true);
   expect(targets.some((t) => t.startsWith('Authenticate'))).toBe(true);
@@ -255,6 +255,7 @@ test('all nine keypad-invoked functions are associated with the telephony instan
   expect(targets.some((t) => t.startsWith('AppointmentList'))).toBe(true);
   expect(targets.some((t) => t.startsWith('AppointmentCancel'))).toBe(true);
   expect(targets.some((t) => t.startsWith('AppointmentReschedule'))).toBe(true);
+  expect(targets.some((t) => t.startsWith('AgentAppointment'))).toBe(true);
 });
 
 test('the instance user data still installs docker', () => {

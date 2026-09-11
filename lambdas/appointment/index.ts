@@ -67,6 +67,11 @@ export const formatDayLabelEn = (dateStr: string): string => {
   return new Intl.DateTimeFormat('en-US', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
 };
 
+export const joinNumbered = (items: string[]): string =>
+  items.map((item, index) => `${index + 1} - ${item}`).join(', ');
+
+export const joinList = (items: string[]): string => items.join('. ');
+
 export const specialtyDisplayNamesEn: Record<string, string> = {
   kardiolog: 'Cardiology',
   dermatolog: 'Dermatology',

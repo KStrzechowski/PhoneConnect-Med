@@ -44,9 +44,7 @@ test('list step returns up to three formatted appointments', async () => {
 
   assert.equal(result.reachable, 'true');
   assert.equal(result.hasAppointments, 'true');
-  assert.match(result.appt1, /kardiolog.*godzina 09:30/);
-  assert.match(result.appt2, /okulista.*godzina 10:00/);
-  assert.equal(result.appt3, '');
+  assert.match(result.apptsList, /^1 - kardiolog.*godzina 09:30, 2 - okulista.*godzina 10:00$/);
 });
 
 test('days step reports not found for a stale selectedSlot', async () => {
@@ -73,9 +71,7 @@ test('days step returns up to three formatted days', async () => {
   assert.equal(result.reachable, 'true');
   assert.equal(result.found, 'true');
   assert.equal(result.available, 'true');
-  assert.ok(result.day1);
-  assert.ok(result.day2);
-  assert.equal(result.day3, '');
+  assert.match(result.daysList, /^1 - .+, 2 - .+$/);
 });
 
 test('times step reports not found for a stale selectedSlot', async () => {
@@ -109,9 +105,7 @@ test('times step returns the resolved date and up to three times', async () => {
   assert.equal(result.found, 'true');
   assert.equal(result.available, 'true');
   assert.equal(result.date, '2026-09-08');
-  assert.equal(result.time1, '08:00');
-  assert.equal(result.time2, '09:30');
-  assert.equal(result.time3, '');
+  assert.equal(result.timesList, '1 - 08:00, 2 - 09:30');
 });
 
 test('confirm step reports not found for a stale selectedSlot', async () => {
@@ -196,7 +190,7 @@ test('list step returns English-formatted appointments when locale is en', async
   const result = await handler(withParams({ step: 'list', locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.appt1, /Cardiology.*at 09:30/);
+  assert.match(result.apptsList, /Cardiology.*at 09:30/);
 });
 
 test('days step returns English day labels when locale is en', async () => {
@@ -204,7 +198,7 @@ test('days step returns English day labels when locale is en', async () => {
   const result = await handler(withParams({ step: 'days', selectedSlot: '1', timeOfDay: 'rano', locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.day1, /Tuesday/);
+  assert.match(result.daysList, /Tuesday/);
 });
 
 test('confirm step returns an English combined read-back message when locale is en', async () => {
