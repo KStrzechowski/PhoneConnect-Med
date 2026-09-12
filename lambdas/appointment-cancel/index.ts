@@ -6,6 +6,7 @@ import {
   formatDayLabel,
   formatDayLabelEn,
   specialtyDisplayNamesEn,
+  ssmlTime,
   joinNumbered,
 } from '@pcm/appointment';
 
@@ -14,8 +15,8 @@ const formatAppointment = (
   locale: string,
 ): string =>
   locale === 'en'
-    ? `${specialtyDisplayNamesEn[appointment.specialty] ?? appointment.specialty}, ${formatDayLabelEn(appointment.date)}, at ${appointment.time}`
-    : `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${appointment.time}`;
+    ? `${specialtyDisplayNamesEn[appointment.specialty] ?? appointment.specialty}, ${formatDayLabelEn(appointment.date)}, at ${ssmlTime(appointment.time)}`
+    : `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${ssmlTime(appointment.time)}`;
 
 export const handler = measured(
   'appointment-cancel',

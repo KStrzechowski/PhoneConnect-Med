@@ -16,7 +16,7 @@ export class CreatePatient1788225506354 implements MigrationInterface {
     `);
     await queryRunner.query(`
       INSERT INTO "patient" ("pesel", "phone", "firstName", "lastName")
-      VALUES ('90010112345', '+48000000000', 'Jan', 'Kowalski')
+      VALUES ('12345678901', '+48518823031', 'Jan', 'Kowalski')
     `);
   }
 

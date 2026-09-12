@@ -1,6 +1,7 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { ssmlTime } from '@pcm/appointment';
 import { handler } from './index.ts';
 
 const sampleEvent = JSON.parse(readFileSync(new URL('./event.sample.json', import.meta.url), 'utf8'));
@@ -57,7 +58,10 @@ test('list step returns up to three formatted appointments', async () => {
 
   assert.equal(result.reachable, 'true');
   assert.equal(result.hasAppointments, 'true');
-  assert.match(result.apptsList, /^1 - kardiolog.*godzina 09:30, 2 - okulista.*godzina 10:00$/);
+  assert.match(
+    result.apptsList,
+    new RegExp(`^1 - kardiolog.*godzina ${ssmlTime('09:30')}, 2 - okulista.*godzina ${ssmlTime('10:00')}$`),
+  );
 });
 
 test('confirm step resolves the chosen appointment and returns a read-back message', async () => {
@@ -67,7 +71,7 @@ test('confirm step resolves the chosen appointment and returns a read-back messa
 
   assert.equal(result.reachable, 'true');
   assert.equal(result.found, 'true');
-  assert.match(result.message, /kardiolog.*godzina 09:30/);
+  assert.match(result.message, new RegExp(`kardiolog.*godzina ${ssmlTime('09:30')}`));
 });
 
 test('confirm step reports not found for an out-of-range selection', async () => {
@@ -113,7 +117,7 @@ test('list step returns English-formatted appointments when locale is en', async
   const result = await handler(withParams({ step: 'list', locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.apptsList, /Cardiology.*at 09:30/);
+  assert.match(result.apptsList, new RegExp(`Cardiology.*at ${ssmlTime('09:30')}`));
 });
 
 test('confirm step returns an English read-back message when locale is en', async () => {
@@ -121,7 +125,7 @@ test('confirm step returns an English read-back message when locale is en', asyn
   const result = await handler(withParams({ step: 'confirm', selectedSlot: '1', locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.message, /Cardiology.*at 09:30/);
+  assert.match(result.message, new RegExp(`Cardiology.*at ${ssmlTime('09:30')}`));
 });
 
 test('list step returns a handled error when the mock is unreachable', async () => {

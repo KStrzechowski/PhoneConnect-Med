@@ -9,11 +9,11 @@ export class AddOtpFallbackToPatient1788461728029 implements MigrationInterface 
       ADD COLUMN "isDemo" boolean NOT NULL DEFAULT false,
       ADD COLUMN "demoOtpCode" character varying
     `);
-    // Demo pair for testers who can't receive a texted code: pesel 85050512345 / phone
-    // +48999999999, fixed OTP 123456.
+    // Demo pair for testers who can't receive a texted code: pesel 09876543210 / phone
+    // +48123456789, fixed OTP 123456.
     await queryRunner.query(`
       INSERT INTO "patient" ("pesel", "phone", "firstName", "lastName", "isDemo", "demoOtpCode")
-      VALUES ('85050512345', '+48999999999', 'Anna', 'Demo', true, '123456')
+      VALUES ('09876543210', '+48123456789', 'Anna', 'Demo', true, '123456')
     `);
   }
 

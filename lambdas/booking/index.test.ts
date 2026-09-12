@@ -1,6 +1,7 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { ssmlTime } from '@pcm/appointment';
 import { handler } from './index.ts';
 
 const sampleEvent = JSON.parse(readFileSync(new URL('./event.sample.json', import.meta.url), 'utf8'));
@@ -44,12 +45,10 @@ test('times step re-derives the chosen day and returns its times', async () => {
   const result = await handler(withParams({ step: 'times', dayChoice: '2' }));
   mock.restoreAll();
 
-  assert.deepEqual(result, {
-    reachable: 'true',
-    available: 'true',
-    date: '2026-09-07',
-    timesList: '1 - 08:00, 2 - 09:30',
-  });
+  assert.equal(result.reachable, 'true');
+  assert.equal(result.available, 'true');
+  assert.match(result.date, /wrze[śs]nia/);
+  assert.equal(result.timesList, `1 - ${ssmlTime('08:00')}, 2 - ${ssmlTime('09:30')}`);
 });
 
 test('times step reports no availability for an out-of-range day choice', async () => {
@@ -69,7 +68,7 @@ test('confirm step resolves day and time and returns a read-back message', async
   assert.equal(result.available, 'true');
   assert.equal(result.date, '2026-09-04');
   assert.equal(result.time, '09:30');
-  assert.ok(result.message.includes('09:30'));
+  assert.ok(result.message.includes(ssmlTime('09:30')));
 });
 
 test('days step returns English day labels when locale is en', async () => {
@@ -91,7 +90,7 @@ test('confirm step returns an English message and specialty name when locale is 
 
   assert.equal(result.reachable, 'true');
   assert.equal(result.available, 'true');
-  assert.equal(result.message, 'Booking: Cardiology, Friday, September 4, at 09:30.');
+  assert.equal(result.message, `Booking: Cardiology, Friday, September 4, at ${ssmlTime('09:30')}.`);
 });
 
 test('confirm step keeps Polish output when locale is omitted', async () => {
@@ -99,7 +98,7 @@ test('confirm step keeps Polish output when locale is omitted', async () => {
   const result = await handler(withParams({ step: 'confirm', dayChoice: '1', timeChoice: '2', specialty: 'kardiolog' }));
   mock.restoreAll();
 
-  assert.equal(result.message, 'Umawiam wizytę: kardiolog, piątek, 4 września, godzina 09:30.');
+  assert.equal(result.message, `Umawiam wizytę: kardiolog, piątek, 4 września, godzina ${ssmlTime('09:30')}.`);
 });
 
 test('confirm step reports no availability when the day no longer resolves', async () => {

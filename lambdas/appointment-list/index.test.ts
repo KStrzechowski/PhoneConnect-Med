@@ -1,6 +1,7 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { ssmlTime } from '@pcm/appointment';
 import { handler } from './index.ts';
 
 const sampleEvent = JSON.parse(readFileSync(new URL('./event.sample.json', import.meta.url), 'utf8'));
@@ -39,7 +40,10 @@ test('returns up to three formatted appointments without an overflow flag when u
   assert.equal(result.reachable, 'true');
   assert.equal(result.hasAppointments, 'true');
   assert.equal(result.hasMore, 'false');
-  assert.match(result.apptsList, /kardiolog.*godzina 09:30\. okulista.*godzina 10:00$/);
+  assert.match(
+    result.apptsList,
+    new RegExp(`kardiolog.*godzina ${ssmlTime('09:30')}\\. okulista.*godzina ${ssmlTime('10:00')}$`),
+  );
 });
 
 test('caps at three appointments and flags overflow when a fourth exists', async () => {
@@ -62,7 +66,7 @@ test('returns English-formatted appointments when locale is en', async () => {
   const result = await handler(withParams({ locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.apptsList, /Cardiology.*at 09:30/);
+  assert.match(result.apptsList, new RegExp(`Cardiology.*at ${ssmlTime('09:30')}`));
 });
 
 test('returns a handled error when the mock is unreachable', async () => {

@@ -69,7 +69,9 @@ describe('AppointmentService', () => {
       `INSERT INTO slot ("doctorId", date, time, "timeOfDay", taken) VALUES ($1, CURRENT_DATE - INTERVAL '1 day', '10:00', 'rano', false)`,
       [doctorId],
     );
-    const [{ today }] = await dataSource.query(`SELECT CURRENT_DATE::text AS today`);
+    const [{ today }] = await dataSource.query(
+      `SELECT (now() AT TIME ZONE 'Europe/Warsaw')::date::text AS today`,
+    );
 
     const days = await service.findAvailableDays('endokrynolog', 'rano');
 

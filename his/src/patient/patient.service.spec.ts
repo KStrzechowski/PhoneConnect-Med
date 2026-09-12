@@ -19,12 +19,12 @@ describe('PatientService', () => {
   afterAll(() => module.close());
 
   it('matches the seeded pesel and phone pair', async () => {
-    const patient = await service.verify('90010112345', '+48000000000');
+    const patient = await service.verify('12345678901', '+48518823031');
 
     expect(patient).toEqual(
       expect.objectContaining({
-        pesel: '90010112345',
-        phone: '+48000000000',
+        pesel: '12345678901',
+        phone: '+48518823031',
         firstName: 'Jan',
         lastName: 'Kowalski',
       }),
@@ -32,7 +32,7 @@ describe('PatientService', () => {
   });
 
   it('does not match a real pesel with the wrong phone', async () => {
-    const patient = await service.verify('90010112345', '+48111111111');
+    const patient = await service.verify('12345678901', '+48111111111');
 
     expect(patient).toBeNull();
   });
@@ -44,12 +44,12 @@ describe('PatientService', () => {
   });
 
   it('matches the seeded demo pesel and phone pair', async () => {
-    const patient = await service.verify('85050512345', '+48999999999');
+    const patient = await service.verify('09876543210', '+48123456789');
 
     expect(patient).toEqual(
       expect.objectContaining({
-        pesel: '85050512345',
-        phone: '+48999999999',
+        pesel: '09876543210',
+        phone: '+48123456789',
         firstName: 'Anna',
         lastName: 'Demo',
         isDemo: true,
@@ -59,7 +59,7 @@ describe('PatientService', () => {
   });
 
   it('does not carry a demo flag on the non-demo patient', async () => {
-    const patient = await service.verify('90010112345', '+48000000000');
+    const patient = await service.verify('12345678901', '+48518823031');
 
     expect(patient).toEqual(
       expect.objectContaining({

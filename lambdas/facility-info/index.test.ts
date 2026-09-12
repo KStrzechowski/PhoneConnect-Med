@@ -1,10 +1,17 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { ssmlTime } from '@pcm/appointment';
+import { ssmlAddress } from '@pcm/facility';
 import { handler } from './index.ts';
 import type { InvocationRecord } from '@pcm/measure';
 
 const sampleEvent = JSON.parse(readFileSync(new URL('./event.sample.json', import.meta.url), 'utf8'));
+
+const withParams = (params: Record<string, string>) => ({
+  ...sampleEvent,
+  Details: { ...sampleEvent.Details, Parameters: { ...sampleEvent.Details.Parameters, ...params } },
+});
 
 const sampleFacility = {
   name: 'Przychodnia Zdrowie',
@@ -25,8 +32,23 @@ test('returns the mock facility payload as a flat string map', async () => {
   const result = await handler();
   mock.restoreAll();
 
-  assert.deepEqual(result, { reachable: 'true', ...sampleFacility });
+  assert.deepEqual(result, {
+    reachable: 'true',
+    ...sampleFacility,
+    address: ssmlAddress(sampleFacility.address),
+    opensAt: ssmlTime(sampleFacility.opensAt),
+    closesAt: ssmlTime(sampleFacility.closesAt),
+  });
   assert.ok(Object.values(result).every((value) => typeof value === 'string'));
+});
+
+test('translates openDays to English when locale is en', async () => {
+  mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify(sampleFacility)));
+  const result = await handler(withParams({ locale: 'en' }));
+  mock.restoreAll();
+
+  assert.equal(result.openDays, 'Monday-Friday');
+  assert.equal(result.address, ssmlAddress(sampleFacility.address, 'en'));
 });
 
 test('returns a handled error when the mock is unreachable', async () => {

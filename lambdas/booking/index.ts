@@ -8,6 +8,7 @@ import {
   formatDayLabel,
   formatDayLabelEn,
   specialtyDisplayNamesEn,
+  ssmlTime,
   joinNumbered,
 } from '@pcm/appointment';
 
@@ -49,8 +50,8 @@ export const handler = measured(
         return {
           reachable: 'true',
           available: 'true',
-          date,
-          timesList: joinNumbered(times.slice(0, 3)),
+          date: dayLabel(date),
+          timesList: joinNumbered(times.slice(0, 3).map(ssmlTime)),
         };
       }
 
@@ -63,8 +64,8 @@ export const handler = measured(
         if (time === null) return { reachable: 'true', available: 'false' };
         const message =
           locale === 'en'
-            ? `Booking: ${specialtyDisplayNamesEn[specialty] ?? specialty}, ${dayLabel(date)}, at ${time}.`
-            : `Umawiam wizytę: ${specialty}, ${dayLabel(date)}, godzina ${time}.`;
+            ? `Booking: ${specialtyDisplayNamesEn[specialty] ?? specialty}, ${dayLabel(date)}, at ${ssmlTime(time)}`
+            : `Umawiam wizytę: ${specialty}, ${dayLabel(date)}, godzina ${ssmlTime(time)}`;
         return {
           reachable: 'true',
           available: 'true',

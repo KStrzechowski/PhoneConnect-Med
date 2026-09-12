@@ -1,6 +1,7 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { ssmlTime } from '@pcm/appointment';
 import { handler } from './index.ts';
 
 const sampleEvent = JSON.parse(readFileSync(new URL('./event.sample.json', import.meta.url), 'utf8'));
@@ -44,7 +45,10 @@ test('list step returns up to three formatted appointments', async () => {
 
   assert.equal(result.reachable, 'true');
   assert.equal(result.hasAppointments, 'true');
-  assert.match(result.apptsList, /^1 - kardiolog.*godzina 09:30, 2 - okulista.*godzina 10:00$/);
+  assert.match(
+    result.apptsList,
+    new RegExp(`^1 - kardiolog.*godzina ${ssmlTime('09:30')}, 2 - okulista.*godzina ${ssmlTime('10:00')}$`),
+  );
 });
 
 test('days step reports not found for a stale selectedSlot', async () => {
@@ -104,8 +108,8 @@ test('times step returns the resolved date and up to three times', async () => {
   assert.equal(result.reachable, 'true');
   assert.equal(result.found, 'true');
   assert.equal(result.available, 'true');
-  assert.equal(result.date, '2026-09-08');
-  assert.equal(result.timesList, '1 - 08:00, 2 - 09:30');
+  assert.match(result.date, /wrze[śs]nia/);
+  assert.equal(result.timesList, `1 - ${ssmlTime('08:00')}, 2 - ${ssmlTime('09:30')}`);
 });
 
 test('confirm step reports not found for a stale selectedSlot', async () => {
@@ -140,7 +144,10 @@ test('confirm step returns a combined old+new read-back message', async () => {
   assert.equal(result.available, 'true');
   assert.equal(result.date, '2026-09-08');
   assert.equal(result.time, '08:00');
-  assert.match(result.message, /kardiolog.*godzina 09:30.*na.*godzina 08:00/);
+  assert.match(
+    result.message,
+    new RegExp(`kardiolog.*godzina ${ssmlTime('09:30')}.*na.*godzina ${ssmlTime('08:00')}`),
+  );
 });
 
 test('reschedule step books the new slot and releases the old one', async () => {
@@ -190,7 +197,7 @@ test('list step returns English-formatted appointments when locale is en', async
   const result = await handler(withParams({ step: 'list', locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.apptsList, /Cardiology.*at 09:30/);
+  assert.match(result.apptsList, new RegExp(`Cardiology.*at ${ssmlTime('09:30')}`));
 });
 
 test('days step returns English day labels when locale is en', async () => {
@@ -208,7 +215,10 @@ test('confirm step returns an English combined read-back message when locale is 
   );
   mock.restoreAll();
 
-  assert.match(result.message, /Cardiology.*at 09:30.*to.*at 08:00/);
+  assert.match(
+    result.message,
+    new RegExp(`Cardiology.*at ${ssmlTime('09:30')}.*to.*at ${ssmlTime('08:00')}`),
+  );
 });
 
 for (const step of ['list', 'days', 'times', 'confirm', 'reschedule']) {

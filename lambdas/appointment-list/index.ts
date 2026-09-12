@@ -1,13 +1,20 @@
 import { measured, downstream } from '@pcm/measure';
-import { listAppointments, formatDayLabel, formatDayLabelEn, specialtyDisplayNamesEn, joinList } from '@pcm/appointment';
+import {
+  listAppointments,
+  formatDayLabel,
+  formatDayLabelEn,
+  specialtyDisplayNamesEn,
+  ssmlTime,
+  joinList,
+} from '@pcm/appointment';
 
 const formatAppointment = (
   appointment: { specialty: string; date: string; time: string },
   locale: string,
 ): string =>
   locale === 'en'
-    ? `${specialtyDisplayNamesEn[appointment.specialty] ?? appointment.specialty}, ${formatDayLabelEn(appointment.date)}, at ${appointment.time}`
-    : `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${appointment.time}`;
+    ? `${specialtyDisplayNamesEn[appointment.specialty] ?? appointment.specialty}, ${formatDayLabelEn(appointment.date)}, at ${ssmlTime(appointment.time)}`
+    : `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${ssmlTime(appointment.time)}`;
 
 export const handler = measured(
   'appointment-list',

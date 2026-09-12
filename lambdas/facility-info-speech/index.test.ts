@@ -2,11 +2,16 @@ import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { SNSClient } from '@aws-sdk/client-sns';
+import { ssmlTime } from '@pcm/appointment';
+import { openDaysEn, ssmlAddress } from '@pcm/facility';
 import { handler } from './index.ts';
 import type { InvocationRecord } from '@pcm/measure';
 
 const messageOf = (result: Awaited<ReturnType<typeof handler>>): string =>
   (result as { messages: [{ content: string }] }).messages[0].content;
+
+const contentTypeOf = (result: Awaited<ReturnType<typeof handler>>): string =>
+  (result as { messages: [{ contentType: string }] }).messages[0].contentType;
 
 const sampleEvent = JSON.parse(readFileSync(new URL('./event.sample.json', import.meta.url), 'utf8'));
 
@@ -138,23 +143,35 @@ test('InfoIntent returns the byte-identical facility sentence', async () => {
 
   assert.equal(
     messageOf(result),
-    'Nasz adres to ul. Kwiatowa 12, 00-001 Warszawa. Jesteśmy czynni od 08:00 do 18:00, poniedziałek-piątek.',
+    `<speak>Nasz adres to ${ssmlAddress('ul. Kwiatowa 12, 00-001 Warszawa')}. Jesteśmy czynni od ${ssmlTime('08:00')} do ${ssmlTime('18:00')}, poniedziałek-piątek.</speak>`,
   );
+  assert.equal(contentTypeOf(result), 'SSML');
   assert.equal(result.sessionState.dialogAction.type, 'Close');
   assert.equal(result.sessionState.intent.name, 'InfoIntent');
   assert.equal(result.sessionState.sessionAttributes.fallbackCount, '0');
 });
 
+test('InfoIntent returns an English facility sentence when the bot locale is en_US', async () => {
+  mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify(sampleFacility)));
+  const result = await handler({ ...eventFor('InfoIntent'), bot: { ...sampleEvent.bot, localeId: 'en_US' } });
+  mock.restoreAll();
+
+  assert.equal(
+    messageOf(result),
+    `<speak>Our address is ${ssmlAddress('ul. Kwiatowa 12, 00-001 Warszawa', 'en')}. We are open from ${ssmlTime('08:00')} to ${ssmlTime('18:00')}, ${openDaysEn['poniedziałek-piątek']}.</speak>`,
+  );
+});
+
 test('RepeatLastMessageIntent echoes the last spoken message', async () => {
   const result = await handler(eventFor('RepeatLastMessageIntent', { lastMessageText: 'poprzednia wiadomość' }));
 
-  assert.equal(messageOf(result), 'poprzednia wiadomość');
+  assert.equal(messageOf(result), '<speak>poprzednia wiadomość</speak>');
 });
 
 test('AgentTransferIntent returns a connecting message', async () => {
   const result = await handler(eventFor('AgentTransferIntent'));
 
-  assert.equal(messageOf(result), 'Już łączę z konsultantem.');
+  assert.equal(messageOf(result), '<speak>Już łączę z konsultantem.</speak>');
   assert.equal(result.sessionState.sessionAttributes.agentRequested, 'true');
 });
 
@@ -189,7 +206,7 @@ test('AuthIntent confirms and sets session attributes when the pair matches from
   const result = await handler(authIntentEvent('90010112345', '+48000000000'));
   mock.restoreAll();
 
-  assert.equal(messageOf(result), 'Dziękuję. Tożsamość została potwierdzona.');
+  assert.equal(messageOf(result), '<speak>Dziękuję. Tożsamość została potwierdzona.</speak>');
   assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
   assert.equal(result.sessionState.sessionAttributes.patientId, '1');
   assert.equal(result.sessionState.sessionAttributes.firstName, 'Jan');
@@ -204,7 +221,7 @@ test('AuthIntent sends the code and starts an OTP challenge when the pair matche
   const result = await handler(authIntentEvent('00000000000', '+48000000000'));
   mock.restoreAll();
 
-  assert.equal(messageOf(result), 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
+  assert.equal(messageOf(result), '<speak>Kod weryfikacyjny został wysłany na podany numer telefonu.</speak>');
   assert.equal(result.sessionState.sessionAttributes.otpRequired, 'true');
   assert.equal(result.sessionState.sessionAttributes.isDemo, 'false');
   assert.equal(result.sessionState.sessionAttributes.code, '');
@@ -228,7 +245,7 @@ test('AuthIntent sends a fresh code and speaks the byte-identical neutral messag
   const result = await handler(authIntentEvent('90010112345', '+48000000000', { callerNumber: '+48111111111' }));
   mock.restoreAll();
 
-  assert.equal(messageOf(result), 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
+  assert.equal(messageOf(result), '<speak>Kod weryfikacyjny został wysłany na podany numer telefonu.</speak>');
   assert.equal(result.sessionState.sessionAttributes.otpRequired, 'true');
   assert.equal(result.sessionState.sessionAttributes.isDemo, 'false');
   assert.equal(result.sessionState.sessionAttributes.phone, '+48000000000');
@@ -277,7 +294,7 @@ test('AuthIntent still returns the code when the initial SNS publish fails', asy
   const result = await handler(authIntentEvent('90010112345', '+48000000000', { callerNumber: '+48111111111' }));
   mock.restoreAll();
 
-  assert.equal(messageOf(result), 'Kod weryfikacyjny został wysłany na podany numer telefonu.');
+  assert.equal(messageOf(result), '<speak>Kod weryfikacyjny został wysłany na podany numer telefonu.</speak>');
   assert.match(result.sessionState.sessionAttributes.code, /^\d{6}$/);
 });
 
@@ -286,7 +303,7 @@ test('OtpIntent authenticates and stamps the otp auth path on a correct real cod
     otpIntentEvent('654321', { code: '654321', isDemo: 'false', phone: '+48000000000', patientId: '1' }),
   );
 
-  assert.equal(messageOf(result), 'Dziękuję. Tożsamość została potwierdzona.');
+  assert.equal(messageOf(result), '<speak>Dziękuję. Tożsamość została potwierdzona.</speak>');
   assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
   assert.equal(result.sessionState.sessionAttributes.patientId, '1');
 });
@@ -453,7 +470,7 @@ test('BookingIntent dialog hook resolves the chosen day and offers times', async
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
   assert.equal(result.sessionState.sessionAttributes.bookingStage, 'time');
   assert.equal(result.sessionState.sessionAttributes.bookingDate, '2026-09-07');
-  assert.match(messageOf(result), /09:30/);
+  assert.match(messageOf(result), new RegExp(ssmlTime('09:30')));
 });
 
 test('BookingIntent dialog hook re-elicits the day choice when it does not resolve', async () => {
@@ -487,7 +504,7 @@ test('BookingIntent dialog hook resolves the chosen time and asks for confirmati
   assert.equal(result.sessionState.sessionAttributes.bookingStage, 'confirm');
   assert.equal(result.sessionState.sessionAttributes.bookingTime, '09:30');
   assert.match(messageOf(result), /kardiolog/);
-  assert.match(messageOf(result), /09:30/);
+  assert.match(messageOf(result), new RegExp(ssmlTime('09:30')));
 });
 
 test('BookingIntent dialog hook offers fresh days again after a decline (bookingStage confirm)', async () => {
@@ -577,7 +594,7 @@ test('CancelAppointmentIntent dialog hook closes with the empty message for a pa
   mock.restoreAll();
 
   assert.equal(result.sessionState.dialogAction.type, 'Close');
-  assert.equal(messageOf(result), 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.');
+  assert.equal(messageOf(result), '<speak>Nie ma Pani/Pan żadnych zaplanowanych wizyt.</speak>');
 });
 
 test('CancelAppointmentIntent dialog hook lists appointments and elicits a selection', async () => {
@@ -606,7 +623,7 @@ test('CancelAppointmentIntent dialog hook resolves the chosen appointment and as
 
   assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
   assert.match(messageOf(result), /kardiolog/);
-  assert.match(messageOf(result), /09:30/);
+  assert.match(messageOf(result), new RegExp(ssmlTime('09:30')));
 });
 
 test('CancelAppointmentIntent dialog hook re-elicits the selection when it does not resolve', async () => {
@@ -721,7 +738,7 @@ test('RescheduleIntent dialog hook closes with the empty message for a patient w
   mock.restoreAll();
 
   assert.equal(result.sessionState.dialogAction.type, 'Close');
-  assert.equal(messageOf(result), 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.');
+  assert.equal(messageOf(result), '<speak>Nie ma Pani/Pan żadnych zaplanowanych wizyt.</speak>');
 });
 
 test('RescheduleIntent dialog hook lists appointments and elicits a selection', async () => {
@@ -856,7 +873,7 @@ test('RescheduleIntent dialog hook resolves the chosen day and offers times', as
 
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
   assert.equal(result.sessionState.sessionAttributes.rescheduleStage, 'time');
-  assert.match(messageOf(result), /09:30/);
+  assert.match(messageOf(result), new RegExp(ssmlTime('09:30')));
 });
 
 test('RescheduleIntent dialog hook re-elicits the day choice when it does not resolve', async () => {
@@ -908,7 +925,10 @@ test('RescheduleIntent dialog hook resolves the chosen time and asks for confirm
   assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
   assert.equal(result.sessionState.sessionAttributes.rescheduleStage, 'confirm');
   assert.equal(result.sessionState.sessionAttributes.rescheduleTime, '09:30');
-  assert.match(messageOf(result), /kardiolog.*godzina 09:30.*na.*godzina 09:30/);
+  assert.match(
+    messageOf(result),
+    new RegExp(`kardiolog.*godzina ${ssmlTime('09:30')}.*na.*godzina ${ssmlTime('09:30')}`),
+  );
 });
 
 test('RescheduleIntent dialog hook transfers immediately when the appointment resolution goes stale at the day stage', async () => {
@@ -1093,7 +1113,7 @@ test('ListAppointmentsIntent reports no appointments for a patient with none', a
   const result = await handler(eventFor('ListAppointmentsIntent', { authenticated: 'true', patientId: '1' }));
   mock.restoreAll();
 
-  assert.equal(messageOf(result), 'Nie ma Pani/Pan żadnych zaplanowanych wizyt.');
+  assert.equal(messageOf(result), '<speak>Nie ma Pani/Pan żadnych zaplanowanych wizyt.</speak>');
 });
 
 test('ListAppointmentsIntent speaks up to three appointments without an overflow line when under the cap', async () => {

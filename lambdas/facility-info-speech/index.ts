@@ -1,6 +1,6 @@
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import { measured, downstream, type ConnectEvent, type InvocationRecord } from '@pcm/measure';
-import { fetchFacility } from '@pcm/facility';
+import { fetchFacility, openDaysEn, ssmlAddress } from '@pcm/facility';
 import { beginOtpChallenge, generateOtpCode, verifyOtpCode } from '@pcm/patient';
 import {
   findAvailableDays,
@@ -13,6 +13,7 @@ import {
   cancelAppointment,
   rescheduleAppointment,
   formatDayLabel,
+  ssmlTime,
 } from '@pcm/appointment';
 
 const sns = new SNSClient({});
@@ -25,6 +26,7 @@ type LexSlots = Record<string, { value?: { interpretedValue?: string } } | null>
 
 type LexEvent = {
   invocationSource: 'DialogCodeHook' | 'FulfillmentCodeHook';
+  bot?: { localeId: string };
   sessionState: {
     sessionAttributes?: Record<string, string>;
     intent: { name: string; slots?: LexSlots };
@@ -37,7 +39,7 @@ type LexCloseResponse = {
     intent: { name: string; state: 'Fulfilled' };
     sessionAttributes: Record<string, string>;
   };
-  messages: [{ contentType: 'PlainText'; content: string }];
+  messages: [{ contentType: 'SSML'; content: string }];
 };
 
 type LexElicitSlotResponse = {
@@ -46,7 +48,7 @@ type LexElicitSlotResponse = {
     intent: { name: string; slots: LexSlots; state: 'InProgress' };
     sessionAttributes: Record<string, string>;
   };
-  messages: [{ contentType: 'PlainText'; content: string }];
+  messages: [{ contentType: 'SSML'; content: string }];
 };
 
 type LexConfirmIntentResponse = {
@@ -55,7 +57,7 @@ type LexConfirmIntentResponse = {
     intent: { name: string; slots: LexSlots; state: 'InProgress' };
     sessionAttributes: Record<string, string>;
   };
-  messages: [{ contentType: 'PlainText'; content: string }];
+  messages: [{ contentType: 'SSML'; content: string }];
 };
 
 type LexDelegateResponse = {
@@ -80,7 +82,7 @@ const close = (intentName: string, sessionAttributes: Record<string, string>, me
     intent: { name: intentName, state: 'Fulfilled' },
     sessionAttributes,
   },
-  messages: [{ contentType: 'PlainText', content: message }],
+  messages: [{ contentType: 'SSML', content: `<speak>${message}</speak>` }],
 });
 
 const elicitSlot = (
@@ -95,7 +97,7 @@ const elicitSlot = (
     intent: { name: intentName, slots, state: 'InProgress' },
     sessionAttributes,
   },
-  messages: [{ contentType: 'PlainText', content: message }],
+  messages: [{ contentType: 'SSML', content: `<speak>${message}</speak>` }],
 });
 
 const confirmIntent = (
@@ -109,7 +111,7 @@ const confirmIntent = (
     intent: { name: intentName, slots, state: 'InProgress' },
     sessionAttributes,
   },
-  messages: [{ contentType: 'PlainText', content: message }],
+  messages: [{ contentType: 'SSML', content: `<speak>${message}</speak>` }],
 });
 
 const delegate = (intentName: string, slots: LexSlots, sessionAttributes: Record<string, string>): LexDelegateResponse => ({
@@ -196,7 +198,7 @@ const handleBookingDialog = async (
         return retry('selectedSlot', 'Nie rozpoznałem podanego numeru terminu. Proszę spróbować jeszcze raz.');
       }
       const times = await downstream(record, () => findAvailableTimes(specialty, timeOfDay, date, abort));
-      const options = times.map((t, i) => `${i + 1} - godzina ${t}`).join(', ');
+      const options = times.map((t, i) => `${i + 1} - godzina ${ssmlTime(t)}`).join(', ');
       const message = `${formatDayLabel(date)}: ${options}. Którą godzinę Pani/Pan wybiera?`;
       return elicitSlot(
         'BookingIntent',
@@ -221,7 +223,7 @@ const handleBookingDialog = async (
       if (attempts + 1 >= BOOKING_ATTEMPT_LIMIT) return giveUp();
       return retry('selectedSlot', 'Nie rozpoznałem podanej godziny. Proszę spróbować jeszcze raz.');
     }
-    const message = `Umawiam Panią/Pana do ${specialty}, ${formatDayLabel(date)}, godzina ${time}. Czy się zgadza?`;
+    const message = `Umawiam Panią/Pana do ${specialty}, ${formatDayLabel(date)}, godzina ${ssmlTime(time)}. Czy się zgadza?`;
     return confirmIntent(
       'BookingIntent',
       slots,
@@ -303,7 +305,7 @@ const handleCancelDialog = async (
       }
       const options = appointments
         .slice(0, 3)
-        .map((a, i) => `${i + 1} - ${a.specialty}, ${formatDayLabel(a.date)}, godzina ${a.time}`)
+        .map((a, i) => `${i + 1} - ${a.specialty}, ${formatDayLabel(a.date)}, godzina ${ssmlTime(a.time)}`)
         .join('. ');
       const message = `Które wizyty Pani/Pan chce odwołać? ${options}. Proszę podać numer.`;
       return elicitSlot(
@@ -335,7 +337,7 @@ const handleCancelDialog = async (
         message,
       );
     }
-    const message = `Odwołuję wizytę: ${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${appointment.time}. Czy się zgadza?`;
+    const message = `Odwołuję wizytę: ${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${ssmlTime(appointment.time)}. Czy się zgadza?`;
     return confirmIntent('CancelAppointmentIntent', slots, { ...incoming, lastMessageText: message }, message);
   } catch (error) {
     record.outcome = 'error';
@@ -422,7 +424,7 @@ const handleRescheduleDialog = async (
       }
       const options = appointments
         .slice(0, 3)
-        .map((a, i) => `${i + 1} - ${a.specialty}, ${formatDayLabel(a.date)}, godzina ${a.time}`)
+        .map((a, i) => `${i + 1} - ${a.specialty}, ${formatDayLabel(a.date)}, godzina ${ssmlTime(a.time)}`)
         .join('. ');
       const message = `Którą wizytę Pani/Pan chce przełożyć? ${options}. Proszę podać numer.`;
       return elicitSlot(
@@ -518,7 +520,7 @@ const handleRescheduleDialog = async (
         );
       }
       const times = await downstream(record, () => findAvailableTimes(appointment.specialty, timeOfDay, date, abort));
-      const options = times.map((t, i) => `${i + 1} - godzina ${t}`).join(', ');
+      const options = times.map((t, i) => `${i + 1} - godzina ${ssmlTime(t)}`).join(', ');
       const message = `${formatDayLabel(date)}: ${options}. Którą godzinę Pani/Pan wybiera?`;
       return elicitSlot(
         'RescheduleIntent',
@@ -562,8 +564,8 @@ const handleRescheduleDialog = async (
       );
     }
     const message =
-      `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${appointment.time}, ` +
-      `na ${formatDayLabel(date)}, godzina ${time}. Czy się zgadza?`;
+      `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${ssmlTime(appointment.time)}, ` +
+      `na ${formatDayLabel(date)}, godzina ${ssmlTime(time)}. Czy się zgadza?`;
     return confirmIntent(
       'RescheduleIntent',
       slots,
@@ -638,14 +640,19 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
   const incoming = event.sessionState.sessionAttributes ?? {};
 
   if (intentName === 'InfoIntent') {
+    const isEn = event.bot?.localeId === 'en_US';
     try {
       const facility = await downstream(record, () => fetchFacility(AbortSignal.timeout(7000)));
-      const message = `Nasz adres to ${facility.address}. Jesteśmy czynni od ${facility.opensAt} do ${facility.closesAt}, ${facility.openDays}.`;
+      const message = isEn
+        ? `Our address is ${ssmlAddress(facility.address, 'en')}. We are open from ${ssmlTime(facility.opensAt)} to ${ssmlTime(facility.closesAt)}, ${openDaysEn[facility.openDays] ?? facility.openDays}.`
+        : `Nasz adres to ${ssmlAddress(facility.address)}. Jesteśmy czynni od ${ssmlTime(facility.opensAt)} do ${ssmlTime(facility.closesAt)}, ${facility.openDays}.`;
       return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
     } catch (error) {
       record.outcome = 'error';
       record.error = String(error);
-      const message = 'Przepraszam, mam teraz problem z pobraniem tych informacji. Łączę z konsultantem.';
+      const message = isEn
+        ? "Sorry, I'm having trouble retrieving this information right now. Connecting you to an agent."
+        : 'Przepraszam, mam teraz problem z pobraniem tych informacji. Łączę z konsultantem.';
       return close(intentName, { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
     }
   }
@@ -818,7 +825,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
       }
       const lines = appointments
         .slice(0, 3)
-        .map((a) => `${a.specialty}, ${formatDayLabel(a.date)}, godzina ${a.time}`)
+        .map((a) => `${a.specialty}, ${formatDayLabel(a.date)}, godzina ${ssmlTime(a.time)}`)
         .join('. ');
       const overflow = appointments.length > 3 ? ' Ma Pani/Pan więcej zaplanowanych wizyt.' : '';
       const message = `Najbliższe wizyty: ${lines}.${overflow}`;

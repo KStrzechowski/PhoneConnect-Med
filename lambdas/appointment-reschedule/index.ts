@@ -10,6 +10,7 @@ import {
   formatDayLabel,
   formatDayLabelEn,
   specialtyDisplayNamesEn,
+  ssmlTime,
   joinNumbered,
 } from '@pcm/appointment';
 
@@ -18,8 +19,8 @@ const formatAppointment = (
   locale: string,
 ): string =>
   locale === 'en'
-    ? `${specialtyDisplayNamesEn[appointment.specialty] ?? appointment.specialty}, ${formatDayLabelEn(appointment.date)}, at ${appointment.time}`
-    : `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${appointment.time}`;
+    ? `${specialtyDisplayNamesEn[appointment.specialty] ?? appointment.specialty}, ${formatDayLabelEn(appointment.date)}, at ${ssmlTime(appointment.time)}`
+    : `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${ssmlTime(appointment.time)}`;
 
 export const handler = measured(
   'appointment-reschedule',
@@ -81,8 +82,8 @@ export const handler = measured(
           reachable: 'true',
           found: 'true',
           available: 'true',
-          date,
-          timesList: joinNumbered(times.slice(0, 3)),
+          date: dayLabel(date),
+          timesList: joinNumbered(times.slice(0, 3).map(ssmlTime)),
         };
       }
 
@@ -101,8 +102,8 @@ export const handler = measured(
         if (time === null) return { reachable: 'true', found: 'true', available: 'false' };
         const message =
           locale === 'en'
-            ? `${formatAppointment(appointment, locale)}, to ${dayLabel(date)}, at ${time}`
-            : `${formatAppointment(appointment, locale)}, na ${dayLabel(date)}, godzina ${time}`;
+            ? `${formatAppointment(appointment, locale)}, to ${dayLabel(date)}, at ${ssmlTime(time)}`
+            : `${formatAppointment(appointment, locale)}, na ${dayLabel(date)}, godzina ${ssmlTime(time)}`;
         return {
           reachable: 'true',
           found: 'true',

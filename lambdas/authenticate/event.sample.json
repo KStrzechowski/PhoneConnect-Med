@@ -6,15 +6,15 @@
       "Channel": "VOICE",
       "InitiationMethod": "INBOUND",
       "CustomerEndpoint": {
-        "Address": "+48000000000",
+        "Address": "+48518823031",
         "Type": "TELEPHONE_NUMBER"
       }
     },
     "Parameters": {
       "variant": "keypad",
-      "pesel": "90010112345",
-      "phone": "+48000000000",
-      "callerNumber": "+48000000000"
+      "pesel": "12345678901",
+      "phone": "+48518823031",
+      "callerNumber": "+48518823031"
     }
   }
 }

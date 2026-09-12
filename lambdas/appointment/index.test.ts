@@ -10,6 +10,7 @@ import {
   resolveAppointment,
   cancelAppointment,
   rescheduleAppointment,
+  ssmlTime,
   joinNumbered,
   joinList,
 } from './index.ts';
@@ -176,6 +177,17 @@ test('rescheduleAppointment books the new slot then releases the old one', async
   mock.restoreAll();
 
   assert.deepEqual(result, { rescheduled: true, oldSlotReleased: true });
+});
+
+test('ssmlTime reads hour and minute as cardinal numbers', () => {
+  assert.equal(
+    ssmlTime('09:30'),
+    '<say-as interpret-as="cardinal">9</say-as> <say-as interpret-as="cardinal">30</say-as>',
+  );
+});
+
+test('ssmlTime omits the minute when it is zero', () => {
+  assert.equal(ssmlTime('08:00'), '<say-as interpret-as="cardinal">8</say-as>');
 });
 
 test('joinNumbered numbers each item and stops at however many are given', () => {

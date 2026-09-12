@@ -34,10 +34,14 @@ function slotValue(value: string, synonyms: string[]): lex.CfnBot.SlotTypeValueP
 
 function keypadOnlyAttempt(maxLength: number): lex.CfnBot.PromptAttemptSpecificationProperty {
   return {
-    allowedInputTypes: { allowAudioInput: false, allowDtmfInput: true },
+    allowedInputTypes: { allowAudioInput: true, allowDtmfInput: true },
     allowInterrupt: false,
     audioAndDtmfInputSpecification: {
       startTimeoutMs: 10000,
+      audioSpecification: {
+        endTimeoutMs: 2000,
+        maxLengthMs: 15000,
+      },
       dtmfSpecification: {
         deletionCharacter: '*',
         endCharacter: '#',

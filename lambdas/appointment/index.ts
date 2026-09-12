@@ -67,6 +67,13 @@ export const formatDayLabelEn = (dateStr: string): string => {
   return new Intl.DateTimeFormat('en-US', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
 };
 
+export const ssmlTime = (time: string): string => {
+  const [hour, minute] = time.split(':').map(Number);
+  return minute === 0
+    ? `<say-as interpret-as="cardinal">${hour}</say-as>`
+    : `<say-as interpret-as="cardinal">${hour}</say-as> <say-as interpret-as="cardinal">${minute}</say-as>`;
+};
+
 export const joinNumbered = (items: string[]): string =>
   items.map((item, index) => `${index + 1} - ${item}`).join(', ');
 
