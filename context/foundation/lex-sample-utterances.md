@@ -232,7 +232,7 @@ nie mogę w tym terminie, chcę inny
 czy można przełożyć
 ```
 
-### CancelIntent
+### CancelAppointmentIntent
 
 Slot: `appointmentId`.
 
@@ -322,9 +322,9 @@ interpreted rather than explained away afterwards.
 
 | Pair | Overlapping phrasing | Disambiguated by |
 |---|---|---|
-| `CancelIntent` vs `DenyIntent` | „anuluj", „rezygnuję", „nie chcę" | Session state — Deny only when a confirmation is pending. Deliberately kept out of the Cancel utterance list. |
+| `CancelAppointmentIntent` vs `DenyIntent` | „anuluj", „rezygnuję", „nie chcę" | Session state — Deny only when a confirmation is pending. Deliberately kept out of the Cancel utterance list. |
 | `NextSlotsIntent` vs `DenyIntent` | „inne opcje", „coś innego", „nie pasuje" | Session state — NextSlots only when slots have just been offered. |
-| `RescheduleIntent` vs `CancelIntent` | „nie mogę w tym terminie" | Reschedule implies a replacement; Cancel does not. Genuinely ambiguous in speech — expect errors here. |
+| `RescheduleIntent` vs `CancelAppointmentIntent` | „nie mogę w tym terminie" | Reschedule implies a replacement; Cancel does not. Genuinely ambiguous in speech — expect errors here. |
 | `AgentTransferIntent` vs `MainMenuIntent` | „pomoc", „nie wiem co dalej" | „pomoc" is assigned to AgentTransfer deliberately; a confused caller wanting a human is the safer default. |
 
 The Cancel/Deny pair is the one most likely to cost accuracy points. It is a real property of

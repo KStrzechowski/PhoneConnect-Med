@@ -29,8 +29,9 @@ the exact same booking data and rules the Polish path uses.
 | --- | --- | --- |
 | Operation scope | Facility-info + booking only | Matches the roadmap's own stated S-10 outcome; list/cancel/reschedule stay Polish-only for now. |
 | Locale plumbing | Add a `locale` param to `lambdas/booking`, branch internally | Keeps one Lambda, one CDK registration; `@pcm/appointment` stays byte-for-byte unchanged. |
-| Counting rule (Open Roadmap Q2) | Caller-facing text units (duplicated flow/Lambda strings vs. added Lex utterances), shared-logic diff = zero | Already the recommendation on record in `change.md`. |
-| Language-selection entry point | New DTMF entry flow ahead of the main menu | Consistent with Variant A being fully digit-driven; mirrors Variant B's detection gate. |
+| **Flow architecture (revised 2026-09-06)** | **One shared flow per menu, locale read from `$.Attributes.locale`, prompts from native Amazon Connect Data Tables** | **The original "-en duplicate flow" design measured how the flows happened to be built, not anything inherent to keypad IVR. A Lambda-backed version was built first, then replaced with native Data Tables (no Lambda) once found — see `change.md`'s two revision notes.** |
+| Counting rule (Open Roadmap Q2) | Revised: one-time locale-infrastructure cost vs. per-language content added after | The duplicated-file counting rule no longer fits the shared-flow design; not yet locked in — see `change.md`. |
+| Language-selection entry point | New DTMF entry flow ahead of the main menu, now setting `$.Attributes.locale` instead of branching to a different flow | Consistent with Variant A being fully digit-driven; mirrors Variant B's detection gate. |
 | Specialty display names | Standard English medical terms, translated directly | Unambiguous, no extra research needed. |
 | Agent-facing `transferReason` text | Stays Polish for every locale | Agent workspace and agent are Polish; not caller-facing. |
 
@@ -52,34 +53,40 @@ the exact same booking data and rules the Polish path uses.
 
 ## Architecture / Approach
 
-One new entry flow gates on a DTMF digit and transfers into either the existing Polish tree
-(untouched) or a new English tree that structurally mirrors it block-for-block: main menu →
-authenticate → authenticated menu → booking. Every English flow keeps the exact same wire values
-(`specialty`, `timeOfDay` stay Polish keys like `kardiolog`/`rano`) and only translates
-caller-facing prompt text plus the TTS voice. The one Lambda that builds its own caller-facing text
-(`lambdas/booking`) gains a `locale` parameter (default `'pl'`, so the Polish flow's behavior is
-byte-identical to today) that branches only its own day-label/specialty-name/message-template
-formatting — never touching the shared `@pcm/appointment` package.
+One new entry flow gates on a DTMF digit and sets `$.Attributes.locale` (`"pl"`/`"en"`) before
+transferring into the single, shared main-menu flow — no separate English flow tree. Every
+locale-aware flow (main menu, authenticate, authenticated-menu, booking) runs a Data Table
+Evaluate query once near its start (no Lambda), copies the returned columns into persisted
+contact attributes, and picks its TTS voice with a `Compare` on `$.Attributes.locale`. Wire values
+(`specialty`, `timeOfDay` stay Polish keys like `kardiolog`/`rano`) are unchanged. The one Lambda
+that builds its own caller-facing text (`lambdas/booking`) gains a `locale` parameter (default
+`'pl'`, so an absent/unknown locale is byte-identical to today) that branches only its own
+day-label/specialty-name/message-template formatting — never touching the shared `@pcm/appointment`
+package. Rationale for the shared-flow design and the Data-Table-over-Lambda choice:
+`change.md`'s two revision notes.
 
 ## Phases at a Glance
 
 | Phase | What it delivers | Key risk |
 | --- | --- | --- |
 | 1. Booking Lambda locale branch | `locale` param, English day-label/specialty/message formatting | Must not change Polish output when `locale` is absent |
-| 2. Language-select + English facility-info | New entry flow; simplest English duplicate proves the pattern | `#`/transfer targets must point at English siblings, not Polish |
-| 3. English authenticate + authenticated-menu | Caller-ID-shortcut identity path in English | OTP fallback intentionally stays Polish — must not silently over-scope |
-| 4. English booking flow | Full specialty/time-of-day/day/time/confirm sequence | Heaviest phase; translation coverage across ~20 menu items |
-| 5. Docs + end-to-end verification | Contract-surfaces entry, naming convention, full manual matrix | Manual console repointing of the live number's entry flow |
+| 2. Data Tables (schema + content) | Four hand-built Data Tables backing every locale-aware flow's text | The Data Table block has no importable JSON form — a real, narrower gap than this repo's usual "hand-built but fully JSON'd" flows |
+| 3. Language-select + locale-aware facility-info menu | Entry flow sets `locale`; main menu made locale-aware in place | List/cancel/reschedule must stay blocked for English, not just untranslated |
+| 4. Locale-aware authenticate + authenticated-menu | Caller-ID-shortcut identity path speaks the caller's language | OTP fallback intentionally stays Polish — must not silently over-scope |
+| 5. Locale-aware booking flow | Full specialty/time-of-day/day/time/confirm sequence | Composite messages must weave live Lambda output with prompt text before `$.External.*` goes stale |
+| 6. Docs + end-to-end verification | Contract-surfaces entries, full manual matrix | Manual console repointing of the live number's entry flow |
 
 **Prerequisites:** none blocking — independent of the F-04 spike since it's keypad-only.
-**Estimated effort:** ~1-2 sessions across 5 phases; Phase 4 is the largest single piece.
+**Estimated effort:** ~1-2 sessions across 6 phases; Phase 5 is the largest single piece.
 
 ## Open Risks & Assumptions
 
 - English callers who fail the caller-ID shortcut hit a Polish OTP challenge — a known, accepted
   gap, not a defect to chase down later unless the scope is deliberately widened.
-- The `-en` filename suffix convention is new; if a later slice needs a third locale, revisit
-  whether suffix or a subdirectory scales better.
+- Data Table Query Name/column names are hand-typed literals with no compiler check against a
+  flow's `copyPrompts` references — a typo fails silently (empty text), not a build error.
+- The Data Table block itself must be added by hand in the console every time a flow is
+  re-imported — AWS hasn't published a Flow Language JSON schema for it.
 
 ## Success Criteria (Summary)
 

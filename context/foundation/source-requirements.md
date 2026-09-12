@@ -279,7 +279,7 @@ Three access layers.
 | `BookingIntent` | „chcę umówić wizytę", „zarejestruj mnie do kardiologa" | Specjalizacja, PoraDnia, WybranyTermin | Fetch available slots and register the chosen one |
 | `NextSlotsIntent` | „następne", „pokaż więcej", „inne opcje" | – | Fetch the next page of available slots |
 | `RescheduleIntent` | „chcę przełożyć wizytę", „zmień termin" | WizytaID, NowaPoraDnia, NowyTermin | Fetch new slots and update the existing booking |
-| `CancelIntent` | „odwołaj wizytę", „anuluj moją wizytę" | WizytaID | Cancel the indicated appointment |
+| `CancelAppointmentIntent` | „odwołaj wizytę", „anuluj moją wizytę" | WizytaID | Cancel the indicated appointment |
 | `ConfirmationIntent` | „tak", „potwierdzam", „zgadza się" | – | Confirm the action in the current session context |
 | `DenyIntent` | „nie", „wróć", „zmień" | – | Cancel the action, return to the previous step |
 

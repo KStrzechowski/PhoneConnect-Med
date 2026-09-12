@@ -413,22 +413,39 @@ something that no test will catch.
   level; a future contributor copying booking's "same digit at both menus" pattern verbatim would
   misassign this one. Nothing in the repo enforces this; flows are hand-built and outside IaC.
 
-## `hasAppointments` / `hasMore` / `appt1` / `appt2` / `appt3` (S-06)
+## `hasAppointments` / `hasMore` / `apptsList` (S-06)
 
 - **Set by:** `lambdas/appointment-list/index.ts` (keypad output fields) — `hasAppointments:
   'false'` for an empty list; otherwise `hasAppointments: 'true'`, `hasMore` reflecting whether a
-  fourth upcoming appointment exists beyond the three spoken, and `appt1`/`appt2`/`appt3` each a
-  formatted `"<specialty>, <day label>, godzina <time>"` string (empty when absent).
+  fourth upcoming appointment exists beyond the three spoken, and `apptsList` one field: up to
+  three formatted `"<specialty>, <day label>, godzina <time>"` strings joined with `'. '`
+  (`@pcm/appointment`'s `joinList`) — empty items are never included, so the joined string is
+  always exactly as long as the real count.
 - **Read by:** `keypad-appointment-list-flow.json`'s `checkHasAppointments`/`checkHasMore`
   branches, to choose which of the three message variants (empty / populated /
-  populated-with-overflow) to play.
+  populated-with-overflow) to play; `setPopulatedMsgWithMore`/`setPopulatedMsgNoMore` concatenate
+  `populatedPrefix` + `$.External.apptsList` + the chosen suffix.
 - **Why it matters:** same class of gap as `Details.Parameters.step` above — a hand-built
   `Compare` block that checks the wrong field, or a flow edit that forgets to update
   `checkHasMore`'s branch after changing the cap, silently plays the wrong message rather than
   failing loudly. The speech variant (`ListAppointmentsIntent` in
   `lambdas/facility-info-speech/index.ts`) reaches the identical `listAppointments`/
-  `formatDayLabel` calls but builds its own single spoken sentence rather than three separate
-  fields — see L-03.
+  `formatDayLabel` calls and already built its own message this same way (a joined string, not
+  fixed-count fields) — see L-03.
+- **2026-09-11 fix:** this field was `appt1`/`appt2`/`appt3` (three always-present, sometimes-empty
+  fields) until a real-call bug was found: `populatedFrag2`/`populatedFrag3`'s static `"."`
+  separators kept getting spoken even when the corresponding `appt2`/`appt3` was empty. The same
+  fixed-count-fields shape had the identical bug in `lambdas/booking/index.ts` (`day1`-`day3`,
+  `time1`-`time3`) and `lambdas/appointment-cancel/index.ts` /
+  `lambdas/appointment-reschedule/index.ts` (`appt1`-`appt3` selection menus, plus reschedule's own
+  `day1`-`day3`/`time1`-`time3`) — all six collapsed to one joined field each
+  (`apptsList`/`daysList`/`timesList`) the same way. **The Lambda side of this fix is deployed
+  ahead of the flow side** — `keypad-booking-flow.json`, `keypad-appointment-cancel-flow.json`,
+  `keypad-appointment-reschedule-flow.json`, and `keypad-appointment-list-flow.json` still read the
+  old `$.External.day1`/`time1`/`appt1` etc. fields, which the Lambdas no longer return. Do not
+  deploy these Lambda changes without updating the four flows' `copyPrompts` and `set*Msg` blocks
+  (and the data table columns they read) in the same change — until then, every affected menu in
+  these four flows will read as empty.
 
 ## Keypad digits: main menu `4`, authenticated menu `3` (S-07)
 
@@ -457,7 +474,7 @@ something that no test will catch.
   read-back confirmation, or reporting success/failure.
 - **Why it matters:** same class of gap as `hasAppointments`/`hasMore` above — a hand-built
   `Compare` block checking the wrong field silently plays the wrong message rather than failing
-  loudly. The speech variant (`CancelIntent` in `lambdas/facility-info-speech/index.ts`) reaches
+  loudly. The speech variant (`CancelAppointmentIntent` in `lambdas/facility-info-speech/index.ts`) reaches
   the identical `resolveAppointment`/`cancelAppointment` calls but drives its own dialog-stage
   state machine rather than reading these three fields directly — see L-03.
 
@@ -494,29 +511,70 @@ something that no test will catch.
   hand-built **Compare** block checking the wrong field name silently fails to route the agent
   anywhere. Nothing in the repo enforces this; flows and views are hand-built and outside IaC.
 
-## `Details.Parameters.locale` (S-10)
+## `$.Attributes.locale` contact attribute (S-10)
 
-- **Set by:** the four `InvokeExternalResource` blocks in `keypad-booking-flow-en.json` (`invokeDays`,
-  `invokeTimes`, `invokeConfirm`, `invokeBook`), as a literal `"en"` alongside the existing
-  `specialty`/`timeOfDay`/`dayChoice`/`timeChoice`/`authenticated`/`patientId` parameters.
-  `keypad-booking-flow.json`'s own four blocks never send this parameter, so the Polish flow's
-  behavior is unaffected by its existence.
-- **Read by:** `lambdas/booking/index.ts`, defaulting to `'pl'` when absent, to choose between the
-  Polish and English day-label formatter, specialty display-name table, and confirmation-message
-  template — never passed to or read by `@pcm/appointment`.
-- **Why it matters:** same class of gap as `Details.Parameters.variant` above — a hand-built
-  `InvokeExternalResource` block that forgets this parameter silently falls back to Polish output
-  for a caller who selected English. Nothing in the repo enforces this; flows are hand-built and
-  outside IaC.
+- **Set by:** `keypad-language-select-flow.json`, once, from the caller's `1`/`2` digit choice
+  (`"pl"` or `"en"`) — the number's entry point. Persists across every later `TransferToFlow` for
+  the rest of the call (Connect contact attributes carry over on transfer within one contact).
+- **Read by:** every keypad flow downstream of language selection
+  (`keypad-facility-info-main-menu-flow.json`, `keypad-authenticate-flow.json`,
+  `keypad-authenticated-menu-flow.json`, `keypad-booking-flow.json`,
+  `keypad-appointment-list-flow.json`, `keypad-appointment-cancel-flow.json`,
+  `keypad-appointment-reschedule-flow.json`), each as the Primary Attribute on its own Data Table
+  Evaluate block, plus a `Compare` block in each flow that picks the TTS voice (`Ola` for `pl`,
+  `Joanna` for `en`). Also forwarded as the `locale` Lambda invocation parameter by
+  `keypad-booking-flow.json`, `keypad-appointment-list-flow.json`,
+  `keypad-appointment-cancel-flow.json`, and `keypad-appointment-reschedule-flow.json`, since
+  those Lambdas format day/time labels and specialty names themselves (`formatDayLabel` /
+  `formatDayLabelEn` / `specialtyDisplayNamesEn` in `@pcm/appointment`) rather than leaving all
+  caller-facing text to the flow's Data Table.
+- **Why it matters:** this is the single switch the whole multilingual mechanism hangs off. There
+  is one flow file per menu, not one per language (see `$.DataTables.*` below and
+  `connect-flow-templates/README.md` → Naming) — a Data Table block configured with the wrong
+  Primary Attribute silently falls back to Polish output for an English caller. Nothing in the
+  repo enforces this; flows and data tables are both hand-built and outside IaC.
+
+## `$.DataTables.<QueryName>.<Column>` (S-10)
+
+- **Set by:** a Data Table block (Evaluate action), hand-added as the true first action of every
+  locale-aware keypad flow — see that flow's own `description` field for exact wiring, and
+  `connect-flow-templates/data-tables.md` for the seven tables' schema and content
+  (`FacilityInfoPrompts`, `AuthenticatePrompts`, `AuthenticatedMenuPrompts`, `BookingPrompts`,
+  `AppointmentListPrompts`, `AppointmentCancelPrompts`, `AppointmentReschedulePrompts`, each with
+  `locale` as its sole Primary Attribute and one row per locale). This block, and data tables
+  themselves, have **no published Flow Language JSON schema** — unlike every other block in this
+  repo, this one cannot be committed as importable JSON; `data-tables.md` is the source of truth a
+  person builds from by hand.
+- **Read by:** each flow's `copyPrompts` step (`UpdateContactAttributes`), immediately after the
+  Data Table block, copying every `$.DataTables.<QueryName>.<Column>` into a same-named, persisted
+  `$.Attributes.<key>`. Some prompts (the booking flow's day/time/confirm messages) are then woven
+  together with a *later* Lambda's `$.External.*` output in the same breath, e.g. `setDaysMsg`'s
+  `lastMessageText`: `"$.Attributes.daysPrefix$.External.daysList$.Attributes.daysSuffix"` — mixing
+  the already-resolved, persisted prompt fragment with the Booking Lambda's fresh output. Every
+  fragment referenced this way is a plain resolved string with no further `$.` placeholders inside
+  it (no double indirection) — `data-tables.md`'s entries all satisfy this by construction. (This
+  three-part shape — prefix, one Lambda-built list, suffix — is the 2026-09-11 fix for the
+  `apptsList`/`daysList`/`timesList` bug above; `daysPrefix`/`timesMid1`/`selectionPrefix` lose
+  their trailing `"1 - "` and the `*Frag2`/`*Frag3` columns are deleted, since numbering now lives
+  inside the Lambda's joined string.)
+- **Why it matters:** this mechanism is what replaced five duplicated Polish/English flow file
+  pairs (S-10's original design considered, then a Lambda-backed version, before landing here —
+  see `context/pending-verification/english-locale/change.md`) with one shared flow file per menu
+  and no Lambda in the text-lookup path at all. Adding a new caller-facing string means adding one
+  column to the relevant data table (both locale rows) and one reference in the flow JSON — there
+  is no separate English flow to forget to update, but also nothing that checks a typo'd Query
+  Name or column name against what a flow's `copyPrompts`/`Text` fields actually reference; an
+  unmatched reference resolves to empty text with no error (per AWS's own documented behavior for
+  a missing Evaluate result).
 
 ## `appt1`-`appt4` surfacing divergence (S-12, agent-appointment `list` step)
 
 - **What:** `lambdas/agent-appointment/index.ts`'s `list` step (shared by `cancel` and
   `reschedule`) returns `appt1`-`appt4` — all rows `listAppointments` returns — with no
   `hasMore` field, unlike the caller-facing `appointment-list`/`appointment-cancel`/
-  `appointment-reschedule` Lambdas, which cap what they surface at `appt1`-`appt3` (see
-  `hasAppointments` / `hasMore` / `appt1` / `appt2` / `appt3` above) because a spoken menu can't
-  offer a fourth item cleanly.
+  `appointment-reschedule` Lambdas, which cap what they surface at three items joined into one
+  `apptsList` field (see `hasAppointments` / `hasMore` / `apptsList` above) because a spoken menu
+  can't offer a fourth item cleanly.
 - **Why it matters:** the caller-facing cap and `findAppointmentsForPatient`'s own `limit(4)` in
   `his/src/appointment/appointment.service.ts` are both untouched — this is a presentation-layer
   divergence, not a data-model one. A future contributor adding a fourth caller-facing menu slot

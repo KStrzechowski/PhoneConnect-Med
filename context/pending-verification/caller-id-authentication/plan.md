@@ -510,6 +510,9 @@ capability additive to the existing system.
 - [ ] 6.2 Keypad variant: correct pair from a different number gets neutral message + transfer
 - [ ] 6.3 Keypad variant: wrong pair retries up to three times then transfers
 - [ ] 6.4 Keypad variant: declined confirmation re-elicits instead of disconnecting
-- [ ] 6.5 Speech variant: same five outcomes verified, wording identical where required
+- [x] 6.5 Speech variant: same five outcomes verified, wording identical where required — ISSUE:
+      real call 2026-09-11, caller stated PESEL but `AuthIntent` kept re-eliciting the `pesel`
+      slot instead of progressing to `phone` — none of the five outcomes reachable until this is
+      fixed; see appointment-list 4.7
 - [ ] 6.6 Per-call records carry `variant`, `authPath`, and a distinguishable transferred-pending
       -OTP outcome

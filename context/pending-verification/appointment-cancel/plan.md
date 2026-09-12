@@ -541,9 +541,9 @@ None — no schema change.
 
 #### Automated
 
-- [x] 4.1 `cdk synth` succeeds with both menu flows' referenced Lambda ARNs resolvable
-- [x] 4.2 Full test suite passes: repo-wide test command
-- [x] 4.3 Linting and type checking pass repo-wide
+- [x] 4.1 `cdk synth` succeeds with both menu flows' referenced Lambda ARNs resolvable — e673ba9
+- [x] 4.2 Full test suite passes: repo-wide test command — e673ba9
+- [x] 4.3 Linting and type checking pass repo-wide — e673ba9
 
 #### Manual
 

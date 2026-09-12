@@ -428,10 +428,14 @@ over already-existing, already-tested shared functions.
 - [x] 1.1 Unit tests pass: `npm test` in `lambdas/agent-appointment` — 593084e
 - [x] 1.2 Type checking passes — 593084e
 - [x] 1.3 CDK synth succeeds with the new function — 593084e
+- [x] 1.4 `infra/test/infra.test.ts`'s two hardcoded keypad-function counts (permissions,
+      telephony-instance associations) updated 9 → 10 for `AgentAppointment` — this plan's own
+      Automated criteria never listed the infra assertion suite, so 1.1-1.3 landing green didn't
+      catch it; found and fixed 2026-09-11, `npm test` in `infra/` now passes in full
 
 #### Manual
 
-- [ ] 1.4 Deployed function invokable directly for each operation's first step, matching its
+- [ ] 1.5 Deployed function invokable directly for each operation's first step, matching its
       mirrored precedent Lambda's output
 
 ### Phase 2: Reusable Agent-Side View Templates

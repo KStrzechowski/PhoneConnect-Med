@@ -57,7 +57,7 @@ B2 and B3 are the load-bearing cards: they test whether a participant volunteers
 | ID | Card (read aloud) | Ground truth |
 |---|---|---|
 | A1 | „Nie pamiętasz, czy masz jeszcze jakąś umówioną wizytę w tej przychodni." | `AppointmentsIntent` |
-| A2 | „Masz umówioną wizytę w czwartek, ale wypadł ci wyjazd i nie dasz rady przyjść." | `CancelIntent` |
+| A2 | „Masz umówioną wizytę w czwartek, ale wypadł ci wyjazd i nie dasz rady przyjść." | `CancelAppointmentIntent` |
 | A3 | „Masz wizytę w piątek rano, ale wolałbyś inny dzień." | `RescheduleIntent` |
 | A4 | „Chcesz sprawdzić, jakie dane przychodnia ma o tobie zapisane." | `PatientDataIntent` |
 

@@ -13,6 +13,9 @@ only the JSON/Markdown source is version-controlled, not the import step itself.
   flows/modules are — AWS-managed views are referenced by ARN and configured per-block, and
   customer-managed views use a separate UI Builder tool outside this repo's flow-JSON
   convention. Always hand-merge guides (`.md`), never `.json`.
+- `data-tables.md` — schema and content for Amazon Connect Data Tables, hand-built the same way
+  as views: no importable JSON format exists for them or for the flow block that reads them
+  (S-10).
 
 ## Naming
 
@@ -27,10 +30,11 @@ A doc that isn't itself importable (a hand-merge guide for an existing console f
 the same prefix and lives alongside the flow/module it documents — see
 `flows/speech-authintent-fragment.md`.
 
-A locale variant of an existing flow appends `-en` (or the relevant locale code) before the
-extension, e.g. `keypad-booking-flow-en.json` alongside `keypad-booking-flow.json` — this keeps the
-locale sibling alphabetically next to the original and leaves the `<variant>-<name>-<flow|module>`
-prefix undisturbed (S-10).
+Locale is not a naming axis: a flow that speaks more than one language is one file, reading
+`$.Attributes.locale` (set once by `keypad-language-select-flow.json`) to pick its prompts (via a
+Data Table lookup — no Lambda, see `data-tables.md`) and TTS voice at runtime (S-10). There is no
+per-locale flow file to name. Each locale-aware flow's `description` field states exactly which
+Data Table block to add by hand after import, since that block has no importable JSON form.
 
 ## Real ARNs (`REPLACE_WITH_*` placeholders)
 

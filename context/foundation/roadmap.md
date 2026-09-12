@@ -60,9 +60,9 @@ that produces evidence rather than infrastructure.
 | S-07 | `appointment-cancel` | cancel a scheduled appointment, releasing the slot | S-06 | FR-014 | in-progress |
 | S-08 | `appointment-reschedule` | move an appointment to a new slot, releasing the old one | S-05, S-07 | FR-015 | in-progress |
 | S-09 | `intent-accuracy-measurement` | (measurement) the project can report intent accuracy on held-out Polish speech | S-05 | NFR-14, FR-009, FR-012 | proposed |
-| S-10 | `english-locale` | complete the same tasks in English, in both variants | S-05, F-04 | FR-009, FR-012, NFR (Polish primary) | proposed |
-| S-11 | `agent-call-handover` | reach an agent who already has the conversation and their patient record | S-01, S-03 | FR-018, FR-019, FR-020 | planning |
-| S-12 | `agent-appointment-management` | have an agent create, cancel, or reschedule for them during the transfer | S-11, S-05, S-07, S-08 | FR-017 | proposed |
+| S-10 | `english-locale` | complete the same tasks in English, in both variants | S-05, F-04 | FR-009, FR-012, NFR (Polish primary) | in-progress |
+| S-11 | `agent-call-handover` | reach an agent who already has the conversation and their patient record | S-01, S-03 | FR-018, FR-019, FR-020 | in-progress |
+| S-12 | `agent-appointment-management` | have an agent create, cancel, or reschedule for them during the transfer | S-11, S-05, S-07, S-08 | FR-017 | in-progress |
 
 ## Streams
 
@@ -460,7 +460,7 @@ the number**: no bot, no contact flow, no deployed function.
   variant needs only an added locale over unchanged business logic. That means the shared logic
   must genuinely not change, and if it does, the finding evaporates. Sequenced after S-05 so
   that booking — the task where the duplication cost is largest — is included in the count.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-11: Agent receives the transferred call with context
 
@@ -477,7 +477,7 @@ the number**: no bot, no contact flow, no deployed function.
   application or second login exists. Depends on S-03 because the patient record only exists once
   identity has been established. Generates no comparison data, so it sits below the north star
   despite being cheap.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-12: Agent manages appointments during the transfer
 
@@ -494,7 +494,7 @@ the number**: no bot, no contact flow, no deployed function.
   agent workspace during a transferred call, backed by the same shared business logic, with no
   separate application, no styling budget, and no agent workflow beyond the three operations.
   This is the one place in the project where an afternoon can quietly become interface work.
-- **Status:** proposed
+- **Status:** in-progress
 
 ## Backlog Handoff
 

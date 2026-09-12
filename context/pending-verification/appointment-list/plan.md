@@ -386,6 +386,9 @@ None — no schema change. Reuses `Slot`/`Doctor` as already migrated by S-05
 - [ ] 4.4 Keypad: zero-appointments message verified
 - [ ] 4.5 Keypad: overflow (4+) line verified
 - [ ] 4.6 Speech, authenticated: direct list via `ListAppointmentsIntent`
-- [ ] 4.7 Speech, not authenticated: needs-auth prompt → `AuthIntent` → repeat request
+- [x] 4.7 Speech, not authenticated: needs-auth prompt → `AuthIntent` → repeat request — ISSUE:
+      needs-auth prompt fired correctly (real call, 2026-09-11), but the caller then got stuck in
+      `AuthIntent`'s `pesel` slot and never reached the repeat-request step — see
+      caller-id-authentication 6.5
 - [ ] 4.8 Mock-unreachable case transfers to agent queue in both variants
 - [ ] 4.9 Global `0`/`*` digits still work at the new flow/intent
