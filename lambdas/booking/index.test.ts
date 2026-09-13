@@ -90,7 +90,7 @@ test('confirm step returns an English message and specialty name when locale is 
 
   assert.equal(result.reachable, 'true');
   assert.equal(result.available, 'true');
-  assert.equal(result.message, `Booking: Cardiology, Friday, September 4, at ${ssmlTime('09:30')}.`);
+  assert.equal(result.message, `Booking: Cardiology, Friday, September 4, at ${ssmlTime('09:30', 'en')}`);
 });
 
 test('confirm step keeps Polish output when locale is omitted', async () => {
@@ -98,7 +98,7 @@ test('confirm step keeps Polish output when locale is omitted', async () => {
   const result = await handler(withParams({ step: 'confirm', dayChoice: '1', timeChoice: '2', specialty: 'kardiolog' }));
   mock.restoreAll();
 
-  assert.equal(result.message, `Umawiam wizytę: kardiolog, piątek, 4 września, godzina ${ssmlTime('09:30')}.`);
+  assert.equal(result.message, `Umawiam wizytę: kardiolog, piątek, 4 września, godzina ${ssmlTime('09:30')}`);
 });
 
 test('confirm step reports no availability when the day no longer resolves', async () => {

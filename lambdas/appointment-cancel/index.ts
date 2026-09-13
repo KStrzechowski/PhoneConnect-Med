@@ -15,8 +15,8 @@ const formatAppointment = (
   locale: string,
 ): string =>
   locale === 'en'
-    ? `${specialtyDisplayNamesEn[appointment.specialty] ?? appointment.specialty}, ${formatDayLabelEn(appointment.date)}, at ${ssmlTime(appointment.time)}`
-    : `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${ssmlTime(appointment.time)}`;
+    ? `${specialtyDisplayNamesEn[appointment.specialty] ?? appointment.specialty}, ${formatDayLabelEn(appointment.date)}, at ${ssmlTime(appointment.time, locale)}`
+    : `${appointment.specialty}, ${formatDayLabel(appointment.date)}, godzina ${ssmlTime(appointment.time, locale)}`;
 
 export const handler = measured(
   'appointment-cancel',

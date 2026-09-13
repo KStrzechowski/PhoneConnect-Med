@@ -117,7 +117,7 @@ test('list step returns English-formatted appointments when locale is en', async
   const result = await handler(withParams({ step: 'list', locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.apptsList, new RegExp(`Cardiology.*at ${ssmlTime('09:30')}`));
+  assert.match(result.apptsList, new RegExp(`Cardiology.*at ${ssmlTime('09:30', 'en')}`));
 });
 
 test('confirm step returns an English read-back message when locale is en', async () => {
@@ -125,7 +125,7 @@ test('confirm step returns an English read-back message when locale is en', asyn
   const result = await handler(withParams({ step: 'confirm', selectedSlot: '1', locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.message, new RegExp(`Cardiology.*at ${ssmlTime('09:30')}`));
+  assert.match(result.message, new RegExp(`Cardiology.*at ${ssmlTime('09:30', 'en')}`));
 });
 
 test('list step returns a handled error when the mock is unreachable', async () => {

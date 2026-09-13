@@ -48,6 +48,15 @@ describe('AppointmentService', () => {
     expect(times).toEqual(['13:30', '15:00']);
   });
 
+  it('returns at least as many times when timeOfDay is omitted, and still includes the bucketed ones', async () => {
+    const [date] = await service.findAvailableDays('kardiolog', 'rano');
+    const withBucket = await service.findAvailableTimes('kardiolog', 'rano', date);
+    const withoutBucket = await service.findAvailableTimes('kardiolog', undefined, date);
+
+    expect(withoutBucket.length).toBeGreaterThanOrEqual(withBucket.length);
+    for (const t of withBucket) expect(withoutBucket).toContain(t);
+  });
+
   it('returns no days for a specialty with no doctor', async () => {
     const days = await service.findAvailableDays('reumatolog', 'rano');
 
@@ -95,6 +104,46 @@ describe('AppointmentService', () => {
 
     expect(booked).toBe(true);
     expect(remaining).not.toContain(time);
+  });
+
+  it('books a free slot without a timeOfDay filter', async () => {
+    const [date] = await service.findAvailableDays('pediatra', 'rano');
+    const [time] = await service.findAvailableTimes('pediatra', undefined, date);
+
+    const booked = await service.book('pediatra', undefined, date, time, 1);
+    const remaining = await service.findAvailableTimes('pediatra', undefined, date);
+
+    expect(booked).toBe(true);
+    expect(remaining).not.toContain(time);
+  });
+
+  it('finds the nearest available slot, matching the earliest time on its own date', async () => {
+    const nearest = await service.findNearestAvailable('chirurg');
+
+    expect(nearest).not.toBeNull();
+    expect(nearest!.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    const timesThatDay = await service.findAvailableTimes('chirurg', undefined, nearest!.date);
+    expect(timesThatDay[0]).toBe(nearest!.time);
+  });
+
+  it('returns null from findNearestAvailable for a specialty with no doctor', async () => {
+    const nearest = await service.findNearestAvailable('reumatolog');
+
+    expect(nearest).toBeNull();
+  });
+
+  it('returns null from findNearestAvailable for a specialty whose doctor has no free slots', async () => {
+    const nearest = await service.findNearestAvailable('alergolog');
+
+    expect(nearest).toBeNull();
+  });
+
+  it('findNearestAvailable respects a minimum time floor', async () => {
+    const unfiltered = await service.findNearestAvailable('psychiatra');
+    const filtered = await service.findNearestAvailable('psychiatra', '23:59');
+
+    expect(unfiltered).not.toBeNull();
+    expect(filtered).toBeNull();
   });
 
   it('fails to book a slot that is already taken', async () => {

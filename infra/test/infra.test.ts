@@ -165,7 +165,7 @@ test('the speech bot has all 6 global-layer intents plus AuthIntent, OtpIntent a
   });
 });
 
-test('BookingIntent has a dialog code hook in addition to fulfillment, and three slots in priority order', () => {
+test('BookingIntent has a dialog code hook in addition to fulfillment, and four slots in priority order', () => {
   const bots = template.findResources('AWS::Lex::Bot');
   const [bot] = Object.values(bots);
   const locale = (bot.Properties.BotLocales as Array<{ LocaleId: string; Intents: Array<{ Name: string }> }>).find(
@@ -183,10 +183,10 @@ test('BookingIntent has a dialog code hook in addition to fulfillment, and three
   expect(bookingIntent?.FulfillmentCodeHook?.Enabled).toBe(true);
   expect(
     bookingIntent?.SlotPriorities?.slice().sort((a, b) => a.Priority - b.Priority).map((slot) => slot.SlotName),
-  ).toEqual(['specialty', 'timeOfDay', 'selectedSlot']);
+  ).toEqual(['specialty', 'preferredDate', 'preferredTime', 'selectedSlot']);
 });
 
-test('BookingIntent has an explicit declination path that clears only selectedSlot', () => {
+test('BookingIntent has an explicit declination path that clears the date, time, and numbered choice', () => {
   const bots = template.findResources('AWS::Lex::Bot');
   const [bot] = Object.values(bots);
   const locale = (bot.Properties.BotLocales as Array<{ LocaleId: string; Intents: Array<{ Name: string }> }>).find(
@@ -204,8 +204,12 @@ test('BookingIntent has an explicit declination path that clears only selectedSl
     | undefined;
 
   const declinationNextStep = bookingIntent?.IntentConfirmationSetting?.DeclinationNextStep;
-  expect(declinationNextStep?.DialogAction?.SlotToElicit).toBe('selectedSlot');
-  expect(declinationNextStep?.Intent?.Slots).toEqual([{ SlotName: 'selectedSlot', SlotValueOverride: {} }]);
+  expect(declinationNextStep?.DialogAction?.SlotToElicit).toBe('preferredDate');
+  expect(declinationNextStep?.Intent?.Slots).toEqual([
+    { SlotName: 'preferredDate', SlotValueOverride: {} },
+    { SlotName: 'preferredTime', SlotValueOverride: {} },
+    { SlotName: 'selectedSlot', SlotValueOverride: {} },
+  ]);
 });
 
 test('AuthIntent has an explicit declination path that clears both slots and re-elicits pesel', () => {

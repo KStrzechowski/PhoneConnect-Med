@@ -51,7 +51,7 @@ export const handler = measured(
           reachable: 'true',
           available: 'true',
           date: dayLabel(date),
-          timesList: joinNumbered(times.slice(0, 3).map(ssmlTime)),
+          timesList: joinNumbered(times.slice(0, 3).map((t) => ssmlTime(t, locale))),
         };
       }
 
@@ -64,8 +64,8 @@ export const handler = measured(
         if (time === null) return { reachable: 'true', available: 'false' };
         const message =
           locale === 'en'
-            ? `Booking: ${specialtyDisplayNamesEn[specialty] ?? specialty}, ${dayLabel(date)}, at ${ssmlTime(time)}`
-            : `Umawiam wizytę: ${specialty}, ${dayLabel(date)}, godzina ${ssmlTime(time)}`;
+            ? `Booking: ${specialtyDisplayNamesEn[specialty] ?? specialty}, ${dayLabel(date)}, at ${ssmlTime(time, locale)}`
+            : `Umawiam wizytę: ${specialty}, ${dayLabel(date)}, godzina ${ssmlTime(time, locale)}`;
         return {
           reachable: 'true',
           available: 'true',

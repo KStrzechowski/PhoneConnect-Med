@@ -66,7 +66,7 @@ test('returns English-formatted appointments when locale is en', async () => {
   const result = await handler(withParams({ locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.apptsList, new RegExp(`Cardiology.*at ${ssmlTime('09:30')}`));
+  assert.match(result.apptsList, new RegExp(`Cardiology.*at ${ssmlTime('09:30', 'en')}`));
 });
 
 test('returns a handled error when the mock is unreachable', async () => {

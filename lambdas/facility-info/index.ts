@@ -1,6 +1,6 @@
 import { measured, downstream } from '@pcm/measure';
 import { fetchFacility, openDaysEn, ssmlAddress } from '@pcm/facility';
-import { ssmlTime } from '@pcm/appointment';
+import { ssmlOpeningHour } from '@pcm/appointment';
 
 export const handler = measured(
   'facility-info',
@@ -13,8 +13,8 @@ export const handler = measured(
         reachable: 'true',
         name: facility.name,
         address: ssmlAddress(facility.address, locale),
-        opensAt: ssmlTime(facility.opensAt),
-        closesAt: ssmlTime(facility.closesAt),
+        opensAt: ssmlOpeningHour(facility.opensAt, locale),
+        closesAt: ssmlOpeningHour(facility.closesAt, locale),
         openDays: locale === 'en' ? (openDaysEn[facility.openDays] ?? facility.openDays) : facility.openDays,
       };
     } catch (error) {

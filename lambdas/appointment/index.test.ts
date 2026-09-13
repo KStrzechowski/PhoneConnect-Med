@@ -3,14 +3,18 @@ import assert from 'node:assert/strict';
 import {
   findAvailableDays,
   findAvailableTimes,
+  findAvailableTimesForDate,
+  findNearestAvailable,
   resolveDay,
   resolveTime,
+  resolveTimeForDate,
   bookAppointment,
   listAppointments,
   resolveAppointment,
   cancelAppointment,
   rescheduleAppointment,
   ssmlTime,
+  ssmlOpeningHour,
   joinNumbered,
   joinList,
 } from './index.ts';
@@ -38,6 +42,75 @@ test('findAvailableTimes returns the times from the mock', async () => {
   mock.restoreAll();
 
   assert.deepEqual(times, ['08:00', '09:30']);
+});
+
+test('findAvailableTimesForDate omits timeOfDay from the request', async () => {
+  const fetchSpy = mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ times: ['08:00'] })));
+  const times = await findAvailableTimesForDate('kardiolog', '2026-09-04', AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(times, ['08:00']);
+  const url = String(fetchSpy.mock.calls[0].arguments[0]);
+  assert.equal(url.includes('timeOfDay'), false);
+});
+
+test('findNearestAvailable returns the mocked pair', async () => {
+  mockJson({ nearest: { date: '2026-09-05', time: '09:30' } });
+  const nearest = await findNearestAvailable('kardiolog', AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(nearest, { date: '2026-09-05', time: '09:30' });
+});
+
+test('findNearestAvailable returns null when nothing is available', async () => {
+  mockJson({ nearest: null });
+  const nearest = await findNearestAvailable('reumatolog', AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.equal(nearest, null);
+});
+
+test('findNearestAvailable includes minTime in the request when given', async () => {
+  const fetchSpy = mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ nearest: null })));
+  await findNearestAvailable('kardiolog', AbortSignal.timeout(1000), '16:00');
+  mock.restoreAll();
+
+  const url = String(fetchSpy.mock.calls[0].arguments[0]);
+  assert.equal(url.includes('minTime=16%3A00'), true);
+});
+
+test('resolveTimeForDate re-derives the time at the chosen index', async () => {
+  mockJson({ times: ['08:00', '09:30'] });
+  const result = await resolveTimeForDate('kardiolog', '2026-09-04', 2, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(result, { time: '09:30' });
+});
+
+test('resolveTimeForDate returns null for a choice outside the offered range', async () => {
+  mockJson({ times: ['08:00'] });
+  const result = await resolveTimeForDate('kardiolog', '2026-09-04', 5, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(result, { time: null });
+});
+
+test('resolveTimeForDate returns null when the search comes back empty', async () => {
+  mockJson({ times: [] });
+  const result = await resolveTimeForDate('kardiolog', '2026-09-04', 1, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(result, { time: null });
+});
+
+test('bookAppointment omits timeOfDay from the request body when null', async () => {
+  const fetchSpy = mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ booked: true })));
+  const booked = await bookAppointment('kardiolog', null, '2026-09-04', '09:30', 1, AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.equal(booked, true);
+  const body = JSON.parse(String(fetchSpy.mock.calls[0].arguments[1]?.body));
+  assert.equal('timeOfDay' in body, false);
 });
 
 test('resolveDay re-derives the date at the chosen index', async () => {
@@ -179,15 +252,30 @@ test('rescheduleAppointment books the new slot then releases the old one', async
   assert.deepEqual(result, { rescheduled: true, oldSlotReleased: true });
 });
 
-test('ssmlTime reads hour and minute as cardinal numbers', () => {
-  assert.equal(
-    ssmlTime('09:30'),
-    '<say-as interpret-as="cardinal">9</say-as> <say-as interpret-as="cardinal">30</say-as>',
-  );
+test('ssmlTime reads the hour as a Polish ordinal word with a cardinal minute', () => {
+  assert.equal(ssmlTime('09:30'), 'dziewiąta <say-as interpret-as="cardinal">30</say-as>');
 });
 
 test('ssmlTime omits the minute when it is zero', () => {
-  assert.equal(ssmlTime('08:00'), '<say-as interpret-as="cardinal">8</say-as>');
+  assert.equal(ssmlTime('08:00'), 'ósma');
+});
+
+test('ssmlTime reads hour and minute as cardinal numbers in English', () => {
+  assert.equal(
+    ssmlTime('09:30', 'en'),
+    '<say-as interpret-as="cardinal">9</say-as> <say-as interpret-as="cardinal">30</say-as>',
+  );
+  assert.equal(ssmlTime('08:00', 'en'), '<say-as interpret-as="cardinal">8</say-as>');
+});
+
+test('ssmlOpeningHour reads the hour in genitive form for the "od...do" opening-hours phrasing', () => {
+  assert.equal(ssmlOpeningHour('08:00'), 'ósmej');
+  assert.equal(ssmlOpeningHour('18:00'), 'osiemnastej');
+  assert.equal(ssmlOpeningHour('09:30'), 'dziewiątej <say-as interpret-as="cardinal">30</say-as>');
+});
+
+test('ssmlOpeningHour falls back to cardinal digits in English', () => {
+  assert.equal(ssmlOpeningHour('08:00', 'en'), '<say-as interpret-as="cardinal">8</say-as>');
 });
 
 test('joinNumbered numbers each item and stops at however many are given', () => {

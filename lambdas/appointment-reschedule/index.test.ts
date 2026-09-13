@@ -197,7 +197,7 @@ test('list step returns English-formatted appointments when locale is en', async
   const result = await handler(withParams({ step: 'list', locale: 'en' }));
   mock.restoreAll();
 
-  assert.match(result.apptsList, new RegExp(`Cardiology.*at ${ssmlTime('09:30')}`));
+  assert.match(result.apptsList, new RegExp(`Cardiology.*at ${ssmlTime('09:30', 'en')}`));
 });
 
 test('days step returns English day labels when locale is en', async () => {
@@ -217,7 +217,7 @@ test('confirm step returns an English combined read-back message when locale is 
 
   assert.match(
     result.message,
-    new RegExp(`Cardiology.*at ${ssmlTime('09:30')}.*to.*at ${ssmlTime('08:00')}`),
+    new RegExp(`Cardiology.*at ${ssmlTime('09:30', 'en')}.*to.*at ${ssmlTime('08:00', 'en')}`),
   );
 });
 

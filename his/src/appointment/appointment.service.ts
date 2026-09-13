@@ -31,22 +31,44 @@ export class AppointmentService {
 
   async findAvailableTimes(
     specialty: string,
-    timeOfDay: string,
+    timeOfDay: string | undefined,
     date: string,
   ): Promise<string[]> {
-    const rows = await this.slotRepository
+    const query = this.slotRepository
       .createQueryBuilder('slot')
       .innerJoin('slot.doctor', 'doctor')
       .where('doctor.specialty = :specialty', { specialty })
-      .andWhere('slot.timeOfDay = :timeOfDay', { timeOfDay })
       .andWhere('slot.date = :date', { date })
-      .andWhere('slot.taken = false')
+      .andWhere('slot.taken = false');
+    if (timeOfDay) query.andWhere('slot.timeOfDay = :timeOfDay', { timeOfDay });
+    const rows = await query
       .select('slot.time', 'time')
       .distinct(true)
       .orderBy('slot.time', 'ASC')
       .limit(3)
       .getRawMany<{ time: string }>();
     return rows.map((row) => row.time);
+  }
+
+  async findNearestAvailable(
+    specialty: string,
+    minTime?: string,
+  ): Promise<{ date: string; time: string } | null> {
+    const query = this.slotRepository
+      .createQueryBuilder('slot')
+      .innerJoin('slot.doctor', 'doctor')
+      .where('doctor.specialty = :specialty', { specialty })
+      .andWhere('slot.taken = false')
+      .andWhere("slot.date >= (now() AT TIME ZONE 'Europe/Warsaw')::date");
+    if (minTime) query.andWhere('slot.time >= :minTime', { minTime });
+    const row = await query
+      .select('slot.date::text', 'date')
+      .addSelect('slot.time', 'time')
+      .orderBy('slot.date::text', 'ASC')
+      .addOrderBy('slot.time', 'ASC')
+      .limit(1)
+      .getRawOne<{ date: string; time: string }>();
+    return row ?? null;
   }
 
   async findAppointmentsForPatient(
@@ -69,20 +91,20 @@ export class AppointmentService {
 
   async book(
     specialty: string,
-    timeOfDay: string,
+    timeOfDay: string | undefined,
     date: string,
     time: string,
     patientId: number,
   ): Promise<boolean> {
-    const candidate = await this.slotRepository
+    const query = this.slotRepository
       .createQueryBuilder('slot')
       .innerJoin('slot.doctor', 'doctor')
       .where('doctor.specialty = :specialty', { specialty })
-      .andWhere('slot.timeOfDay = :timeOfDay', { timeOfDay })
       .andWhere('slot.date = :date', { date })
       .andWhere('slot.time = :time', { time })
-      .andWhere('slot.taken = false')
-      .getOne();
+      .andWhere('slot.taken = false');
+    if (timeOfDay) query.andWhere('slot.timeOfDay = :timeOfDay', { timeOfDay });
+    const candidate = await query.getOne();
     if (!candidate) return false;
 
     const result = await this.slotRepository.update(

@@ -21,7 +21,7 @@ export class AppointmentController {
   @Get('times')
   async times(
     @Query('specialty') specialty: string,
-    @Query('timeOfDay') timeOfDay: string,
+    @Query('timeOfDay') timeOfDay: string | undefined,
     @Query('date') date: string,
   ) {
     return {
@@ -29,6 +29,19 @@ export class AppointmentController {
         specialty,
         timeOfDay,
         date,
+      ),
+    };
+  }
+
+  @Get('nearest')
+  async nearest(
+    @Query('specialty') specialty: string,
+    @Query('minTime') minTime: string | undefined,
+  ) {
+    return {
+      nearest: await this.appointmentService.findNearestAvailable(
+        specialty,
+        minTime,
       ),
     };
   }
@@ -47,7 +60,7 @@ export class AppointmentController {
     @Body()
     body: {
       specialty: string;
-      timeOfDay: string;
+      timeOfDay: string | undefined;
       date: string;
       time: string;
       patientId: number;

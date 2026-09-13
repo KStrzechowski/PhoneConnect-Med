@@ -25,6 +25,12 @@ export type OtpChallengeResult =
       lastName: string | null;
     };
 
+const toE164 = (phone: string): string => {
+  if (phone.startsWith('+')) return phone;
+  const digits = phone.replace(/\D/g, '');
+  return digits.startsWith('48') && digits.length === 11 ? `+${digits}` : `+48${digits}`;
+};
+
 export const verifyPatient = async (pesel: string, phone: string, signal: AbortSignal): Promise<VerifyResult> => {
   const response = await fetch(`${process.env.MOCK_BASE_URL}/patient/verify`, {
     method: 'POST',
@@ -41,8 +47,9 @@ export const authenticate = async (
   callerNumber: string,
   signal: AbortSignal,
 ): Promise<AuthResult> => {
-  const result = await verifyPatient(pesel, phone, signal);
-  if (!result.matched || callerNumber !== phone) return { authenticated: false };
+  const normalizedPhone = toE164(phone);
+  const result = await verifyPatient(pesel, normalizedPhone, signal);
+  if (!result.matched || callerNumber !== normalizedPhone) return { authenticated: false };
   return { authenticated: true, patientId: result.id, firstName: result.firstName, lastName: result.lastName };
 };
 
@@ -54,8 +61,9 @@ export const beginOtpChallenge = async (
   callerNumber: string,
   signal: AbortSignal,
 ): Promise<OtpChallengeResult> => {
-  const result = await verifyPatient(pesel, phone, signal);
-  if (result.matched && callerNumber === phone) {
+  const normalizedPhone = toE164(phone);
+  const result = await verifyPatient(pesel, normalizedPhone, signal);
+  if (result.matched && callerNumber === normalizedPhone) {
     return { authenticated: true, patientId: result.id, firstName: result.firstName, lastName: result.lastName };
   }
   if (result.matched) {
@@ -73,7 +81,7 @@ export const beginOtpChallenge = async (
           otpRequired: true,
           isDemo: false,
           code: generateOtpCode(),
-          phone,
+          phone: normalizedPhone,
           patientId: result.id,
           firstName: result.firstName,
           lastName: result.lastName,

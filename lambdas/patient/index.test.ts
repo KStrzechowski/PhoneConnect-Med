@@ -14,6 +14,22 @@ test('authenticates when the pair matches and the caller dials from the declared
   assert.deepEqual(result, { authenticated: true, patientId: 1, firstName: 'Jan', lastName: 'Kowalski' });
 });
 
+test('authenticates when the caller keys the phone as bare local digits (no + or country code, as DTMF forces)', async () => {
+  mockVerify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski', isDemo: false, demoOtpCode: null });
+  const result = await authenticate('90010112345', '518823031', '+48518823031', AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(result, { authenticated: true, patientId: 1, firstName: 'Jan', lastName: 'Kowalski' });
+});
+
+test('authenticates when the caller keys the phone with a leading 48 but no +', async () => {
+  mockVerify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski', isDemo: false, demoOtpCode: null });
+  const result = await authenticate('90010112345', '48518823031', '+48518823031', AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.deepEqual(result, { authenticated: true, patientId: 1, firstName: 'Jan', lastName: 'Kowalski' });
+});
+
 test('does not authenticate when the pair matches but the caller dials from a different number', async () => {
   mockVerify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski', isDemo: false, demoOtpCode: null });
   const result = await authenticate('90010112345', '+48000000000', '+48111111111', AbortSignal.timeout(1000));
@@ -62,6 +78,15 @@ test('beginOtpChallenge issues a fresh code to the matched phone for a real, non
   assert.match(result.code ?? '', /^\d{6}$/);
   assert.equal(result.firstName, 'Jan');
   assert.equal(result.lastName, 'Kowalski');
+});
+
+test('beginOtpChallenge normalizes a bare-digit phone before matching and sends to the E.164 form', async () => {
+  mockVerify({ matched: true, id: 1, firstName: 'Jan', lastName: 'Kowalski', isDemo: false, demoOtpCode: null });
+  const result = await beginOtpChallenge('90010112345', '518823031', '+48111111111', AbortSignal.timeout(1000));
+  mock.restoreAll();
+
+  assert.ok('otpRequired' in result);
+  assert.equal(result.phone, '+48518823031');
 });
 
 test('beginOtpChallenge uses the seeded fixed code and sends nothing for a demo match', async () => {

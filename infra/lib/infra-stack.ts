@@ -1,4 +1,5 @@
 import * as path from 'node:path';
+import * as crypto from 'node:crypto';
 import * as cdk from 'aws-cdk-lib/core';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
@@ -28,20 +29,20 @@ function say(value: string): lex.CfnBot.MessageGroupProperty {
   return { message: { plainTextMessage: { value } } };
 }
 
+function saySSML(value: string): lex.CfnBot.MessageGroupProperty {
+  return { message: { ssmlMessage: { value: `<speak>${value}</speak>` } } };
+}
+
 function slotValue(value: string, synonyms: string[]): lex.CfnBot.SlotTypeValueProperty {
   return { sampleValue: { value }, synonyms: synonyms.map((synonym) => ({ value: synonym })) };
 }
 
 function keypadOnlyAttempt(maxLength: number): lex.CfnBot.PromptAttemptSpecificationProperty {
   return {
-    allowedInputTypes: { allowAudioInput: true, allowDtmfInput: true },
+    allowedInputTypes: { allowAudioInput: false, allowDtmfInput: true },
     allowInterrupt: false,
     audioAndDtmfInputSpecification: {
       startTimeoutMs: 10000,
-      audioSpecification: {
-        endTimeoutMs: 2000,
-        maxLengthMs: 15000,
-      },
       dtmfSpecification: {
         deletionCharacter: '*',
         endCharacter: '#',
@@ -143,11 +144,14 @@ const bookingUtterances = [
   'potrzebuję terminu u {specialty}',
   'czy jest wolny termin do {specialty}',
   'chcę się dostać do {specialty}',
-  'chcę się umówić do {specialty} {timeOfDay}',
-  'chcę się dostać do {specialty} {timeOfDay}',
-  'umów mnie do {specialty} {timeOfDay}',
-  'szukam terminu {timeOfDay}',
-  'umów mnie {timeOfDay}',
+  'chcę się umówić do {specialty} na {preferredDate}',
+  'chcę się dostać do {specialty} na {preferredDate}',
+  'umów mnie do {specialty} na {preferredDate}',
+  'szukam terminu na {preferredDate}',
+  'umów mnie na {preferredDate}',
+  'chcę się umówić do {specialty} na {preferredTime}',
+  'umów mnie na {preferredTime}',
+  'umów mnie na {preferredDate} na {preferredTime}',
 ];
 
 const listAppointmentsUtterances = [
@@ -277,11 +281,14 @@ const bookingUtterancesEn = [
   'I need a slot with a {specialty}',
   'is there a free slot with a {specialty}',
   'I want to get in with a {specialty}',
-  'I want to book with a {specialty} {timeOfDay}',
-  'I want to get in with a {specialty} {timeOfDay}',
-  'book me with a {specialty} {timeOfDay}',
-  'I am looking for a {timeOfDay} slot',
-  'book me {timeOfDay}',
+  'I want to book with a {specialty} on {preferredDate}',
+  'I want to get in with a {specialty} on {preferredDate}',
+  'book me with a {specialty} on {preferredDate}',
+  'I am looking for a slot on {preferredDate}',
+  'book me for {preferredDate}',
+  'I want to book with a {specialty} at {preferredTime}',
+  'book me at {preferredTime}',
+  'book me for {preferredDate} at {preferredTime}',
 ];
 
 const listAppointmentsUtterancesEn = [
@@ -739,13 +746,7 @@ volumes:
     );
     speechConversations.grantWrite(speechBotRole);
 
-    const speechBot = new lex.CfnBot(this, 'SpeechBot', {
-      name: 'PhoneConnect-Med-FacilityInfoSpeech',
-      roleArn: speechBotRole.roleArn,
-      dataPrivacy: { ChildDirected: false },
-      idleSessionTtlInSeconds: 300,
-      autoBuildBotLocales: true,
-      botLocales: [
+    const speechBotLocales: lex.CfnBot.BotLocaleProperty[] = [
         {
           localeId: speechLocale,
           nluConfidenceThreshold: 0.4,
@@ -753,18 +754,27 @@ volumes:
           slotTypes: [
             {
               name: 'KeyedPesel',
-              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
-              slotTypeValues: [{ sampleValue: { value: '00000000000' } }],
+              parentSlotTypeSignature: 'AMAZON.AlphaNumeric',
+              valueSelectionSetting: {
+                resolutionStrategy: 'ORIGINAL_VALUE',
+                regexFilter: { pattern: '[0-9]{11}' },
+              },
             },
             {
               name: 'KeyedPhone',
-              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
-              slotTypeValues: [{ sampleValue: { value: '000000000' } }],
+              parentSlotTypeSignature: 'AMAZON.AlphaNumeric',
+              valueSelectionSetting: {
+                resolutionStrategy: 'ORIGINAL_VALUE',
+                regexFilter: { pattern: '[0-9]{1,15}' },
+              },
             },
             {
               name: 'KeyedOtpCode',
-              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
-              slotTypeValues: [{ sampleValue: { value: '000000' } }],
+              parentSlotTypeSignature: 'AMAZON.AlphaNumeric',
+              valueSelectionSetting: {
+                resolutionStrategy: 'ORIGINAL_VALUE',
+                regexFilter: { pattern: '[0-9]{1,6}' },
+              },
             },
             {
               name: 'Specialty',
@@ -830,6 +840,9 @@ volumes:
                         Retry2: keypadOnlyAttempt(11),
                       },
                     },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                    },
                   },
                 },
                 {
@@ -849,6 +862,9 @@ volumes:
                         Retry2: keypadOnlyAttempt(15),
                       },
                     },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                    },
                   },
                 },
               ],
@@ -857,8 +873,9 @@ volumes:
                   maxRetries: 2,
                   allowInterrupt: false,
                   messageGroupsList: [
-                    say(
-                      'Podano numer PESEL {pesel} oraz numer telefonu {phone}. Czy dane są poprawne? Powiedz tak albo nie.',
+                    saySSML(
+                      'Podano numer PESEL <say-as interpret-as="digits">{pesel}</say-as> oraz numer telefonu ' +
+                        '<say-as interpret-as="digits">{phone}</say-as>. Czy dane są poprawne? Powiedz tak albo nie.',
                     ),
                   ],
                   promptAttemptsSpecification: {
@@ -907,6 +924,9 @@ volumes:
                         Retry2: keypadOnlyAttempt(6),
                       },
                     },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                    },
                   },
                 },
               ],
@@ -918,8 +938,9 @@ volumes:
               fulfillmentCodeHook: { enabled: true },
               slotPriorities: [
                 { slotName: 'specialty', priority: 1 },
-                { slotName: 'timeOfDay', priority: 2 },
-                { slotName: 'selectedSlot', priority: 3 },
+                { slotName: 'preferredDate', priority: 2 },
+                { slotName: 'preferredTime', priority: 3 },
+                { slotName: 'selectedSlot', priority: 4 },
               ],
               slots: [
                 {
@@ -930,7 +951,7 @@ volumes:
                     promptSpecification: {
                       maxRetries: 2,
                       allowInterrupt: false,
-                      messageGroupsList: [say('Do jakiego specjalisty chce się Pani/Pan umówić?')],
+                      messageGroupsList: [say('Do jakiego specjalisty chcą się Państwo umówić?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
@@ -940,23 +961,42 @@ volumes:
                   },
                 },
                 {
-                  name: 'timeOfDay',
-                  slotTypeName: 'TimeOfDay',
+                  name: 'preferredDate',
+                  slotTypeName: 'AMAZON.Date',
                   valueElicitationSetting: {
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
                       allowInterrupt: false,
-                      messageGroupsList: [
-                        say(
-                          'Jaka pora dnia Pani/Panu odpowiada: rano, przed południem, po południu, czy wieczorem?',
-                        ),
-                      ],
+                      messageGroupsList: [say('Jaki dzień Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
                         Retry2: voiceAttempt(),
                       },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTime',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('O której godzinie Państwu odpowiada?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
                     },
                   },
                 },
@@ -968,7 +1008,7 @@ volumes:
                     promptSpecification: {
                       maxRetries: 2,
                       allowInterrupt: false,
-                      messageGroupsList: [say('Który numer Pani/Pan wybiera?')],
+                      messageGroupsList: [say('Który numer Państwo wybierają?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
@@ -993,9 +1033,13 @@ volumes:
                   messageGroupsList: [say('Dobrze, wybierzmy inny termin.')],
                 },
                 declinationNextStep: {
-                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'preferredDate' },
                   intent: {
-                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                    slots: [
+                      { slotName: 'preferredDate', slotValueOverride: {} },
+                      { slotName: 'preferredTime', slotValueOverride: {} },
+                      { slotName: 'selectedSlot', slotValueOverride: {} },
+                    ],
                   },
                 },
               },
@@ -1015,7 +1059,7 @@ volumes:
                     promptSpecification: {
                       maxRetries: 2,
                       allowInterrupt: false,
-                      messageGroupsList: [say('Który numer Pani/Pan wybiera?')],
+                      messageGroupsList: [say('Który numer Państwo wybierają?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
@@ -1067,7 +1111,7 @@ volumes:
                       allowInterrupt: false,
                       messageGroupsList: [
                         say(
-                          'Jaka pora dnia Pani/Panu odpowiada: rano, przed południem, po południu, czy wieczorem?',
+                          'Jaka pora dnia Państwu odpowiada: rano, przed południem, po południu, czy wieczorem?',
                         ),
                       ],
                       promptAttemptsSpecification: {
@@ -1086,7 +1130,7 @@ volumes:
                     promptSpecification: {
                       maxRetries: 2,
                       allowInterrupt: false,
-                      messageGroupsList: [say('Który numer Pani/Pan wybiera?')],
+                      messageGroupsList: [say('Który numer Państwo wybierają?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
@@ -1132,18 +1176,27 @@ volumes:
           slotTypes: [
             {
               name: 'KeyedPesel',
-              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
-              slotTypeValues: [{ sampleValue: { value: '00000000000' } }],
+              parentSlotTypeSignature: 'AMAZON.AlphaNumeric',
+              valueSelectionSetting: {
+                resolutionStrategy: 'ORIGINAL_VALUE',
+                regexFilter: { pattern: '[0-9]{11}' },
+              },
             },
             {
               name: 'KeyedPhone',
-              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
-              slotTypeValues: [{ sampleValue: { value: '000000000' } }],
+              parentSlotTypeSignature: 'AMAZON.AlphaNumeric',
+              valueSelectionSetting: {
+                resolutionStrategy: 'ORIGINAL_VALUE',
+                regexFilter: { pattern: '[0-9]{1,15}' },
+              },
             },
             {
               name: 'KeyedOtpCode',
-              valueSelectionSetting: { resolutionStrategy: 'ORIGINAL_VALUE' },
-              slotTypeValues: [{ sampleValue: { value: '000000' } }],
+              parentSlotTypeSignature: 'AMAZON.AlphaNumeric',
+              valueSelectionSetting: {
+                resolutionStrategy: 'ORIGINAL_VALUE',
+                regexFilter: { pattern: '[0-9]{1,6}' },
+              },
             },
             {
               name: 'Specialty',
@@ -1209,6 +1262,9 @@ volumes:
                         Retry2: keypadOnlyAttempt(11),
                       },
                     },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                    },
                   },
                 },
                 {
@@ -1228,6 +1284,9 @@ volumes:
                         Retry2: keypadOnlyAttempt(15),
                       },
                     },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                    },
                   },
                 },
               ],
@@ -1236,8 +1295,9 @@ volumes:
                   maxRetries: 2,
                   allowInterrupt: false,
                   messageGroupsList: [
-                    say(
-                      'You entered PESEL number {pesel} and phone number {phone}. Is that correct? Please say yes or no.',
+                    saySSML(
+                      'You entered PESEL number <say-as interpret-as="digits">{pesel}</say-as> and phone number ' +
+                        '<say-as interpret-as="digits">{phone}</say-as>. Is that correct? Please say yes or no.',
                     ),
                   ],
                   promptAttemptsSpecification: {
@@ -1286,6 +1346,9 @@ volumes:
                         Retry2: keypadOnlyAttempt(6),
                       },
                     },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                    },
                   },
                 },
               ],
@@ -1297,8 +1360,9 @@ volumes:
               fulfillmentCodeHook: { enabled: true },
               slotPriorities: [
                 { slotName: 'specialty', priority: 1 },
-                { slotName: 'timeOfDay', priority: 2 },
-                { slotName: 'selectedSlot', priority: 3 },
+                { slotName: 'preferredDate', priority: 2 },
+                { slotName: 'preferredTime', priority: 3 },
+                { slotName: 'selectedSlot', priority: 4 },
               ],
               slots: [
                 {
@@ -1319,23 +1383,42 @@ volumes:
                   },
                 },
                 {
-                  name: 'timeOfDay',
-                  slotTypeName: 'TimeOfDay',
+                  name: 'preferredDate',
+                  slotTypeName: 'AMAZON.Date',
                   valueElicitationSetting: {
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
                       allowInterrupt: false,
-                      messageGroupsList: [
-                        say(
-                          'What time of day works for you: morning, late morning, afternoon, or evening?',
-                        ),
-                      ],
+                      messageGroupsList: [say('What day would work for you?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
                         Retry2: voiceAttempt(),
                       },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTime',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('What time would work for you?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: false },
                     },
                   },
                 },
@@ -1372,9 +1455,13 @@ volumes:
                   messageGroupsList: [say("Okay, let's choose another time.")],
                 },
                 declinationNextStep: {
-                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
+                  dialogAction: { type: 'ElicitSlot', slotToElicit: 'preferredDate' },
                   intent: {
-                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                    slots: [
+                      { slotName: 'preferredDate', slotValueOverride: {} },
+                      { slotName: 'preferredTime', slotValueOverride: {} },
+                      { slotName: 'selectedSlot', slotValueOverride: {} },
+                    ],
                   },
                 },
               },
@@ -1504,10 +1591,28 @@ volumes:
             },
           ],
         },
-      ],
+    ];
+
+    const speechBot = new lex.CfnBot(this, 'SpeechBot', {
+      name: 'PhoneConnect-Med-FacilityInfoSpeech',
+      roleArn: speechBotRole.roleArn,
+      dataPrivacy: { ChildDirected: false },
+      idleSessionTtlInSeconds: 300,
+      autoBuildBotLocales: true,
+      botLocales: speechBotLocales,
     });
 
-    const speechBotVersion = new lex.CfnBotVersion(this, 'SpeechBotVersion', {
+    // AWS::Lex::BotVersion only creates a fresh version when the DRAFT actually changed, and
+    // CloudFormation only calls it at all when this resource's own properties change — which they
+    // never do, since sourceBotVersion is always the literal string 'DRAFT'. Without a content
+    // hash in the logical id, editing an intent/slot never rolls the alias onto a new version.
+    const speechBotLocalesHash = crypto
+      .createHash('sha256')
+      .update(JSON.stringify(speechBotLocales))
+      .digest('hex')
+      .slice(0, 10);
+
+    const speechBotVersion = new lex.CfnBotVersion(this, `SpeechBotVersion${speechBotLocalesHash}`, {
       botId: speechBot.attrId,
       botVersionLocaleSpecification: [
         { localeId: speechLocale, botVersionLocaleDetails: { sourceBotVersion: 'DRAFT' } },

@@ -1,7 +1,7 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ssmlTime } from '@pcm/appointment';
+import { ssmlOpeningHour } from '@pcm/appointment';
 import { ssmlAddress } from '@pcm/facility';
 import { handler } from './index.ts';
 import type { InvocationRecord } from '@pcm/measure';
@@ -36,8 +36,8 @@ test('returns the mock facility payload as a flat string map', async () => {
     reachable: 'true',
     ...sampleFacility,
     address: ssmlAddress(sampleFacility.address),
-    opensAt: ssmlTime(sampleFacility.opensAt),
-    closesAt: ssmlTime(sampleFacility.closesAt),
+    opensAt: ssmlOpeningHour(sampleFacility.opensAt),
+    closesAt: ssmlOpeningHour(sampleFacility.closesAt),
   });
   assert.ok(Object.values(result).every((value) => typeof value === 'string'));
 });
@@ -49,6 +49,7 @@ test('translates openDays to English when locale is en', async () => {
 
   assert.equal(result.openDays, 'Monday-Friday');
   assert.equal(result.address, ssmlAddress(sampleFacility.address, 'en'));
+  assert.equal(result.opensAt, ssmlOpeningHour(sampleFacility.opensAt, 'en'));
 });
 
 test('returns a handled error when the mock is unreachable', async () => {
