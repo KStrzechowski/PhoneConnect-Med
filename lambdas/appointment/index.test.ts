@@ -79,6 +79,16 @@ test('findNearestAvailable includes minTime in the request when given', async ()
   assert.equal(url.includes('minTime=16%3A00'), true);
 });
 
+test('findNearestAvailable includes maxTime in the request when given', async () => {
+  const fetchSpy = mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ nearest: null })));
+  await findNearestAvailable('kardiolog', AbortSignal.timeout(1000), undefined, '12:00');
+  mock.restoreAll();
+
+  const url = String(fetchSpy.mock.calls[0].arguments[0]);
+  assert.equal(url.includes('maxTime=12%3A00'), true);
+  assert.equal(url.includes('minTime'), false);
+});
+
 test('resolveTimeForDate re-derives the time at the chosen index', async () => {
   mockJson({ times: ['08:00', '09:30'] });
   const result = await resolveTimeForDate('kardiolog', '2026-09-04', 2, AbortSignal.timeout(1000));

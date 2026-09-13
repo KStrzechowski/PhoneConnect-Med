@@ -27,6 +27,13 @@ const CANCEL_ATTEMPT_LIMIT = 3;
 const RESCHEDULE_ATTEMPT_LIMIT = 3;
 const OTP_MISMATCH_LIMIT = 3;
 
+const TIME_OF_DAY_BOUNDS: Record<string, { min: string; max: string }> = {
+  rano: { min: '06:00', max: '11:59' },
+  'przed południem': { min: '09:00', max: '11:59' },
+  'po południu': { min: '12:00', max: '17:59' },
+  wieczorem: { min: '18:00', max: '21:59' },
+};
+
 type LexSlots = Record<string, { value?: { interpretedValue?: string } } | null>;
 
 type LexEvent = {
@@ -34,7 +41,7 @@ type LexEvent = {
   bot?: { localeId: string };
   sessionState: {
     sessionAttributes?: Record<string, string>;
-    intent: { name: string; slots?: LexSlots };
+    intent: { name: string; slots?: LexSlots; confirmationState?: 'None' | 'Confirmed' | 'Denied' };
   };
 };
 
@@ -166,6 +173,7 @@ const handleBookingDialog = async (
   slots: LexSlots,
   incoming: Record<string, string>,
   record: InvocationRecord,
+  confirmationState?: 'None' | 'Confirmed' | 'Denied',
 ): Promise<LexResponse> => {
   const specialty = slots.specialty?.value?.interpretedValue;
 
@@ -175,6 +183,34 @@ const handleBookingDialog = async (
 
   if (!specialty) {
     return delegate('BookingIntent', slots, incoming);
+  }
+
+  if (confirmationState === 'Confirmed') {
+    return handleBookingFulfillment(slots, incoming, record);
+  }
+
+  if (
+    confirmationState === 'Denied' &&
+    !slots.preferredDate?.value?.interpretedValue &&
+    !slots.preferredTime?.value?.interpretedValue &&
+    !slots.preferredTimeBefore?.value?.interpretedValue &&
+    !slots.preferredTimeOfDay?.value?.interpretedValue
+  ) {
+    const message = 'Dobrze, wybierzmy inny termin. Jaki dzień Państwu odpowiada?';
+    return elicitSlot(
+      'BookingIntent',
+      'preferredDate',
+      {
+        ...slots,
+        preferredDate: null,
+        preferredTime: null,
+        preferredTimeBefore: null,
+        preferredTimeOfDay: null,
+        selectedSlot: null,
+      },
+      { ...incoming, lastMessageText: message, bookingStage: '' },
+      message,
+    );
   }
 
   const stage = incoming.bookingStage ?? '';
@@ -195,22 +231,29 @@ const handleBookingDialog = async (
       message,
     );
 
-  const proposeNearest = async (minTime?: string): Promise<LexResponse> => {
-    const nearest = await downstream(record, () => findNearestAvailable(specialty, abort, minTime));
+  const proposeNearest = async (minTime?: string, maxTime?: string): Promise<LexResponse> => {
+    const nearest = await downstream(record, () => findNearestAvailable(specialty, abort, minTime, maxTime));
     if (nearest === null) {
       if (attempts + 1 >= BOOKING_ATTEMPT_LIMIT) return giveUp();
       const message = 'Brak wolnych terminów dla wybranej specjalizacji. Proszę podać inną specjalizację.';
       return elicitSlot(
         'BookingIntent',
         'specialty',
-        { ...slots, specialty: null, preferredDate: null, preferredTime: null },
+        {
+          ...slots,
+          specialty: null,
+          preferredDate: null,
+          preferredTime: null,
+          preferredTimeBefore: null,
+          preferredTimeOfDay: null,
+        },
         { ...incoming, lastMessageText: message, bookingStage: '', bookingAttempts: String(attempts + 1) },
         message,
       );
     }
     const message =
       `Najbliższy wolny termin do ${specialty} to ${formatDayLabel(nearest.date)}, godzina ${ssmlTime(nearest.time)}. ` +
-      'Czy pasuje?';
+      'Czy to Państwu odpowiada?';
     return confirmIntent(
       'BookingIntent',
       slots,
@@ -253,11 +296,17 @@ const handleBookingDialog = async (
   // selectedSlot, so the stage value doesn't matter here; we always re-derive from what's filled now.
   const preferredDate = slots.preferredDate?.value?.interpretedValue;
   const preferredTime = slots.preferredTime?.value?.interpretedValue;
+  const preferredTimeBefore = slots.preferredTimeBefore?.value?.interpretedValue;
+  const preferredTimeOfDay = slots.preferredTimeOfDay?.value?.interpretedValue;
+  const timeOfDayBounds = preferredTimeOfDay ? TIME_OF_DAY_BOUNDS[preferredTimeOfDay] : undefined;
+  const effectiveMinTime = preferredTime ?? timeOfDayBounds?.min;
+  const effectiveMaxTime = preferredTimeBefore ?? timeOfDayBounds?.max;
   try {
     if (preferredDate) {
       let times = await downstream(record, () => findAvailableTimesForDate(specialty, preferredDate, abort));
-      if (preferredTime) times = times.filter((t) => t >= preferredTime);
-      if (times.length === 0) return proposeNearest(preferredTime);
+      if (effectiveMinTime) times = times.filter((t) => t >= effectiveMinTime);
+      if (effectiveMaxTime) times = times.filter((t) => t <= effectiveMaxTime);
+      if (times.length === 0) return proposeNearest(effectiveMinTime, effectiveMaxTime);
       if (times.length === 1) {
         const message =
           `Umawiam Państwa do ${specialty}, ${formatDayLabel(preferredDate)}, godzina ${ssmlTime(times[0])}. ` +
@@ -285,7 +334,7 @@ const handleBookingDialog = async (
         message,
       );
     }
-    return await proposeNearest(preferredTime);
+    return await proposeNearest(effectiveMinTime, effectiveMaxTime);
   } catch (error) {
     record.outcome = 'error';
     record.error = String(error);
@@ -334,9 +383,19 @@ const handleCancelDialog = async (
   slots: LexSlots,
   incoming: Record<string, string>,
   record: InvocationRecord,
+  confirmationState?: 'None' | 'Confirmed' | 'Denied',
 ): Promise<LexResponse> => {
   if (incoming.authenticated !== 'true') {
     return redirectToAuth('CancelAppointmentIntent', incoming);
+  }
+
+  if (confirmationState === 'Confirmed') {
+    return handleCancelFulfillment(slots, incoming, record);
+  }
+
+  if (confirmationState === 'Denied') {
+    const message = 'Dobrze, zostawiam tę wizytę bez zmian.';
+    return close('CancelAppointmentIntent', { ...incoming, lastMessageText: message, fallbackCount: '0' }, message);
   }
 
   const stage = incoming.cancelStage ?? '';
@@ -446,9 +505,22 @@ const handleRescheduleDialog = async (
   slots: LexSlots,
   incoming: Record<string, string>,
   record: InvocationRecord,
+  confirmationState?: 'None' | 'Confirmed' | 'Denied',
 ): Promise<LexResponse> => {
   if (incoming.authenticated !== 'true') {
     return redirectToAuth('RescheduleIntent', incoming);
+  }
+
+  if (confirmationState === 'Confirmed') {
+    return handleRescheduleFulfillment(slots, incoming, record);
+  }
+
+  if (confirmationState === 'Denied') {
+    return handleRescheduleDialog(
+      { ...slots, selectedSlot: null },
+      { ...incoming, rescheduleStage: '', rescheduleApptSelection: '', rescheduleDate: '' },
+      record,
+    );
   }
 
   const timeOfDay = slots.timeOfDay?.value?.interpretedValue;
@@ -901,7 +973,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
   if (intentName === 'BookingIntent') {
     const slots = event.sessionState.intent.slots ?? {};
     if (event.invocationSource === 'DialogCodeHook') {
-      return handleBookingDialog(slots, incoming, record);
+      return handleBookingDialog(slots, incoming, record, event.sessionState.intent.confirmationState);
     }
     return handleBookingFulfillment(slots, incoming, record);
   }
@@ -909,7 +981,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
   if (intentName === 'CancelAppointmentIntent') {
     const slots = event.sessionState.intent.slots ?? {};
     if (event.invocationSource === 'DialogCodeHook') {
-      return handleCancelDialog(slots, incoming, record);
+      return handleCancelDialog(slots, incoming, record, event.sessionState.intent.confirmationState);
     }
     return handleCancelFulfillment(slots, incoming, record);
   }
@@ -917,7 +989,7 @@ const dispatch = async (event: LexEvent, record: InvocationRecord): Promise<LexR
   if (intentName === 'RescheduleIntent') {
     const slots = event.sessionState.intent.slots ?? {};
     if (event.invocationSource === 'DialogCodeHook') {
-      return handleRescheduleDialog(slots, incoming, record);
+      return handleRescheduleDialog(slots, incoming, record, event.sessionState.intent.confirmationState);
     }
     return handleRescheduleFulfillment(slots, incoming, record);
   }

@@ -146,6 +146,25 @@ describe('AppointmentService', () => {
     expect(filtered).toBeNull();
   });
 
+  it('findNearestAvailable respects a maximum time ceiling', async () => {
+    const unfiltered = await service.findNearestAvailable('chirurg');
+    const filtered = await service.findNearestAvailable('chirurg', undefined, '00:00');
+
+    expect(unfiltered).not.toBeNull();
+    expect(filtered).toBeNull();
+  });
+
+  it('findNearestAvailable applies both a minimum and a maximum time bound together', async () => {
+    const nearest = await service.findNearestAvailable('chirurg');
+    expect(nearest).not.toBeNull();
+
+    const withinBounds = await service.findNearestAvailable('chirurg', '00:00', '23:59');
+    expect(withinBounds).toEqual(nearest);
+
+    const outsideBounds = await service.findNearestAvailable('chirurg', nearest!.time, '00:01');
+    expect(outsideBounds).toBeNull();
+  });
+
   it('fails to book a slot that is already taken', async () => {
     const [date] = await service.findAvailableDays('urolog', 'przed południem');
     const [time] = await service.findAvailableTimes(

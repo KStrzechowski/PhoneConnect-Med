@@ -165,7 +165,7 @@ test('the speech bot has all 6 global-layer intents plus AuthIntent, OtpIntent a
   });
 });
 
-test('BookingIntent has a dialog code hook in addition to fulfillment, and four slots in priority order', () => {
+test('BookingIntent has a dialog code hook in addition to fulfillment, and six slots in priority order', () => {
   const bots = template.findResources('AWS::Lex::Bot');
   const [bot] = Object.values(bots);
   const locale = (bot.Properties.BotLocales as Array<{ LocaleId: string; Intents: Array<{ Name: string }> }>).find(
@@ -183,10 +183,17 @@ test('BookingIntent has a dialog code hook in addition to fulfillment, and four 
   expect(bookingIntent?.FulfillmentCodeHook?.Enabled).toBe(true);
   expect(
     bookingIntent?.SlotPriorities?.slice().sort((a, b) => a.Priority - b.Priority).map((slot) => slot.SlotName),
-  ).toEqual(['specialty', 'preferredDate', 'preferredTime', 'selectedSlot']);
+  ).toEqual([
+    'specialty',
+    'preferredDate',
+    'preferredTime',
+    'preferredTimeBefore',
+    'preferredTimeOfDay',
+    'selectedSlot',
+  ]);
 });
 
-test('BookingIntent has an explicit declination path that clears the date, time, and numbered choice', () => {
+test('BookingIntent has an explicit declination path that clears the date, time bounds, and numbered choice', () => {
   const bots = template.findResources('AWS::Lex::Bot');
   const [bot] = Object.values(bots);
   const locale = (bot.Properties.BotLocales as Array<{ LocaleId: string; Intents: Array<{ Name: string }> }>).find(
@@ -208,6 +215,8 @@ test('BookingIntent has an explicit declination path that clears the date, time,
   expect(declinationNextStep?.Intent?.Slots).toEqual([
     { SlotName: 'preferredDate', SlotValueOverride: {} },
     { SlotName: 'preferredTime', SlotValueOverride: {} },
+    { SlotName: 'preferredTimeBefore', SlotValueOverride: {} },
+    { SlotName: 'preferredTimeOfDay', SlotValueOverride: {} },
     { SlotName: 'selectedSlot', SlotValueOverride: {} },
   ]);
 });

@@ -37,11 +37,13 @@ export class AppointmentController {
   async nearest(
     @Query('specialty') specialty: string,
     @Query('minTime') minTime: string | undefined,
+    @Query('maxTime') maxTime: string | undefined,
   ) {
     return {
       nearest: await this.appointmentService.findNearestAvailable(
         specialty,
         minTime,
+        maxTime,
       ),
     };
   }

@@ -121,6 +121,8 @@ const authUtterances = [
   'chcę się zalogować',
   'zaloguj mnie',
   'chcę się zidentyfikować',
+  'chciałbym się zidentyfikować',
+  'chciałabym się zidentyfikować',
   'chcę potwierdzić tożsamość',
   'chcę się uwierzytelnić',
   'podam swoje dane',
@@ -129,29 +131,137 @@ const authUtterances = [
   'jak się zalogować',
 ];
 
-const otpUtterances = ['chcę podać kod', 'mam kod weryfikacyjny', 'podam kod z sms'];
+const otpUtterances = [
+  'chcę podać kod',
+  'chciałbym podać kod',
+  'chciałabym podać kod',
+  'mam kod weryfikacyjny',
+  'podam kod z sms',
+];
 
 const bookingUtterances = [
+  // no slots yet
   'chcę umówić wizytę',
+  'chciałbym umówić wizytę',
+  'chciałabym umówić wizytę',
   'chcę się zapisać do lekarza',
   'chciałbym się zapisać',
+  'chciałabym się zapisać',
   'potrzebuję wizyty',
   'potrzebuję terminu',
+  'muszę umówić wizytę',
+  'proszę o umówienie wizyty',
+  'poproszę o wizytę',
+  'czy mogę umówić wizytę',
+  'czy jest możliwość umówienia wizyty',
+  'zależy mi na wizycie',
+
+  // specialty only
   'chcę się umówić do {specialty}',
+  'chciałbym się umówić do {specialty}',
+  'chciałabym się umówić do {specialty}',
+  'chciałbym umówić się do {specialty}',
+  'chciałabym umówić się do {specialty}',
   'chcę wizytę u {specialty}',
+  'chcę wizytę do {specialty}',
+  'wizyta do {specialty}',
+  'wizyta u {specialty}',
+  'termin do {specialty}',
+  'termin u {specialty}',
   'zapisz mnie do {specialty}',
   'zarejestruj mnie do {specialty}',
   'potrzebuję terminu u {specialty}',
+  'potrzebuję wizyty u {specialty}',
+  'muszę się umówić do {specialty}',
+  'proszę o wizytę do {specialty}',
+  'poproszę o wizytę do {specialty}',
   'czy jest wolny termin do {specialty}',
+  'czy mogę się umówić do {specialty}',
+  'czy jest możliwość zapisania się do {specialty}',
   'chcę się dostać do {specialty}',
+  'wolałbym się umówić do {specialty}',
+  'wolałabym się umówić do {specialty}',
+
+  // specialty + date
   'chcę się umówić do {specialty} na {preferredDate}',
+  'chciałbym się umówić do {specialty} na {preferredDate}',
+  'chciałabym się umówić do {specialty} na {preferredDate}',
+  'chciałbym umówić się do {specialty} na {preferredDate}',
+  'chciałabym umówić się do {specialty} na {preferredDate}',
   'chcę się dostać do {specialty} na {preferredDate}',
   'umów mnie do {specialty} na {preferredDate}',
+  'wizyta do {specialty} na {preferredDate}',
+  'termin do {specialty} na {preferredDate}',
+  'proszę o wizytę do {specialty} na {preferredDate}',
+  'zapisz mnie do {specialty} na {preferredDate}',
+  'czy jest wolny termin do {specialty} na {preferredDate}',
+
+  // date only
   'szukam terminu na {preferredDate}',
   'umów mnie na {preferredDate}',
+  'chciałbym umówić się na {preferredDate}',
+  'chciałabym umówić się na {preferredDate}',
+  'chciałbym się umówić na {preferredDate}',
+  'chciałabym się umówić na {preferredDate}',
+  'na {preferredDate}',
+  'w {preferredDate}',
+  'od {preferredDate}',
+  'do {preferredDate}',
+  'czy jest coś wolnego {preferredDate}',
+  'czy macie coś wolnego na {preferredDate}',
+
+  // specialty + time (at/after)
   'chcę się umówić do {specialty} na {preferredTime}',
+
+  // time only (at/after)
   'umów mnie na {preferredTime}',
+  'chciałbym umówić się na {preferredTime}',
+  'chciałabym umówić się na {preferredTime}',
+  'na {preferredTime}',
+  'o {preferredTime}',
+  'o godzinie {preferredTime}',
+  'od {preferredTime}',
+  'od godziny {preferredTime}',
+  'koło {preferredTime}',
+  'około {preferredTime}',
+  'po {preferredTime}',
+  'po godzinie {preferredTime}',
+
+  // time only (before)
+  'przed {preferredTimeBefore}',
+  'przed godziną {preferredTimeBefore}',
+  'do {preferredTimeBefore}',
+  'do godziny {preferredTimeBefore}',
+
+  // time of day (rano / przed południem / po południu / wieczorem)
+  '{preferredTimeOfDay}',
+  'chcę się umówić do {specialty} {preferredTimeOfDay}',
+  'chciałbym się umówić do {specialty} {preferredTimeOfDay}',
+  'chciałabym się umówić do {specialty} {preferredTimeOfDay}',
+  'wizyta do {specialty} {preferredTimeOfDay}',
+  'chcę się umówić {preferredTimeOfDay}',
+  'umów mnie {preferredTimeOfDay}',
+  'czy jest coś wolnego {preferredTimeOfDay}',
+  'chcę się umówić do {specialty} na {preferredDate} {preferredTimeOfDay}',
+  'wizyta do {specialty} na {preferredDate} {preferredTimeOfDay}',
+
+  // date + time, no specialty
   'umów mnie na {preferredDate} na {preferredTime}',
+  'na {preferredDate} na {preferredTime}',
+  'na {preferredDate} o {preferredTime}',
+  'na {preferredDate} przed {preferredTimeBefore}',
+
+  // specialty + date + time
+  'chcę się umówić do {specialty} na {preferredDate} na {preferredTime}',
+  'chciałbym się umówić do {specialty} na {preferredDate} na {preferredTime}',
+  'chciałabym się umówić do {specialty} na {preferredDate} na {preferredTime}',
+  'chciałbym umówić się do {specialty} na {preferredDate} na {preferredTime}',
+  'chciałabym umówić się do {specialty} na {preferredDate} na {preferredTime}',
+  'zapisz mnie do {specialty} na {preferredDate} na {preferredTime}',
+  'wizyta do {specialty} na {preferredDate} na {preferredTime}',
+  'termin do {specialty} na {preferredDate} o {preferredTime}',
+  'chcę się umówić do {specialty} na {preferredDate} przed {preferredTimeBefore}',
+  'termin do {specialty} na {preferredDate} przed godziną {preferredTimeBefore}',
 ];
 
 const listAppointmentsUtterances = [
@@ -163,21 +273,34 @@ const listAppointmentsUtterances = [
   'kiedy mam wizytę',
   'czy mam jakieś umówione wizyty',
   'wymień moje wizyty',
+  'co mam zaplanowane',
+  'czy mam coś zaplanowanego',
+  'chcę sprawdzić moje terminy',
 ];
 
 const cancelUtterances = [
   'odwołaj wizytę',
   'chcę odwołać wizytę',
+  'chciałbym odwołać wizytę',
+  'chciałabym odwołać wizytę',
   'chcę odwołać',
   'muszę odwołać termin',
+  'muszę odwołać wizytę',
   'anuluj moją wizytę',
   'proszę usunąć moją wizytę',
+  'proszę anulować wizytę',
   'nie przyjdę na wizytę',
+  'nie dam rady przyjść na wizytę',
   'chcę zrezygnować z wizyty',
+  'chciałbym zrezygnować z wizyty',
+  'chciałabym zrezygnować z wizyty',
+  'czy mogę odwołać wizytę',
 ];
 
 const rescheduleUtterances = [
   'chcę przełożyć wizytę',
+  'chciałbym przełożyć wizytę',
+  'chciałabym przełożyć wizytę',
   'chcę przesunąć wizytę',
   'chcę zmienić termin',
   'zmień termin',
@@ -186,6 +309,8 @@ const rescheduleUtterances = [
   'przenieś moją wizytę',
   'nie mogę w tym terminie, chcę inny',
   'czy można przełożyć',
+  'czy mogę przełożyć wizytę na inny dzień',
+  'muszę zmienić termin wizyty',
 ];
 
 const agentTransferUtterances = [
@@ -258,6 +383,7 @@ const authUtterancesEn = [
   'I want to log in',
   'log me in',
   'I want to identify myself',
+  'I would like to identify myself',
   'I want to confirm my identity',
   'I want to authenticate',
   'I will give my details',
@@ -266,29 +392,82 @@ const authUtterancesEn = [
   'how do I log in',
 ];
 
-const otpUtterancesEn = ['I want to give the code', 'I have a verification code', 'I will give the code from the text message'];
+const otpUtterancesEn = [
+  'I want to give the code',
+  'I would like to give the code',
+  'I have a verification code',
+  'I will give the code from the text message',
+];
 
 const bookingUtterancesEn = [
+  // no slots yet
   'I want to book an appointment',
   'I want to see a doctor',
   'I would like to make an appointment',
   'I need an appointment',
   'I need a time slot',
+  'I have to book an appointment',
+  'can I book an appointment',
+  'is it possible to book an appointment',
+
+  // specialty only
   'I want to book with a {specialty}',
+  'I would like to book with a {specialty}',
   'I want an appointment with a {specialty}',
   'book me with a {specialty}',
   'register me with a {specialty}',
   'I need a slot with a {specialty}',
   'is there a free slot with a {specialty}',
   'I want to get in with a {specialty}',
+  'can I book with a {specialty}',
+  'I would prefer to see a {specialty}',
+
+  // specialty + date
   'I want to book with a {specialty} on {preferredDate}',
+  'I would like to book with a {specialty} on {preferredDate}',
   'I want to get in with a {specialty} on {preferredDate}',
   'book me with a {specialty} on {preferredDate}',
+  'register me with a {specialty} on {preferredDate}',
+
+  // date only
   'I am looking for a slot on {preferredDate}',
   'book me for {preferredDate}',
+  'I would like an appointment on {preferredDate}',
+  'on {preferredDate}',
+  'from {preferredDate}',
+  'until {preferredDate}',
+  'do you have anything free on {preferredDate}',
+
+  // specialty/time only (at/after)
   'I want to book with a {specialty} at {preferredTime}',
   'book me at {preferredTime}',
+  'I would like an appointment at {preferredTime}',
+  'at {preferredTime}',
+  'from {preferredTime}',
+  'around {preferredTime}',
+  'after {preferredTime}',
+
+  // time only (before)
+  'before {preferredTimeBefore}',
+  'until {preferredTimeBefore}',
+
+  // time of day (morning / late morning / afternoon / evening)
+  '{preferredTimeOfDay}',
+  'I want to book with a {specialty} {preferredTimeOfDay}',
+  'I would like to book with a {specialty} {preferredTimeOfDay}',
+  'book me with a {specialty} {preferredTimeOfDay}',
+  'do you have anything free {preferredTimeOfDay}',
+  'I want to book with a {specialty} on {preferredDate} {preferredTimeOfDay}',
+
+  // date + time, no specialty
   'book me for {preferredDate} at {preferredTime}',
+  'book me for {preferredDate} before {preferredTimeBefore}',
+
+  // specialty + date + time
+  'I want to book with a {specialty} on {preferredDate} at {preferredTime}',
+  'I would like to book with a {specialty} on {preferredDate} at {preferredTime}',
+  'book me with a {specialty} for {preferredDate} at {preferredTime}',
+  'I want to book with a {specialty} on {preferredDate} before {preferredTimeBefore}',
 ];
 
 const listAppointmentsUtterancesEn = [
@@ -300,21 +479,28 @@ const listAppointmentsUtterancesEn = [
   'when is my appointment',
   'do I have any appointments booked',
   'list my appointments',
+  'what do I have scheduled',
+  'do I have anything scheduled',
 ];
 
 const cancelUtterancesEn = [
   'cancel my appointment',
   'I want to cancel my appointment',
+  'I would like to cancel my appointment',
   'I want to cancel',
   'I need to cancel my appointment',
   'cancel my booking',
   'please remove my appointment',
+  'please cancel my appointment',
   'I will not be coming to my appointment',
+  'I cannot make it to my appointment',
   'I want to give up my appointment',
+  'can I cancel my appointment',
 ];
 
 const rescheduleUtterancesEn = [
   'I want to reschedule my appointment',
+  'I would like to reschedule my appointment',
   'I want to move my appointment',
   'I want to change my appointment time',
   'change the time',
@@ -323,6 +509,8 @@ const rescheduleUtterancesEn = [
   'move my appointment',
   'I cannot make that time, I want another one',
   'can I reschedule',
+  'can I reschedule my appointment for another day',
+  'I need to change my appointment',
 ];
 
 const agentTransferUtterancesEn = [
@@ -780,21 +968,36 @@ volumes:
               name: 'Specialty',
               valueSelectionSetting: { resolutionStrategy: 'TOP_RESOLUTION' },
               slotTypeValues: [
-                slotValue('kardiolog', ['lekarz od serca', 'kardiologia', 'serce']),
-                slotValue('dermatolog', ['lekarz od skóry', 'dermatologia', 'skóra']),
-                slotValue('okulista', ['lekarz od oczu', 'okulistyka', 'oczy', 'wzrok']),
-                slotValue('laryngolog', ['lekarz od gardła', 'laryngologia', 'uszy', 'gardło']),
-                slotValue('neurolog', ['neurologia']),
-                slotValue('ortopeda', ['ortopedia', 'kości', 'staw']),
-                slotValue('internista', ['lekarz rodzinny', 'lekarz pierwszego kontaktu', 'internistyczna']),
-                slotValue('ginekolog', ['ginekologia']),
-                slotValue('pediatra', ['lekarz dziecięcy', 'pediatria']),
-                slotValue('endokrynolog', ['endokrynologia', 'hormony', 'tarczyca']),
-                slotValue('chirurg', ['chirurgia']),
-                slotValue('urolog', ['urologia']),
-                slotValue('psychiatra', ['psychiatria']),
-                slotValue('alergolog', ['alergologia', 'alergia']),
-                slotValue('reumatolog', ['reumatologia']),
+                slotValue('kardiolog', ['kardiologa', 'lekarz od serca', 'kardiologia', 'serce']),
+                slotValue('dermatolog', ['dermatologa', 'lekarz od skóry', 'dermatologia', 'skóra']),
+                slotValue('okulista', ['okulisty', 'lekarz od oczu', 'okulistyka', 'oczy', 'wzrok']),
+                slotValue('laryngolog', [
+                  'laryngologa',
+                  'lekarz od gardła',
+                  'lekarz od uszu nosa i gardła',
+                  'laryngologia',
+                  'uszy',
+                  'gardło',
+                ]),
+                slotValue('neurolog', ['neurologa', 'lekarz od nerwów', 'neurologia']),
+                slotValue('ortopeda', ['ortopedy', 'ortopedia', 'kości', 'staw']),
+                slotValue('internista', [
+                  'internisty',
+                  'lekarz rodzinny',
+                  'lekarza rodzinnego',
+                  'lekarz pierwszego kontaktu',
+                  'lekarz ogólny',
+                  'lekarz poz',
+                  'internistyczna',
+                ]),
+                slotValue('ginekolog', ['ginekologa', 'ginekologia']),
+                slotValue('pediatra', ['pediatry', 'lekarz dziecięcy', 'lekarza dziecięcego', 'pediatria']),
+                slotValue('endokrynolog', ['endokrynologa', 'endokrynologia', 'hormony', 'tarczyca']),
+                slotValue('chirurg', ['chirurga', 'chirurgia']),
+                slotValue('urolog', ['urologa', 'lekarz od dróg moczowych', 'urologia']),
+                slotValue('psychiatra', ['psychiatry', 'psychiatria']),
+                slotValue('alergolog', ['alergologa', 'alergologia', 'alergia']),
+                slotValue('reumatolog', ['reumatologa', 'lekarz od reumatyzmu', 'reumatologia']),
               ],
             },
             {
@@ -940,7 +1143,9 @@ volumes:
                 { slotName: 'specialty', priority: 1 },
                 { slotName: 'preferredDate', priority: 2 },
                 { slotName: 'preferredTime', priority: 3 },
-                { slotName: 'selectedSlot', priority: 4 },
+                { slotName: 'preferredTimeBefore', priority: 4 },
+                { slotName: 'preferredTimeOfDay', priority: 5 },
+                { slotName: 'selectedSlot', priority: 6 },
               ],
               slots: [
                 {
@@ -976,7 +1181,7 @@ volumes:
                       },
                     },
                     slotCaptureSetting: {
-                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
                     },
                   },
                 },
@@ -996,7 +1201,47 @@ volumes:
                       },
                     },
                     slotCaptureSetting: {
-                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTimeBefore',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Do której godziny Państwu odpowiada?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTimeOfDay',
+                  slotTypeName: 'TimeOfDay',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Jaka pora dnia Państwu odpowiada?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
                     },
                   },
                 },
@@ -1038,6 +1283,8 @@ volumes:
                     slots: [
                       { slotName: 'preferredDate', slotValueOverride: {} },
                       { slotName: 'preferredTime', slotValueOverride: {} },
+                      { slotName: 'preferredTimeBefore', slotValueOverride: {} },
+                      { slotName: 'preferredTimeOfDay', slotValueOverride: {} },
                       { slotName: 'selectedSlot', slotValueOverride: {} },
                     ],
                   },
@@ -1362,7 +1609,9 @@ volumes:
                 { slotName: 'specialty', priority: 1 },
                 { slotName: 'preferredDate', priority: 2 },
                 { slotName: 'preferredTime', priority: 3 },
-                { slotName: 'selectedSlot', priority: 4 },
+                { slotName: 'preferredTimeBefore', priority: 4 },
+                { slotName: 'preferredTimeOfDay', priority: 5 },
+                { slotName: 'selectedSlot', priority: 6 },
               ],
               slots: [
                 {
@@ -1398,7 +1647,7 @@ volumes:
                       },
                     },
                     slotCaptureSetting: {
-                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
                     },
                   },
                 },
@@ -1418,7 +1667,47 @@ volumes:
                       },
                     },
                     slotCaptureSetting: {
-                      elicitationCodeHook: { enableCodeHookInvocation: false },
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTimeBefore',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('What time should it be before?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTimeOfDay',
+                  slotTypeName: 'TimeOfDay',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('What time of day would work for you?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
                     },
                   },
                 },
@@ -1460,6 +1749,8 @@ volumes:
                     slots: [
                       { slotName: 'preferredDate', slotValueOverride: {} },
                       { slotName: 'preferredTime', slotValueOverride: {} },
+                      { slotName: 'preferredTimeBefore', slotValueOverride: {} },
+                      { slotName: 'preferredTimeOfDay', slotValueOverride: {} },
                       { slotName: 'selectedSlot', slotValueOverride: {} },
                     ],
                   },
