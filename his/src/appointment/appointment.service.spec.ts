@@ -165,6 +165,17 @@ describe('AppointmentService', () => {
     expect(outsideBounds).toBeNull();
   });
 
+  it('findNearestAvailable respects a minimum date floor', async () => {
+    const nearest = await service.findNearestAvailable('chirurg');
+    expect(nearest).not.toBeNull();
+
+    const onTheFloor = await service.findNearestAvailable('chirurg', undefined, undefined, nearest!.date);
+    expect(onTheFloor).toEqual(nearest);
+
+    const beyondEverything = await service.findNearestAvailable('chirurg', undefined, undefined, '2099-01-01');
+    expect(beyondEverything).toBeNull();
+  });
+
   it('fails to book a slot that is already taken', async () => {
     const [date] = await service.findAvailableDays('urolog', 'przed południem');
     const [time] = await service.findAvailableTimes(

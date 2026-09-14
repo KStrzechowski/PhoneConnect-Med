@@ -54,6 +54,7 @@ export class AppointmentService {
     specialty: string,
     minTime?: string,
     maxTime?: string,
+    minDate?: string,
   ): Promise<{ date: string; time: string } | null> {
     const query = this.slotRepository
       .createQueryBuilder('slot')
@@ -63,6 +64,7 @@ export class AppointmentService {
       .andWhere("slot.date >= (now() AT TIME ZONE 'Europe/Warsaw')::date");
     if (minTime) query.andWhere('slot.time >= :minTime', { minTime });
     if (maxTime) query.andWhere('slot.time <= :maxTime', { maxTime });
+    if (minDate) query.andWhere('slot.date >= :minDate', { minDate });
     const row = await query
       .select('slot.date::text', 'date')
       .addSelect('slot.time', 'time')

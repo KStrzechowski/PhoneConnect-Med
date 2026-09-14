@@ -576,8 +576,16 @@ test('BookingIntent dialog hook searches a specific date and offers a numbered l
   assert.match(messageOf(result), new RegExp(ssmlTime('09:30')));
 });
 
-test('BookingIntent dialog hook falls back to the nearest slot when the given date has nothing free', async () => {
-  mockFetchSequence([{ times: [] }, { nearest: { date: '2026-09-10', time: '08:00' } }]);
+test('BookingIntent dialog hook falls back to the nearest slot at or after the given date when it has nothing free', async () => {
+  let secondUrl = '';
+  let call = 0;
+  mock.method(globalThis, 'fetch', async (url: string) => {
+    call += 1;
+    if (call === 2) secondUrl = String(url);
+    return new Response(
+      JSON.stringify(call === 1 ? { times: [] } : { nearest: { date: '2026-09-10', time: '08:00' } }),
+    );
+  });
   const result = await handler(
     bookingIntentEvent(
       'DialogCodeHook',
@@ -590,6 +598,27 @@ test('BookingIntent dialog hook falls back to the nearest slot when the given da
   assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
   assert.equal(result.sessionState.sessionAttributes.bookingDate, '2026-09-10');
   assert.match(messageOf(result), /Najbliższy wolny termin/);
+  assert.equal(secondUrl.includes('minDate=2026-09-07'), true);
+});
+
+test('BookingIntent dialog hook searches from a given "starting from" date onward when no exact date is given', async () => {
+  const fetchSpy = mock.method(
+    globalThis,
+    'fetch',
+    async () => new Response(JSON.stringify({ nearest: { date: '2026-09-20', time: '10:00' } })),
+  );
+  const result = await handler(
+    bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', preferredDateAfter: '2026-09-18' },
+      { authenticated: 'true' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.sessionAttributes.bookingDate, '2026-09-20');
+  const url = String(fetchSpy.mock.calls[0].arguments[0]);
+  assert.equal(url.includes('minDate=2026-09-18'), true);
 });
 
 test('BookingIntent dialog hook filters a given date down to times at or after the requested preferredTime', async () => {
@@ -754,6 +783,66 @@ test('BookingIntent dialog hook re-elicits the numbered choice when it does not 
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
   assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
   assert.equal(result.sessionState.sessionAttributes.bookingAttempts, '1');
+});
+
+test('BookingIntent dialog hook resolves a directly spoken time instead of a numbered choice', async () => {
+  mockFetchSequence([{ times: ['08:00', '09:30'] }]);
+  const result = await handler(
+    bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', selectedTime: '09:30' },
+      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.bookingTime, '09:30');
+});
+
+test('BookingIntent dialog hook re-elicits when the spoken time does not match any offered time', async () => {
+  mockFetchSequence([{ times: ['08:00', '09:30'] }]);
+  const result = await handler(
+    bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', selectedTime: '14:00' },
+      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
+  assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
+  assert.equal(result.sessionState.sessionAttributes.bookingAttempts, '1');
+});
+
+test('BookingIntent dialog hook resolves a numbered choice by its hour when the caller repeats the time instead of the position', async () => {
+  mockFetchSequence([{ times: ['08:00', '09:30', '11:00'] }]);
+  const result = await handler(
+    bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', selectedSlot: '11' },
+      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.bookingTime, '11:00');
+});
+
+test('BookingIntent dialog hook still prefers position over hour when both would resolve', async () => {
+  mockFetchSequence([{ times: ['08:00', '09:30', '11:00'] }]);
+  const result = await handler(
+    bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', selectedSlot: '2' },
+      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.sessionAttributes.bookingTime, '09:30');
 });
 
 test('BookingIntent dialog hook treats a stale bookingStage as fresh once a decline has cleared selectedSlot', async () => {

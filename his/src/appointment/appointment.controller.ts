@@ -38,12 +38,14 @@ export class AppointmentController {
     @Query('specialty') specialty: string,
     @Query('minTime') minTime: string | undefined,
     @Query('maxTime') maxTime: string | undefined,
+    @Query('minDate') minDate: string | undefined,
   ) {
     return {
       nearest: await this.appointmentService.findNearestAvailable(
         specialty,
         minTime,
         maxTime,
+        minDate,
       ),
     };
   }

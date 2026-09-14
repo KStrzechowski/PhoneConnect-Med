@@ -35,11 +35,13 @@ export const findNearestAvailable = async (
   signal: AbortSignal,
   minTime?: string,
   maxTime?: string,
+  minDate?: string,
 ): Promise<{ date: string; time: string } | null> => {
   const url =
     `${baseUrl()}/appointment/nearest?specialty=${encodeURIComponent(specialty)}` +
     (minTime ? `&minTime=${encodeURIComponent(minTime)}` : '') +
-    (maxTime ? `&maxTime=${encodeURIComponent(maxTime)}` : '');
+    (maxTime ? `&maxTime=${encodeURIComponent(maxTime)}` : '') +
+    (minDate ? `&minDate=${encodeURIComponent(minDate)}` : '');
   const response = await fetch(url, { signal });
   if (!response.ok) throw new Error(`GET /appointment/nearest failed: ${response.status}`);
   const body = (await response.json()) as { nearest: { date: string; time: string } | null };

@@ -196,7 +196,7 @@ const bookingUtterances = [
   'zapisz mnie do {specialty} na {preferredDate}',
   'czy jest wolny termin do {specialty} na {preferredDate}',
 
-  // date only
+  // date only (exact day)
   'szukam terminu na {preferredDate}',
   'umów mnie na {preferredDate}',
   'chciałbym umówić się na {preferredDate}',
@@ -205,10 +205,21 @@ const bookingUtterances = [
   'chciałabym się umówić na {preferredDate}',
   'na {preferredDate}',
   'w {preferredDate}',
-  'od {preferredDate}',
   'do {preferredDate}',
   'czy jest coś wolnego {preferredDate}',
   'czy macie coś wolnego na {preferredDate}',
+
+  // date only (starting from / after)
+  'od {preferredDateAfter}',
+  'po {preferredDateAfter}',
+  'zaczynając od {preferredDateAfter}',
+  'poczynając od {preferredDateAfter}',
+  'szukam terminu po {preferredDateAfter}',
+  'umów mnie po {preferredDateAfter}',
+  'chciałbym umówić się po {preferredDateAfter}',
+  'chciałabym umówić się po {preferredDateAfter}',
+  'chcę się umówić do {specialty} po {preferredDateAfter}',
+  'czy jest coś wolnego po {preferredDateAfter}',
 
   // specialty + time (at/after)
   'chcę się umówić do {specialty} na {preferredTime}',
@@ -220,17 +231,17 @@ const bookingUtterances = [
   'na {preferredTime}',
   'o {preferredTime}',
   'o godzinie {preferredTime}',
-  'od {preferredTime}',
   'od godziny {preferredTime}',
   'koło {preferredTime}',
   'około {preferredTime}',
-  'po {preferredTime}',
   'po godzinie {preferredTime}',
 
-  // time only (before)
+  // time only (before) — always qualified with "godziny"/"godziną": a bare "do {ordinal}"/"przed
+  // {ordinal}" is ambiguous with a day-of-month and Lex will sometimes misparse "po szesnastym
+  // września" as time 16:00 + bare date "września" (defaulting to the 1st) if an unqualified
+  // "po {preferredTime}" template is also declared.
   'przed {preferredTimeBefore}',
   'przed godziną {preferredTimeBefore}',
-  'do {preferredTimeBefore}',
   'do godziny {preferredTimeBefore}',
 
   // time of day (rano / przed południem / po południu / wieczorem)
@@ -249,6 +260,7 @@ const bookingUtterances = [
   'umów mnie na {preferredDate} na {preferredTime}',
   'na {preferredDate} na {preferredTime}',
   'na {preferredDate} o {preferredTime}',
+  'na {preferredDate} na godzinę {preferredTime}',
   'na {preferredDate} przed {preferredTimeBefore}',
 
   // specialty + date + time
@@ -257,11 +269,24 @@ const bookingUtterances = [
   'chciałabym się umówić do {specialty} na {preferredDate} na {preferredTime}',
   'chciałbym umówić się do {specialty} na {preferredDate} na {preferredTime}',
   'chciałabym umówić się do {specialty} na {preferredDate} na {preferredTime}',
+  'chcę się umówić do {specialty} na {preferredDate} na godzinę {preferredTime}',
+  'chciałbym się umówić do {specialty} na {preferredDate} na godzinę {preferredTime}',
+  'chciałabym się umówić do {specialty} na {preferredDate} na godzinę {preferredTime}',
   'zapisz mnie do {specialty} na {preferredDate} na {preferredTime}',
   'wizyta do {specialty} na {preferredDate} na {preferredTime}',
   'termin do {specialty} na {preferredDate} o {preferredTime}',
   'chcę się umówić do {specialty} na {preferredDate} przed {preferredTimeBefore}',
   'termin do {specialty} na {preferredDate} przed godziną {preferredTimeBefore}',
+
+  // numbered choice by spoken time instead of by number
+  '{selectedTime}',
+  'godzina {selectedTime}',
+  'wybieram {selectedTime}',
+  'poproszę {selectedTime}',
+  'poproszę o {selectedTime}',
+  'chcę {selectedTime}',
+  'o {selectedTime}',
+  'ta o {selectedTime}',
 ];
 
 const listAppointmentsUtterances = [
@@ -429,27 +454,34 @@ const bookingUtterancesEn = [
   'book me with a {specialty} on {preferredDate}',
   'register me with a {specialty} on {preferredDate}',
 
-  // date only
+  // date only (exact day)
   'I am looking for a slot on {preferredDate}',
   'book me for {preferredDate}',
   'I would like an appointment on {preferredDate}',
   'on {preferredDate}',
-  'from {preferredDate}',
   'until {preferredDate}',
   'do you have anything free on {preferredDate}',
 
-  // specialty/time only (at/after)
+  // date only (starting from / after)
+  'from {preferredDateAfter}',
+  'after {preferredDateAfter}',
+  'starting from {preferredDateAfter}',
+  'I am looking for a slot after {preferredDateAfter}',
+  'book me for anytime after {preferredDateAfter}',
+  'do you have anything free after {preferredDateAfter}',
+  'I want to book with a {specialty} after {preferredDateAfter}',
+
+  // specialty/time only (at/after) — "from"/"after" alone are ambiguous with
+  // {preferredDateAfter} (e.g. "after the 16th" vs "after 4pm"); keep only qualifiers that can't
+  // also read as a date.
   'I want to book with a {specialty} at {preferredTime}',
   'book me at {preferredTime}',
   'I would like an appointment at {preferredTime}',
   'at {preferredTime}',
-  'from {preferredTime}',
   'around {preferredTime}',
-  'after {preferredTime}',
 
-  // time only (before)
+  // time only (before) — "until" alone is ambiguous with the exact-date "until {preferredDate}".
   'before {preferredTimeBefore}',
-  'until {preferredTimeBefore}',
 
   // time of day (morning / late morning / afternoon / evening)
   '{preferredTimeOfDay}',
@@ -468,6 +500,13 @@ const bookingUtterancesEn = [
   'I would like to book with a {specialty} on {preferredDate} at {preferredTime}',
   'book me with a {specialty} for {preferredDate} at {preferredTime}',
   'I want to book with a {specialty} on {preferredDate} before {preferredTimeBefore}',
+
+  // numbered choice by spoken time instead of by number
+  '{selectedTime}',
+  'I will take {selectedTime}',
+  "I'll take {selectedTime}",
+  'the one at {selectedTime}',
+  'at {selectedTime}',
 ];
 
 const listAppointmentsUtterancesEn = [
@@ -1142,10 +1181,12 @@ volumes:
               slotPriorities: [
                 { slotName: 'specialty', priority: 1 },
                 { slotName: 'preferredDate', priority: 2 },
-                { slotName: 'preferredTime', priority: 3 },
-                { slotName: 'preferredTimeBefore', priority: 4 },
-                { slotName: 'preferredTimeOfDay', priority: 5 },
-                { slotName: 'selectedSlot', priority: 6 },
+                { slotName: 'preferredDateAfter', priority: 3 },
+                { slotName: 'preferredTime', priority: 4 },
+                { slotName: 'preferredTimeBefore', priority: 5 },
+                { slotName: 'preferredTimeOfDay', priority: 6 },
+                { slotName: 'selectedSlot', priority: 7 },
+                { slotName: 'selectedTime', priority: 8 },
               ],
               slots: [
                 {
@@ -1174,6 +1215,26 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('Jaki dzień Państwu odpowiada?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredDateAfter',
+                  slotTypeName: 'AMAZON.Date',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Od jakiego dnia mamy szukać terminu?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
@@ -1262,6 +1323,26 @@ volumes:
                     },
                   },
                 },
+                {
+                  name: 'selectedTime',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Który numer, albo o której godzinie, Państwo wybierają?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
               ],
               intentConfirmationSetting: {
                 promptSpecification: {
@@ -1282,10 +1363,12 @@ volumes:
                   intent: {
                     slots: [
                       { slotName: 'preferredDate', slotValueOverride: {} },
+                      { slotName: 'preferredDateAfter', slotValueOverride: {} },
                       { slotName: 'preferredTime', slotValueOverride: {} },
                       { slotName: 'preferredTimeBefore', slotValueOverride: {} },
                       { slotName: 'preferredTimeOfDay', slotValueOverride: {} },
                       { slotName: 'selectedSlot', slotValueOverride: {} },
+                      { slotName: 'selectedTime', slotValueOverride: {} },
                     ],
                   },
                 },
@@ -1608,10 +1691,12 @@ volumes:
               slotPriorities: [
                 { slotName: 'specialty', priority: 1 },
                 { slotName: 'preferredDate', priority: 2 },
-                { slotName: 'preferredTime', priority: 3 },
-                { slotName: 'preferredTimeBefore', priority: 4 },
-                { slotName: 'preferredTimeOfDay', priority: 5 },
-                { slotName: 'selectedSlot', priority: 6 },
+                { slotName: 'preferredDateAfter', priority: 3 },
+                { slotName: 'preferredTime', priority: 4 },
+                { slotName: 'preferredTimeBefore', priority: 5 },
+                { slotName: 'preferredTimeOfDay', priority: 6 },
+                { slotName: 'selectedSlot', priority: 7 },
+                { slotName: 'selectedTime', priority: 8 },
               ],
               slots: [
                 {
@@ -1640,6 +1725,26 @@ volumes:
                       maxRetries: 2,
                       allowInterrupt: false,
                       messageGroupsList: [say('What day would work for you?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredDateAfter',
+                  slotTypeName: 'AMAZON.Date',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('What day should we start searching from?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
@@ -1728,6 +1833,26 @@ volumes:
                     },
                   },
                 },
+                {
+                  name: 'selectedTime',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Which number, or what time, would you like to choose?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
               ],
               intentConfirmationSetting: {
                 promptSpecification: {
@@ -1748,10 +1873,12 @@ volumes:
                   intent: {
                     slots: [
                       { slotName: 'preferredDate', slotValueOverride: {} },
+                      { slotName: 'preferredDateAfter', slotValueOverride: {} },
                       { slotName: 'preferredTime', slotValueOverride: {} },
                       { slotName: 'preferredTimeBefore', slotValueOverride: {} },
                       { slotName: 'preferredTimeOfDay', slotValueOverride: {} },
                       { slotName: 'selectedSlot', slotValueOverride: {} },
+                      { slotName: 'selectedTime', slotValueOverride: {} },
                     ],
                   },
                 },

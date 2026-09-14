@@ -9,7 +9,6 @@ import {
   findNearestAvailable,
   resolveDay,
   resolveTime,
-  resolveTimeForDate,
   bookAppointment,
   listAppointments,
   resolveAppointment,
@@ -192,6 +191,7 @@ const handleBookingDialog = async (
   if (
     confirmationState === 'Denied' &&
     !slots.preferredDate?.value?.interpretedValue &&
+    !slots.preferredDateAfter?.value?.interpretedValue &&
     !slots.preferredTime?.value?.interpretedValue &&
     !slots.preferredTimeBefore?.value?.interpretedValue &&
     !slots.preferredTimeOfDay?.value?.interpretedValue
@@ -203,10 +203,12 @@ const handleBookingDialog = async (
       {
         ...slots,
         preferredDate: null,
+        preferredDateAfter: null,
         preferredTime: null,
         preferredTimeBefore: null,
         preferredTimeOfDay: null,
         selectedSlot: null,
+        selectedTime: null,
       },
       { ...incoming, lastMessageText: message, bookingStage: '' },
       message,
@@ -222,17 +224,8 @@ const handleBookingDialog = async (
     return close('BookingIntent', { ...incoming, lastMessageText: message, transfer: 'true' }, message);
   };
 
-  const retry = (slotName: string, message: string, extra: Record<string, string> = {}): LexResponse =>
-    elicitSlot(
-      'BookingIntent',
-      slotName,
-      { ...slots, [slotName]: null },
-      { ...incoming, lastMessageText: message, bookingAttempts: String(attempts + 1), ...extra },
-      message,
-    );
-
-  const proposeNearest = async (minTime?: string, maxTime?: string): Promise<LexResponse> => {
-    const nearest = await downstream(record, () => findNearestAvailable(specialty, abort, minTime, maxTime));
+  const proposeNearest = async (minTime?: string, maxTime?: string, minDate?: string): Promise<LexResponse> => {
+    const nearest = await downstream(record, () => findNearestAvailable(specialty, abort, minTime, maxTime, minDate));
     if (nearest === null) {
       if (attempts + 1 >= BOOKING_ATTEMPT_LIMIT) return giveUp();
       const message = 'Brak wolnych terminów dla wybranej specjalizacji. Proszę podać inną specjalizację.';
@@ -243,6 +236,7 @@ const handleBookingDialog = async (
           ...slots,
           specialty: null,
           preferredDate: null,
+          preferredDateAfter: null,
           preferredTime: null,
           preferredTimeBefore: null,
           preferredTimeOfDay: null,
@@ -268,14 +262,34 @@ const handleBookingDialog = async (
     );
   };
 
-  if (stage === 'time' && slots.selectedSlot?.value?.interpretedValue) {
-    const timeChoice = Number(slots.selectedSlot.value.interpretedValue);
+  const directTime = slots.selectedTime?.value?.interpretedValue;
+  if (stage === 'time' && (slots.selectedSlot?.value?.interpretedValue || directTime)) {
     const date = incoming.bookingDate ?? '';
     try {
-      const { time } = await downstream(record, () => resolveTimeForDate(specialty, date, timeChoice, abort));
+      let time: string | null;
+      if (directTime) {
+        const times = await downstream(record, () => findAvailableTimesForDate(specialty, date, abort));
+        time = times.includes(directTime) ? directTime : null;
+      } else {
+        // AMAZON.Number reliably parses a spoken hour word ("jedenasta" -> 11) but not as an
+        // index into a 2-3 item list, so a caller repeating the hour back (rather than saying
+        // "drugi") resolves to a number that's out of range as a position. Try the hour itself
+        // against the offered times before giving up.
+        const timeChoice = Number(slots.selectedSlot!.value!.interpretedValue);
+        const times = await downstream(record, () => findAvailableTimesForDate(specialty, date, abort));
+        const byHour = times.find((t) => Number(t.slice(0, 2)) === timeChoice);
+        time = times[timeChoice - 1] ?? byHour ?? null;
+      }
       if (time === null) {
         if (attempts + 1 >= BOOKING_ATTEMPT_LIMIT) return giveUp();
-        return retry('selectedSlot', 'Nie rozpoznałem podanej godziny. Proszę spróbować jeszcze raz.');
+        const message = 'Nie rozpoznałem podanej godziny. Proszę spróbować jeszcze raz.';
+        return elicitSlot(
+          'BookingIntent',
+          'selectedSlot',
+          { ...slots, selectedSlot: null, selectedTime: null },
+          { ...incoming, lastMessageText: message, bookingAttempts: String(attempts + 1) },
+          message,
+        );
       }
       const message = `Umawiam Państwa do ${specialty}, ${formatDayLabel(date)}, godzina ${ssmlTime(time)}. Czy się zgadza?`;
       return confirmIntent(
@@ -295,6 +309,7 @@ const handleBookingDialog = async (
   // Initial turn, and any turn after a decline — decline always resets preferredDate/preferredTime/
   // selectedSlot, so the stage value doesn't matter here; we always re-derive from what's filled now.
   const preferredDate = slots.preferredDate?.value?.interpretedValue;
+  const preferredDateAfter = slots.preferredDateAfter?.value?.interpretedValue;
   const preferredTime = slots.preferredTime?.value?.interpretedValue;
   const preferredTimeBefore = slots.preferredTimeBefore?.value?.interpretedValue;
   const preferredTimeOfDay = slots.preferredTimeOfDay?.value?.interpretedValue;
@@ -306,7 +321,7 @@ const handleBookingDialog = async (
       let times = await downstream(record, () => findAvailableTimesForDate(specialty, preferredDate, abort));
       if (effectiveMinTime) times = times.filter((t) => t >= effectiveMinTime);
       if (effectiveMaxTime) times = times.filter((t) => t <= effectiveMaxTime);
-      if (times.length === 0) return proposeNearest(effectiveMinTime, effectiveMaxTime);
+      if (times.length === 0) return proposeNearest(effectiveMinTime, effectiveMaxTime, preferredDate);
       if (times.length === 1) {
         const message =
           `Umawiam Państwa do ${specialty}, ${formatDayLabel(preferredDate)}, godzina ${ssmlTime(times[0])}. ` +
@@ -329,12 +344,12 @@ const handleBookingDialog = async (
       return elicitSlot(
         'BookingIntent',
         'selectedSlot',
-        { ...slots, selectedSlot: null },
+        { ...slots, selectedSlot: null, selectedTime: null },
         { ...incoming, lastMessageText: message, bookingStage: 'time', bookingDate: preferredDate, bookingAttempts: '0' },
         message,
       );
     }
-    return await proposeNearest(effectiveMinTime, effectiveMaxTime);
+    return await proposeNearest(effectiveMinTime, effectiveMaxTime, preferredDateAfter);
   } catch (error) {
     record.outcome = 'error';
     record.error = String(error);
