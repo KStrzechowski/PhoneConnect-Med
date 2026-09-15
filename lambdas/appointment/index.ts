@@ -209,7 +209,7 @@ export const rescheduleAppointment = async (
   oldDate: string,
   oldTime: string,
   specialty: string,
-  timeOfDay: string,
+  timeOfDay: string | null,
   newDate: string,
   newTime: string,
   signal: AbortSignal,

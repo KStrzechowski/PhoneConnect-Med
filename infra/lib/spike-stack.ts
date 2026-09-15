@@ -56,8 +56,14 @@ function fallbackIntent(closingMessage: string): lex.CfnBot.IntentProperty {
   };
 }
 
+export interface SpikeStackProps extends cdk.StackProps {
+  targetBotId: string;
+  targetBotAliasId: string;
+  targetBotAliasArn: string;
+}
+
 export class SpikeStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: SpikeStackProps) {
     super(scope, id, props);
 
     const connectInstanceArn: string | undefined = this.node.tryGetContext('connectInstanceArn');
@@ -184,9 +190,10 @@ export class SpikeStack extends cdk.Stack {
       projectRoot: repoRoot,
       depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
       runtime: lambda.Runtime.NODEJS_24_X,
-      timeout: cdk.Duration.seconds(30),
-      environment: { BOT_ID: bot.attrId, BOT_ALIAS_ID: botAlias.attrBotAliasId },
+      timeout: cdk.Duration.seconds(55),
+      environment: { BOT_ID: props.targetBotId, BOT_ALIAS_ID: props.targetBotAliasId },
     });
+    languageDetectSpike.configureAsyncInvoke({ retryAttempts: 0 });
 
     languageDetectSpike.role?.addToPrincipalPolicy(
       new iam.PolicyStatement({
@@ -198,7 +205,7 @@ export class SpikeStack extends cdk.Stack {
       new iam.PolicyStatement({ actions: ['transcribe:StartStreamTranscription'], resources: ['*'] }),
     );
     languageDetectSpike.role?.addToPrincipalPolicy(
-      new iam.PolicyStatement({ actions: ['lex:RecognizeText'], resources: [botAlias.attrArn] }),
+      new iam.PolicyStatement({ actions: ['lex:RecognizeText'], resources: [props.targetBotAliasArn] }),
     );
 
     languageDetectSpike.addPermission('ConnectInvoke', {

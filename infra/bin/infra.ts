@@ -13,7 +13,7 @@ if (connectInstanceArn && !app.node.tryGetContext('connectInstanceArn')) {
 }
 
 const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'eu-central-1' };
-new InfraStack(app, 'PhoneConnect-Med-InfraStack', {
+const infraStack = new InfraStack(app, 'PhoneConnect-Med-InfraStack', {
   env,
   tags: { Project: 'PhoneConnect-Med' },
 });
@@ -26,6 +26,9 @@ new GithubOidcStack(app, 'PhoneConnect-Med-GithubOidcStack', {
 new SpikeStack(app, 'PhoneConnect-Med-SpikeStack', {
   env,
   tags: { Project: 'PhoneConnect-Med' },
+  targetBotId: infraStack.speechBot.attrId,
+  targetBotAliasId: infraStack.speechBotAlias.attrBotAliasId,
+  targetBotAliasArn: infraStack.speechBotAlias.attrArn,
 });
 
 cdk.Tags.of(app).add('Project', 'PhoneConnect-Med');

@@ -377,6 +377,16 @@ test('OtpIntent authenticates and stamps the demo auth path on a correct demo co
   assert.equal(result.sessionState.sessionAttributes.patientId, '2');
 });
 
+test('OtpIntent success confirms identity in English when the bot locale is en_US', async () => {
+  const result = await handler({
+    ...otpIntentEvent('123456', { code: '123456', isDemo: 'true', phone: '', patientId: '2' }),
+    bot: { ...sampleEvent.bot, localeId: 'en_US' },
+  });
+
+  assert.equal(result.sessionState.sessionAttributes.authenticated, 'true');
+  assert.equal(messageOf(result), '<speak>Thank you. Your identity has been confirmed.</speak>');
+});
+
 test('OtpIntent re-elicits the code on a wrong entry without authenticating', async () => {
   const result = await handler(
     otpIntentEvent('000000', { code: '654321', isDemo: 'false', phone: '+48000000000', patientId: '1' }),
@@ -486,6 +496,21 @@ test('BookingIntent dialog hook needs auth before eliciting anything', async () 
   assert.equal(result.sessionState.sessionAttributes.pendingIntent, 'BookingIntent');
 });
 
+test('BookingIntent dialog hook redirects to auth in English when the bot locale is en_US', async () => {
+  const result = await handler({
+    ...bookingIntentEvent('DialogCodeHook', { specialty: null, timeOfDay: null }, { authenticated: 'false' }),
+    bot: { ...sampleEvent.bot, localeId: 'en_US' },
+  });
+
+  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
+  assert.equal(result.sessionState.dialogAction.slotToElicit, 'pesel');
+  assert.equal(intentNameOf(result), 'AuthIntent');
+  assert.equal(
+    messageOf(result),
+    '<speak>To book an appointment, please identify yourself first. Enter your PESEL number on the keypad, then press the pound key.</speak>',
+  );
+});
+
 test('BookingIntent dialog hook delegates to Lex while specialty is still unfilled', async () => {
   const result = await handler(
     bookingIntentEvent('DialogCodeHook', { specialty: null }, { authenticated: 'true' }),
@@ -494,15 +519,29 @@ test('BookingIntent dialog hook delegates to Lex while specialty is still unfill
   assert.equal(result.sessionState.dialogAction.type, 'Delegate');
 });
 
-test('BookingIntent dialog hook proposes the nearest available slot when no date is given', async () => {
-  mockFetchSequence([{ nearest: { date: '2026-09-07', time: '09:30' } }]);
+test('BookingIntent dialog hook asks for day and time together on the first turn after specialty is known', async () => {
   const result = await handler(
     bookingIntentEvent('DialogCodeHook', { specialty: 'kardiolog' }, { authenticated: 'true' }),
+  );
+
+  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
+  assert.equal(result.sessionState.dialogAction.slotToElicit, 'preferredDate');
+  assert.equal(result.sessionState.sessionAttributes.bookingAsked, 'true');
+  assert.match(messageOf(result), /Jaki dzień, i o której godzinie/);
+});
+
+test('BookingIntent dialog hook proposes the nearest available slot once asked and nothing resolved', async () => {
+  mockFetchSequence([{ nearest: { date: '2026-09-07', time: '09:30' } }]);
+  const result = await handler(
+    bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog' },
+      { authenticated: 'true', bookingAsked: 'true' },
+    ),
   );
   mock.restoreAll();
 
   assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
-  assert.equal(result.sessionState.sessionAttributes.bookingStage, 'confirm');
   assert.equal(result.sessionState.sessionAttributes.bookingDate, '2026-09-07');
   assert.equal(result.sessionState.sessionAttributes.bookingTime, '09:30');
   assert.match(messageOf(result), /Najbliższy wolny termin/);
@@ -515,7 +554,7 @@ test('BookingIntent dialog hook re-elicits specialty when nothing is available a
     bookingIntentEvent(
       'DialogCodeHook',
       { specialty: 'reumatolog' },
-      { authenticated: 'true', bookingAttempts: '0' },
+      { authenticated: 'true', bookingAsked: 'true', bookingAttempts: '0' },
     ),
   );
   mock.restoreAll();
@@ -532,7 +571,7 @@ test('BookingIntent dialog hook transfers after the third consecutive no-availab
     bookingIntentEvent(
       'DialogCodeHook',
       { specialty: 'reumatolog' },
-      { authenticated: 'true', bookingAttempts: '2' },
+      { authenticated: 'true', bookingAsked: 'true', bookingAttempts: '2' },
     ),
   );
   mock.restoreAll();
@@ -541,7 +580,7 @@ test('BookingIntent dialog hook transfers after the third consecutive no-availab
   assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
 });
 
-test('BookingIntent dialog hook searches a specific date and confirms directly when exactly one time is free', async () => {
+test('BookingIntent dialog hook searches a specific date and confirms the earliest time when exactly one is free', async () => {
   mockFetchSequence([{ times: ['09:30'] }]);
   const result = await handler(
     bookingIntentEvent(
@@ -553,12 +592,11 @@ test('BookingIntent dialog hook searches a specific date and confirms directly w
   mock.restoreAll();
 
   assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
-  assert.equal(result.sessionState.sessionAttributes.bookingStage, 'confirm');
   assert.equal(result.sessionState.sessionAttributes.bookingDate, '2026-09-07');
   assert.equal(result.sessionState.sessionAttributes.bookingTime, '09:30');
 });
 
-test('BookingIntent dialog hook searches a specific date and offers a numbered list when multiple times are free', async () => {
+test('BookingIntent dialog hook searches a specific date and always proposes the earliest time, never a list', async () => {
   mockFetchSequence([{ times: ['08:00', '09:30'] }]);
   const result = await handler(
     bookingIntentEvent(
@@ -569,11 +607,10 @@ test('BookingIntent dialog hook searches a specific date and offers a numbered l
   );
   mock.restoreAll();
 
-  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
-  assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
-  assert.equal(result.sessionState.sessionAttributes.bookingStage, 'time');
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
   assert.equal(result.sessionState.sessionAttributes.bookingDate, '2026-09-07');
-  assert.match(messageOf(result), new RegExp(ssmlTime('09:30')));
+  assert.equal(result.sessionState.sessionAttributes.bookingTime, '08:00');
+  assert.match(messageOf(result), new RegExp(ssmlTime('08:00')));
 });
 
 test('BookingIntent dialog hook falls back to the nearest slot at or after the given date when it has nothing free', async () => {
@@ -656,7 +693,7 @@ test('BookingIntent dialog hook proposes the nearest slot at or after preferredT
   assert.equal(url.includes('minTime=16%3A00'), true);
 });
 
-test('BookingIntent dialog hook filters a given date down to times at or before preferredTimeBefore', async () => {
+test('BookingIntent dialog hook filters a given date down to times at or before preferredTimeBefore, then takes the earliest', async () => {
   mockFetchSequence([{ times: ['08:00', '09:30', '16:30'] }]);
   const result = await handler(
     bookingIntentEvent(
@@ -667,11 +704,8 @@ test('BookingIntent dialog hook filters a given date down to times at or before 
   );
   mock.restoreAll();
 
-  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
-  assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
-  assert.match(messageOf(result), new RegExp(ssmlTime('08:00')));
-  assert.match(messageOf(result), new RegExp(ssmlTime('09:30')));
-  assert.doesNotMatch(messageOf(result), new RegExp(ssmlTime('16:30')));
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.bookingTime, '08:00');
 });
 
 test('BookingIntent dialog hook proposes the nearest slot at or before preferredTimeBefore when no date is given', async () => {
@@ -751,122 +785,13 @@ test('BookingIntent dialog hook prefers an explicit preferredTime over the time-
   assert.equal(url.includes('maxTime=11%3A59'), true);
 });
 
-test('BookingIntent dialog hook resolves a numbered time choice and asks for confirmation', async () => {
-  mockFetchSequence([{ times: ['08:00', '09:30'] }]);
-  const result = await handler(
-    bookingIntentEvent(
-      'DialogCodeHook',
-      { specialty: 'kardiolog', selectedSlot: '2' },
-      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
-  assert.equal(result.sessionState.sessionAttributes.bookingStage, 'confirm');
-  assert.equal(result.sessionState.sessionAttributes.bookingTime, '09:30');
-  assert.match(messageOf(result), /kardiolog/);
-  assert.match(messageOf(result), new RegExp(ssmlTime('09:30')));
-});
-
-test('BookingIntent dialog hook re-elicits the numbered choice when it does not resolve', async () => {
-  mockFetchSequence([{ times: ['08:00'] }]);
-  const result = await handler(
-    bookingIntentEvent(
-      'DialogCodeHook',
-      { specialty: 'kardiolog', selectedSlot: '9' },
-      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
-  assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
-  assert.equal(result.sessionState.sessionAttributes.bookingAttempts, '1');
-});
-
-test('BookingIntent dialog hook resolves a directly spoken time instead of a numbered choice', async () => {
-  mockFetchSequence([{ times: ['08:00', '09:30'] }]);
-  const result = await handler(
-    bookingIntentEvent(
-      'DialogCodeHook',
-      { specialty: 'kardiolog', selectedTime: '09:30' },
-      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
-  assert.equal(result.sessionState.sessionAttributes.bookingTime, '09:30');
-});
-
-test('BookingIntent dialog hook re-elicits when the spoken time does not match any offered time', async () => {
-  mockFetchSequence([{ times: ['08:00', '09:30'] }]);
-  const result = await handler(
-    bookingIntentEvent(
-      'DialogCodeHook',
-      { specialty: 'kardiolog', selectedTime: '14:00' },
-      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
-  assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
-  assert.equal(result.sessionState.sessionAttributes.bookingAttempts, '1');
-});
-
-test('BookingIntent dialog hook resolves a numbered choice by its hour when the caller repeats the time instead of the position', async () => {
-  mockFetchSequence([{ times: ['08:00', '09:30', '11:00'] }]);
-  const result = await handler(
-    bookingIntentEvent(
-      'DialogCodeHook',
-      { specialty: 'kardiolog', selectedSlot: '11' },
-      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
-  assert.equal(result.sessionState.sessionAttributes.bookingTime, '11:00');
-});
-
-test('BookingIntent dialog hook still prefers position over hour when both would resolve', async () => {
-  mockFetchSequence([{ times: ['08:00', '09:30', '11:00'] }]);
-  const result = await handler(
-    bookingIntentEvent(
-      'DialogCodeHook',
-      { specialty: 'kardiolog', selectedSlot: '2' },
-      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.sessionAttributes.bookingTime, '09:30');
-});
-
-test('BookingIntent dialog hook treats a stale bookingStage as fresh once a decline has cleared selectedSlot', async () => {
-  mockFetchSequence([{ nearest: { date: '2026-09-08', time: '08:00' } }]);
-  const result = await handler(
-    bookingIntentEvent(
-      'DialogCodeHook',
-      { specialty: 'kardiolog', selectedSlot: null },
-      { authenticated: 'true', bookingStage: 'time', bookingDate: '2026-09-07', bookingAttempts: '0' },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
-  assert.match(messageOf(result), /Najbliższy wolny termin/);
-});
-
 test('BookingIntent dialog hook forwards straight to fulfillment when the caller confirms', async () => {
   mockFetchSequence([{ booked: true }]);
   const result = await handler(
     bookingIntentEvent(
       'DialogCodeHook',
       { specialty: 'kardiolog' },
-      { authenticated: 'true', patientId: '1', bookingDate: '2026-09-07', bookingTime: '09:30', bookingStage: 'confirm' },
+      { authenticated: 'true', patientId: '1', bookingDate: '2026-09-07', bookingTime: '09:30' },
       'Confirmed',
     ),
   );
@@ -876,19 +801,20 @@ test('BookingIntent dialog hook forwards straight to fulfillment when the caller
   assert.match(messageOf(result), /umówiona/);
 });
 
-test('BookingIntent dialog hook re-asks for a day when the caller declines without naming a new date', async () => {
+test('BookingIntent dialog hook re-asks for day and time together when the caller declines without naming a new one', async () => {
   const result = await handler(
     bookingIntentEvent(
       'DialogCodeHook',
       { specialty: 'kardiolog' },
-      { authenticated: 'true', bookingDate: '2026-09-07', bookingTime: '09:30', bookingStage: 'confirm' },
+      { authenticated: 'true', bookingDate: '2026-09-07', bookingTime: '09:30' },
       'Denied',
     ),
   );
 
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
   assert.equal(result.sessionState.dialogAction.slotToElicit, 'preferredDate');
-  assert.equal(result.sessionState.sessionAttributes.bookingStage, '');
+  assert.equal(result.sessionState.sessionAttributes.bookingAsked, 'true');
+  assert.match(messageOf(result), /Jaki dzień, i o której godzinie/);
 });
 
 test('BookingIntent dialog hook searches the new date directly when the caller declines while naming one', async () => {
@@ -897,7 +823,7 @@ test('BookingIntent dialog hook searches the new date directly when the caller d
     bookingIntentEvent(
       'DialogCodeHook',
       { specialty: 'kardiolog', preferredDate: '2026-09-16' },
-      { authenticated: 'true', bookingDate: '2026-09-07', bookingTime: '09:30', bookingStage: 'confirm' },
+      { authenticated: 'true', bookingDate: '2026-09-07', bookingTime: '09:30' },
       'Denied',
     ),
   );
@@ -1130,7 +1056,7 @@ test('CancelAppointmentIntent fulfillment transfers when the appointment no long
 
 test('RescheduleIntent dialog hook needs auth before eliciting anything', async () => {
   const result = await handler(
-    rescheduleIntentEvent('DialogCodeHook', { timeOfDay: null }, { authenticated: 'false' }),
+    rescheduleIntentEvent('DialogCodeHook', {}, { authenticated: 'false' }),
   );
 
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
@@ -1139,18 +1065,10 @@ test('RescheduleIntent dialog hook needs auth before eliciting anything', async 
   assert.equal(result.sessionState.sessionAttributes.pendingIntent, 'RescheduleIntent');
 });
 
-test('RescheduleIntent dialog hook delegates to Lex while timeOfDay is still unfilled', async () => {
-  const result = await handler(
-    rescheduleIntentEvent('DialogCodeHook', { timeOfDay: null }, { authenticated: 'true' }),
-  );
-
-  assert.equal(result.sessionState.dialogAction.type, 'Delegate');
-});
-
 test('RescheduleIntent dialog hook closes with the empty message for a patient with no appointments', async () => {
   mockFetchSequence([{ appointments: [] }]);
   const result = await handler(
-    rescheduleIntentEvent('DialogCodeHook', { timeOfDay: 'rano' }, { authenticated: 'true', patientId: '1' }),
+    rescheduleIntentEvent('DialogCodeHook', {}, { authenticated: 'true', patientId: '1' }),
   );
   mock.restoreAll();
 
@@ -1161,34 +1079,13 @@ test('RescheduleIntent dialog hook closes with the empty message for a patient w
 test('RescheduleIntent dialog hook lists appointments and elicits a selection', async () => {
   mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
   const result = await handler(
-    rescheduleIntentEvent('DialogCodeHook', { timeOfDay: 'rano' }, { authenticated: 'true', patientId: '1' }),
+    rescheduleIntentEvent('DialogCodeHook', {}, { authenticated: 'true', patientId: '1' }),
   );
   mock.restoreAll();
 
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
   assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleStage, 'select');
   assert.match(messageOf(result), /kardiolog/);
-});
-
-test('RescheduleIntent dialog hook resolves the chosen appointment and offers days', async () => {
-  mockFetchSequence([
-    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
-    { days: ['2026-09-04', '2026-09-07'] },
-  ]);
-  const result = await handler(
-    rescheduleIntentEvent(
-      'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '1' },
-      { authenticated: 'true', patientId: '1', rescheduleStage: 'select', rescheduleAttempts: '0' },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleStage, 'day');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleApptSelection, '1');
-  assert.match(messageOf(result), /Mam wolne terminy/);
 });
 
 test('RescheduleIntent dialog hook re-elicits the selection when it does not resolve', async () => {
@@ -1196,8 +1093,8 @@ test('RescheduleIntent dialog hook re-elicits the selection when it does not res
   const result = await handler(
     rescheduleIntentEvent(
       'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '9' },
-      { authenticated: 'true', patientId: '1', rescheduleStage: 'select', rescheduleAttempts: '0' },
+      { selectedSlot: '9' },
+      { authenticated: 'true', patientId: '1', rescheduleAttempts: '0' },
     ),
   );
   mock.restoreAll();
@@ -1212,8 +1109,8 @@ test('RescheduleIntent dialog hook transfers after the third consecutive unresol
   const result = await handler(
     rescheduleIntentEvent(
       'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '9' },
-      { authenticated: 'true', patientId: '1', rescheduleStage: 'select', rescheduleAttempts: '2' },
+      { selectedSlot: '9' },
+      { authenticated: 'true', patientId: '1', rescheduleAttempts: '2' },
     ),
   );
   mock.restoreAll();
@@ -1222,200 +1119,69 @@ test('RescheduleIntent dialog hook transfers after the third consecutive unresol
   assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
 });
 
-test('RescheduleIntent dialog hook re-elicits timeOfDay when the resolved appointment has no availability', async () => {
-  mockFetchSequence([
-    { appointments: [{ specialty: 'reumatolog', date: '2026-09-08', time: '09:30' }] },
-    { days: [] },
-  ]);
+test('RescheduleIntent dialog hook asks for day and time together right after the appointment is chosen', async () => {
+  mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
   const result = await handler(
     rescheduleIntentEvent(
       'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '1' },
-      { authenticated: 'true', patientId: '1', rescheduleStage: 'select', rescheduleAttempts: '0' },
+      { selectedSlot: '1' },
+      { authenticated: 'true', patientId: '1' },
     ),
   );
   mock.restoreAll();
 
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
-  assert.equal(result.sessionState.dialogAction.slotToElicit, 'timeOfDay');
+  assert.equal(result.sessionState.dialogAction.slotToElicit, 'preferredDate');
   assert.equal(result.sessionState.sessionAttributes.rescheduleApptSelection, '1');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleAttempts, '1');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleAsked, 'true');
+  assert.match(messageOf(result), /Jaki dzień, i o której godzinie/);
 });
 
-test('RescheduleIntent dialog hook offers fresh days again after a decline (rescheduleStage confirm)', async () => {
-  mockFetchSequence([
-    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
-    { days: ['2026-09-04'] },
-  ]);
+test('RescheduleIntent dialog hook proposes the nearest available slot once asked and nothing resolved', async () => {
+  mockFetchSequence([{ nearest: { date: '2026-09-14', time: '08:00' } }]);
   const result = await handler(
     rescheduleIntentEvent(
       'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: null },
+      {},
       {
         authenticated: 'true',
         patientId: '1',
-        rescheduleStage: 'confirm',
         rescheduleApptSelection: '1',
-        rescheduleDate: '2026-09-07',
-        rescheduleTime: '08:00',
-      },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleStage, 'day');
-});
-
-test('RescheduleIntent dialog hook resolves the chosen day and offers times', async () => {
-  mockFetchSequence([
-    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
-    { days: ['2026-09-04', '2026-09-07'] },
-    { times: ['08:00', '09:30'] },
-  ]);
-  const result = await handler(
-    rescheduleIntentEvent(
-      'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '2' },
-      {
-        authenticated: 'true',
-        patientId: '1',
-        rescheduleStage: 'day',
-        rescheduleApptSelection: '1',
-        rescheduleAttempts: '0',
-      },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleStage, 'time');
-  assert.match(messageOf(result), new RegExp(ssmlTime('09:30')));
-});
-
-test('RescheduleIntent dialog hook re-elicits the day choice when it does not resolve', async () => {
-  mockFetchSequence([
-    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
-    { days: ['2026-09-04'] },
-  ]);
-  const result = await handler(
-    rescheduleIntentEvent(
-      'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '9' },
-      {
-        authenticated: 'true',
-        patientId: '1',
-        rescheduleStage: 'day',
-        rescheduleApptSelection: '1',
-        rescheduleAttempts: '0',
-      },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
-  assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleAttempts, '1');
-});
-
-test('RescheduleIntent dialog hook resolves the chosen time and asks for confirmation', async () => {
-  mockFetchSequence([
-    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
-    { times: ['08:00', '09:30'] },
-  ]);
-  const result = await handler(
-    rescheduleIntentEvent(
-      'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '2' },
-      {
-        authenticated: 'true',
-        patientId: '1',
-        rescheduleStage: 'time',
-        rescheduleApptSelection: '1',
-        rescheduleDate: '2026-09-07',
-        rescheduleAttempts: '0',
+        rescheduleSpecialty: 'kardiolog',
+        rescheduleOldDate: '2026-09-08',
+        rescheduleOldTime: '09:30',
+        rescheduleAsked: 'true',
       },
     ),
   );
   mock.restoreAll();
 
   assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleStage, 'confirm');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleTime, '09:30');
-  assert.match(
-    messageOf(result),
-    new RegExp(`kardiolog.*godzina ${ssmlTime('09:30')}.*na.*godzina ${ssmlTime('09:30')}`),
-  );
+  assert.equal(result.sessionState.sessionAttributes.rescheduleApptSelection, '1');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleDate, '2026-09-14');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleTime, '08:00');
+  assert.match(messageOf(result), /kardiolog/);
+  assert.match(messageOf(result), /14 wrześ/);
+  assert.match(messageOf(result), new RegExp(ssmlTime('08:00')));
 });
 
-test('RescheduleIntent dialog hook transfers immediately when the appointment resolution goes stale at the day stage', async () => {
-  const fetchMock = mock.method(
-    globalThis,
-    'fetch',
-    async () => new Response(JSON.stringify({ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] })),
-  );
-  const result = await handler(
-    rescheduleIntentEvent(
-      'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '2' },
-      {
-        authenticated: 'true',
-        patientId: '1',
-        rescheduleStage: 'day',
-        rescheduleApptSelection: '9',
-        rescheduleAttempts: '0',
-      },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'Close');
-  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
-  assert.equal(fetchMock.mock.callCount(), 1);
-});
-
-test('RescheduleIntent dialog hook transfers immediately when the appointment resolution goes stale at the time stage', async () => {
-  const fetchMock = mock.method(
-    globalThis,
-    'fetch',
-    async () => new Response(JSON.stringify({ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] })),
-  );
-  const result = await handler(
-    rescheduleIntentEvent(
-      'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '2' },
-      {
-        authenticated: 'true',
-        patientId: '1',
-        rescheduleStage: 'time',
-        rescheduleApptSelection: '9',
-        rescheduleDate: '2026-09-07',
-        rescheduleAttempts: '0',
-      },
-    ),
-  );
-  mock.restoreAll();
-
-  assert.equal(result.sessionState.dialogAction.type, 'Close');
-  assert.equal(result.sessionState.sessionAttributes.transfer, 'true');
-  assert.equal(fetchMock.mock.callCount(), 1);
-});
-
-test('RescheduleIntent dialog hook re-elicits the time choice when it does not resolve', async () => {
+test('RescheduleIntent dialog hook offers a different appointment when nothing is available for that specialty', async () => {
   mockFetchSequence([
-    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
-    { times: ['08:00'] },
+    { nearest: null },
+    { appointments: [{ specialty: 'reumatolog', date: '2026-09-08', time: '09:30' }] },
   ]);
   const result = await handler(
     rescheduleIntentEvent(
       'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '9' },
+      {},
       {
         authenticated: 'true',
         patientId: '1',
-        rescheduleStage: 'time',
         rescheduleApptSelection: '1',
-        rescheduleDate: '2026-09-07',
+        rescheduleSpecialty: 'reumatolog',
+        rescheduleOldDate: '2026-09-08',
+        rescheduleOldTime: '09:30',
+        rescheduleAsked: 'true',
         rescheduleAttempts: '0',
       },
     ),
@@ -1424,7 +1190,76 @@ test('RescheduleIntent dialog hook re-elicits the time choice when it does not r
 
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
   assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleAttempts, '1');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleApptSelection, '');
+  assert.match(messageOf(result), /Brak wolnych termin/);
+});
+
+test('RescheduleIntent dialog hook searches a given date and confirms directly when exactly one time is free', async () => {
+  mockFetchSequence([
+    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
+    { times: ['11:00'] },
+  ]);
+  const result = await handler(
+    rescheduleIntentEvent(
+      'DialogCodeHook',
+      { selectedSlot: '1', preferredDate: '2026-09-16' },
+      { authenticated: 'true', patientId: '1' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleDate, '2026-09-16');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleTime, '11:00');
+});
+
+test('RescheduleIntent dialog hook searches a given date and always proposes the earliest time, never a list', async () => {
+  mockFetchSequence([
+    { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] },
+    { times: ['08:00', '11:00'] },
+  ]);
+  const result = await handler(
+    rescheduleIntentEvent(
+      'DialogCodeHook',
+      { selectedSlot: '1', preferredDate: '2026-09-16' },
+      { authenticated: 'true', patientId: '1' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleDate, '2026-09-16');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleTime, '08:00');
+});
+
+test('RescheduleIntent dialog hook falls back to the nearest slot at or after the given date when it has nothing free', async () => {
+  let thirdUrl = '';
+  let call = 0;
+  mock.method(globalThis, 'fetch', async (url: string) => {
+    call += 1;
+    if (call === 3) thirdUrl = String(url);
+    return new Response(
+      JSON.stringify(
+        call === 1
+          ? { appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }
+          : call === 2
+            ? { times: [] }
+            : { nearest: { date: '2026-09-20', time: '08:00' } },
+      ),
+    );
+  });
+  const result = await handler(
+    rescheduleIntentEvent(
+      'DialogCodeHook',
+      { selectedSlot: '1', preferredDate: '2026-09-16' },
+      { authenticated: 'true', patientId: '1' },
+    ),
+  );
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleDate, '2026-09-20');
+  assert.equal(thirdUrl.includes('minDate=2026-09-16'), true);
 });
 
 test('RescheduleIntent dialog hook forwards straight to fulfillment when the caller confirms', async () => {
@@ -1436,12 +1271,12 @@ test('RescheduleIntent dialog hook forwards straight to fulfillment when the cal
   const result = await handler(
     rescheduleIntentEvent(
       'DialogCodeHook',
-      { timeOfDay: 'rano' },
+      {},
       {
         authenticated: 'true',
         patientId: '1',
         rescheduleApptSelection: '1',
-        rescheduleDate: '2026-09-07',
+        rescheduleDate: '2026-09-16',
         rescheduleTime: '08:00',
       },
       'Confirmed',
@@ -1453,17 +1288,47 @@ test('RescheduleIntent dialog hook forwards straight to fulfillment when the cal
   assert.match(messageOf(result), /przełożona/);
 });
 
-test('RescheduleIntent dialog hook restarts from appointment selection when the caller declines', async () => {
-  mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
+test('RescheduleIntent dialog hook keeps the chosen appointment and asks for a different day when the caller declines', async () => {
   const result = await handler(
     rescheduleIntentEvent(
       'DialogCodeHook',
-      { timeOfDay: 'rano', selectedSlot: '1' },
+      {},
       {
         authenticated: 'true',
         patientId: '1',
         rescheduleApptSelection: '1',
-        rescheduleDate: '2026-09-07',
+        rescheduleSpecialty: 'kardiolog',
+        rescheduleOldDate: '2026-09-08',
+        rescheduleOldTime: '09:30',
+        rescheduleDate: '2026-09-16',
+        rescheduleTime: '08:00',
+      },
+      'Denied',
+    ),
+  );
+
+  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
+  assert.equal(result.sessionState.dialogAction.slotToElicit, 'preferredDate');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleApptSelection, '1');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleSpecialty, 'kardiolog');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleAsked, 'true');
+  assert.match(messageOf(result), /Jaki dzień, i o której godzinie/);
+});
+
+test('RescheduleIntent dialog hook searches the new date directly when the caller declines while naming one', async () => {
+  mockFetchSequence([{ times: ['10:00'] }]);
+  const result = await handler(
+    rescheduleIntentEvent(
+      'DialogCodeHook',
+      { preferredDate: '2026-09-18' },
+      {
+        authenticated: 'true',
+        patientId: '1',
+        rescheduleApptSelection: '1',
+        rescheduleSpecialty: 'kardiolog',
+        rescheduleOldDate: '2026-09-08',
+        rescheduleOldTime: '09:30',
+        rescheduleDate: '2026-09-16',
         rescheduleTime: '08:00',
       },
       'Denied',
@@ -1471,15 +1336,26 @@ test('RescheduleIntent dialog hook restarts from appointment selection when the 
   );
   mock.restoreAll();
 
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleDate, '2026-09-18');
+  assert.equal(result.sessionState.sessionAttributes.rescheduleTime, '10:00');
+});
+
+test('RescheduleIntent dialog hook restarts from appointment selection when declining before any appointment is chosen', async () => {
+  mockFetchSequence([{ appointments: [{ specialty: 'kardiolog', date: '2026-09-08', time: '09:30' }] }]);
+  const result = await handler(
+    rescheduleIntentEvent('DialogCodeHook', {}, { authenticated: 'true', patientId: '1' }, 'Denied'),
+  );
+  mock.restoreAll();
+
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
   assert.equal(result.sessionState.dialogAction.slotToElicit, 'selectedSlot');
-  assert.equal(result.sessionState.sessionAttributes.rescheduleStage, 'select');
   assert.equal(result.sessionState.sessionAttributes.rescheduleApptSelection, '');
 });
 
 test('RescheduleIntent fulfillment needs auth before rescheduling', async () => {
   const result = await handler(
-    rescheduleIntentEvent('FulfillmentCodeHook', { timeOfDay: 'rano' }, { authenticated: 'false' }),
+    rescheduleIntentEvent('FulfillmentCodeHook', {}, { authenticated: 'false' }),
   );
 
   assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
@@ -1492,8 +1368,8 @@ test('RescheduleIntent fulfillment reports a clean failure when patientId is mis
   const result = await handler(
     rescheduleIntentEvent(
       'FulfillmentCodeHook',
-      { timeOfDay: 'rano' },
-      { authenticated: 'true', rescheduleApptSelection: '1', rescheduleDate: '2026-09-07', rescheduleTime: '08:00' },
+      {},
+      { authenticated: 'true', rescheduleApptSelection: '1', rescheduleDate: '2026-09-16', rescheduleTime: '08:00' },
     ),
   );
 
@@ -1510,12 +1386,12 @@ test('RescheduleIntent fulfillment reschedules the resolved appointment and conf
   const result = await handler(
     rescheduleIntentEvent(
       'FulfillmentCodeHook',
-      { timeOfDay: 'rano' },
+      {},
       {
         authenticated: 'true',
         patientId: '1',
         rescheduleApptSelection: '1',
-        rescheduleDate: '2026-09-07',
+        rescheduleDate: '2026-09-16',
         rescheduleTime: '08:00',
       },
     ),
@@ -1534,12 +1410,12 @@ test('RescheduleIntent fulfillment reports a clean failure when the new slot was
   const result = await handler(
     rescheduleIntentEvent(
       'FulfillmentCodeHook',
-      { timeOfDay: 'rano' },
+      {},
       {
         authenticated: 'true',
         patientId: '1',
         rescheduleApptSelection: '1',
-        rescheduleDate: '2026-09-07',
+        rescheduleDate: '2026-09-16',
         rescheduleTime: '08:00',
       },
     ),
@@ -1555,12 +1431,12 @@ test('RescheduleIntent fulfillment transfers when the old appointment no longer 
   const result = await handler(
     rescheduleIntentEvent(
       'FulfillmentCodeHook',
-      { timeOfDay: 'rano' },
+      {},
       {
         authenticated: 'true',
         patientId: '1',
         rescheduleApptSelection: '9',
-        rescheduleDate: '2026-09-07',
+        rescheduleDate: '2026-09-16',
         rescheduleTime: '08:00',
       },
     ),

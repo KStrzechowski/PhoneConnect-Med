@@ -80,17 +80,33 @@ test('builds a RecognizeText request carrying the contact id as the session id',
   });
 });
 
+async function collect(frames: AsyncGenerator<Uint8Array>): Promise<Buffer[]> {
+  const collected: Buffer[] = [];
+  for await (const frame of frames) collected.push(Buffer.from(frame));
+  return collected;
+}
+
 test('captureAudioFrames extracts only the audio track\'s SimpleBlock payloads, ignoring video', async () => {
-  const frames = await captureAudioFrames(Readable.from([syntheticFragment()]), 5000);
+  const frames = await collect(captureAudioFrames(Readable.from([syntheticFragment()]), 5000));
 
   assert.deepEqual(
-    frames.map((frame) => Buffer.from(frame).toString()),
+    frames.map((frame) => frame.toString()),
     ['audioframe1', 'audioframe2'],
   );
 });
 
 test('captureAudioFrames stops without reading past an exhausted deadline', async () => {
-  const frames = await captureAudioFrames(Readable.from([syntheticFragment()]), -1);
+  const frames = await collect(captureAudioFrames(Readable.from([syntheticFragment()]), -1));
 
   assert.deepEqual(frames, []);
+});
+
+test('captureAudioFrames yields the first frame before the source stream ends', async () => {
+  const frames = captureAudioFrames(Readable.from([syntheticFragment()]), 5000);
+  const first = await frames.next();
+
+  assert.equal(first.done, false);
+  assert.equal(Buffer.from(first.value as Uint8Array).toString(), 'audioframe1');
+
+  await frames.return(undefined);
 });

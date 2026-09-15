@@ -13,6 +13,9 @@ beforeAll(() => {
   });
   const stack = new SpikeStack(app, 'TestStack', {
     env: { account: '123456789012', region: 'eu-central-1' },
+    targetBotId: 'TARGETBOT01',
+    targetBotAliasId: 'TARGETALIAS01',
+    targetBotAliasArn: 'arn:aws:lex:eu-central-1:123456789012:bot-alias/TARGETBOT01/TARGETALIAS01',
   });
   template = Template.fromStack(stack);
 });
@@ -91,5 +94,11 @@ test('the bot association custom resource may associate and disassociate the bot
 });
 
 test('synth fails without the telephony instance ARN', () => {
-  expect(() => new SpikeStack(new cdk.App(), 'NoContext')).toThrow(/connectInstanceArn/);
+  expect(() =>
+    new SpikeStack(new cdk.App(), 'NoContext', {
+      targetBotId: 'TARGETBOT01',
+      targetBotAliasId: 'TARGETALIAS01',
+      targetBotAliasArn: 'arn:aws:lex:eu-central-1:123456789012:bot-alias/TARGETBOT01/TARGETALIAS01',
+    }),
+  ).toThrow(/connectInstanceArn/);
 });

@@ -277,16 +277,6 @@ const bookingUtterances = [
   'termin do {specialty} na {preferredDate} o {preferredTime}',
   'chcę się umówić do {specialty} na {preferredDate} przed {preferredTimeBefore}',
   'termin do {specialty} na {preferredDate} przed godziną {preferredTimeBefore}',
-
-  // numbered choice by spoken time instead of by number
-  '{selectedTime}',
-  'godzina {selectedTime}',
-  'wybieram {selectedTime}',
-  'poproszę {selectedTime}',
-  'poproszę o {selectedTime}',
-  'chcę {selectedTime}',
-  'o {selectedTime}',
-  'ta o {selectedTime}',
 ];
 
 const listAppointmentsUtterances = [
@@ -323,6 +313,7 @@ const cancelUtterances = [
 ];
 
 const rescheduleUtterances = [
+  // no slots yet
   'chcę przełożyć wizytę',
   'chciałbym przełożyć wizytę',
   'chciałabym przełożyć wizytę',
@@ -336,6 +327,29 @@ const rescheduleUtterances = [
   'czy można przełożyć',
   'czy mogę przełożyć wizytę na inny dzień',
   'muszę zmienić termin wizyty',
+
+  // date only (exact day) — bare "na/w/do {preferredDate}" live only in bookingUtterances:
+  // Lex requires sample utterances to be unique across all intents in a locale, so the two
+  // intents can't both declare the same bare template.
+  'chcę przełożyć wizytę na {preferredDate}',
+  'chciałbym przełożyć wizytę na {preferredDate}',
+  'chciałabym przełożyć wizytę na {preferredDate}',
+
+  // date only (starting from / after) — bare "od/po {preferredDateAfter}" live only in bookingUtterances.
+  'chcę przełożyć wizytę po {preferredDateAfter}',
+
+  // time only (at/after) — bare variants live only in bookingUtterances.
+
+  // time only (before) — bare variants live only in bookingUtterances.
+
+  // time of day — bare "{preferredTimeOfDay}" lives only in bookingUtterances.
+  'chcę przełożyć wizytę {preferredTimeOfDay}',
+  'chciałbym przełożyć wizytę {preferredTimeOfDay}',
+  'chciałabym przełożyć wizytę {preferredTimeOfDay}',
+
+  // date + time — bare "na {preferredDate} ..." combos live only in bookingUtterances.
+  'chcę przełożyć wizytę na {preferredDate} na {preferredTime}',
+  'chcę przełożyć wizytę na {preferredDate} {preferredTimeOfDay}',
 ];
 
 const agentTransferUtterances = [
@@ -500,13 +514,6 @@ const bookingUtterancesEn = [
   'I would like to book with a {specialty} on {preferredDate} at {preferredTime}',
   'book me with a {specialty} for {preferredDate} at {preferredTime}',
   'I want to book with a {specialty} on {preferredDate} before {preferredTimeBefore}',
-
-  // numbered choice by spoken time instead of by number
-  '{selectedTime}',
-  'I will take {selectedTime}',
-  "I'll take {selectedTime}",
-  'the one at {selectedTime}',
-  'at {selectedTime}',
 ];
 
 const listAppointmentsUtterancesEn = [
@@ -538,6 +545,7 @@ const cancelUtterancesEn = [
 ];
 
 const rescheduleUtterancesEn = [
+  // no slots yet
   'I want to reschedule my appointment',
   'I would like to reschedule my appointment',
   'I want to move my appointment',
@@ -550,6 +558,27 @@ const rescheduleUtterancesEn = [
   'can I reschedule',
   'can I reschedule my appointment for another day',
   'I need to change my appointment',
+
+  // date only (exact day) — bare "on/until {preferredDate}" live only in bookingUtterancesEn:
+  // Lex requires sample utterances to be unique across all intents in a locale.
+  'reschedule my appointment for {preferredDate}',
+  'move my appointment to {preferredDate}',
+
+  // date only (starting from / after) — bare "from/after {preferredDateAfter}" live only in bookingUtterancesEn.
+  'reschedule my appointment for after {preferredDateAfter}',
+
+  // time only (at/after) — bare variants live only in bookingUtterancesEn.
+
+  // time only (before) — bare variant lives only in bookingUtterancesEn.
+
+  // time of day — bare "{preferredTimeOfDay}" lives only in bookingUtterancesEn.
+  'reschedule my appointment {preferredTimeOfDay}',
+
+  // date + time
+  'on {preferredDate} at {preferredTime}',
+  'on {preferredDate} before {preferredTimeBefore}',
+  'reschedule my appointment for {preferredDate} at {preferredTime}',
+  'reschedule my appointment for {preferredDate} {preferredTimeOfDay}',
 ];
 
 const agentTransferUtterancesEn = [
@@ -570,6 +599,9 @@ const agentTransferUtterancesEn = [
 ];
 
 export class InfraStack extends cdk.Stack {
+  public readonly speechBot: lex.CfnBot;
+  public readonly speechBotAlias: lex.CfnBotAlias;
+
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -1185,8 +1217,6 @@ volumes:
                 { slotName: 'preferredTime', priority: 4 },
                 { slotName: 'preferredTimeBefore', priority: 5 },
                 { slotName: 'preferredTimeOfDay', priority: 6 },
-                { slotName: 'selectedSlot', priority: 7 },
-                { slotName: 'selectedTime', priority: 8 },
               ],
               slots: [
                 {
@@ -1214,7 +1244,7 @@ volumes:
                     promptSpecification: {
                       maxRetries: 2,
                       allowInterrupt: false,
-                      messageGroupsList: [say('Jaki dzień Państwu odpowiada?')],
+                      messageGroupsList: [say('Jaki dzień, i o której godzinie, Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
@@ -1306,43 +1336,6 @@ volumes:
                     },
                   },
                 },
-                {
-                  name: 'selectedSlot',
-                  slotTypeName: 'AMAZON.Number',
-                  valueElicitationSetting: {
-                    slotConstraint: 'Required',
-                    promptSpecification: {
-                      maxRetries: 2,
-                      allowInterrupt: false,
-                      messageGroupsList: [say('Który numer Państwo wybierają?')],
-                      promptAttemptsSpecification: {
-                        Initial: voiceAttempt(),
-                        Retry1: voiceAttempt(),
-                        Retry2: voiceAttempt(),
-                      },
-                    },
-                  },
-                },
-                {
-                  name: 'selectedTime',
-                  slotTypeName: 'AMAZON.Time',
-                  valueElicitationSetting: {
-                    slotConstraint: 'Optional',
-                    promptSpecification: {
-                      maxRetries: 2,
-                      allowInterrupt: false,
-                      messageGroupsList: [say('Który numer, albo o której godzinie, Państwo wybierają?')],
-                      promptAttemptsSpecification: {
-                        Initial: voiceAttempt(),
-                        Retry1: voiceAttempt(),
-                        Retry2: voiceAttempt(),
-                      },
-                    },
-                    slotCaptureSetting: {
-                      elicitationCodeHook: { enableCodeHookInvocation: true },
-                    },
-                  },
-                },
               ],
               intentConfirmationSetting: {
                 promptSpecification: {
@@ -1367,8 +1360,6 @@ volumes:
                       { slotName: 'preferredTime', slotValueOverride: {} },
                       { slotName: 'preferredTimeBefore', slotValueOverride: {} },
                       { slotName: 'preferredTimeOfDay', slotValueOverride: {} },
-                      { slotName: 'selectedSlot', slotValueOverride: {} },
-                      { slotName: 'selectedTime', slotValueOverride: {} },
                     ],
                   },
                 },
@@ -1427,31 +1418,14 @@ volumes:
               dialogCodeHook: { enabled: true },
               fulfillmentCodeHook: { enabled: true },
               slotPriorities: [
-                { slotName: 'timeOfDay', priority: 1 },
-                { slotName: 'selectedSlot', priority: 2 },
+                { slotName: 'selectedSlot', priority: 1 },
+                { slotName: 'preferredDate', priority: 2 },
+                { slotName: 'preferredDateAfter', priority: 3 },
+                { slotName: 'preferredTime', priority: 4 },
+                { slotName: 'preferredTimeBefore', priority: 5 },
+                { slotName: 'preferredTimeOfDay', priority: 6 },
               ],
               slots: [
-                {
-                  name: 'timeOfDay',
-                  slotTypeName: 'TimeOfDay',
-                  valueElicitationSetting: {
-                    slotConstraint: 'Required',
-                    promptSpecification: {
-                      maxRetries: 2,
-                      allowInterrupt: false,
-                      messageGroupsList: [
-                        say(
-                          'Jaka pora dnia Państwu odpowiada: rano, przed południem, po południu, czy wieczorem?',
-                        ),
-                      ],
-                      promptAttemptsSpecification: {
-                        Initial: voiceAttempt(),
-                        Retry1: voiceAttempt(),
-                        Retry2: voiceAttempt(),
-                      },
-                    },
-                  },
-                },
                 {
                   name: 'selectedSlot',
                   slotTypeName: 'AMAZON.Number',
@@ -1466,6 +1440,106 @@ volumes:
                         Retry1: voiceAttempt(),
                         Retry2: voiceAttempt(),
                       },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredDate',
+                  slotTypeName: 'AMAZON.Date',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Jaki dzień, i o której godzinie, Państwu odpowiada?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredDateAfter',
+                  slotTypeName: 'AMAZON.Date',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Od jakiego dnia mamy szukać terminu?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTime',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('O której godzinie Państwu odpowiada?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTimeBefore',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Do której godziny Państwu odpowiada?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTimeOfDay',
+                  slotTypeName: 'TimeOfDay',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('Jaka pora dnia Państwu odpowiada?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
                     },
                   },
                 },
@@ -1487,7 +1561,14 @@ volumes:
                 declinationNextStep: {
                   dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
                   intent: {
-                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                    slots: [
+                      { slotName: 'selectedSlot', slotValueOverride: {} },
+                      { slotName: 'preferredDate', slotValueOverride: {} },
+                      { slotName: 'preferredDateAfter', slotValueOverride: {} },
+                      { slotName: 'preferredTime', slotValueOverride: {} },
+                      { slotName: 'preferredTimeBefore', slotValueOverride: {} },
+                      { slotName: 'preferredTimeOfDay', slotValueOverride: {} },
+                    ],
                   },
                 },
               },
@@ -1695,8 +1776,6 @@ volumes:
                 { slotName: 'preferredTime', priority: 4 },
                 { slotName: 'preferredTimeBefore', priority: 5 },
                 { slotName: 'preferredTimeOfDay', priority: 6 },
-                { slotName: 'selectedSlot', priority: 7 },
-                { slotName: 'selectedTime', priority: 8 },
               ],
               slots: [
                 {
@@ -1724,7 +1803,7 @@ volumes:
                     promptSpecification: {
                       maxRetries: 2,
                       allowInterrupt: false,
-                      messageGroupsList: [say('What day would work for you?')],
+                      messageGroupsList: [say('What day, and what time, would work for you?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
@@ -1816,43 +1895,6 @@ volumes:
                     },
                   },
                 },
-                {
-                  name: 'selectedSlot',
-                  slotTypeName: 'AMAZON.Number',
-                  valueElicitationSetting: {
-                    slotConstraint: 'Required',
-                    promptSpecification: {
-                      maxRetries: 2,
-                      allowInterrupt: false,
-                      messageGroupsList: [say('Which number would you like to choose?')],
-                      promptAttemptsSpecification: {
-                        Initial: voiceAttempt(),
-                        Retry1: voiceAttempt(),
-                        Retry2: voiceAttempt(),
-                      },
-                    },
-                  },
-                },
-                {
-                  name: 'selectedTime',
-                  slotTypeName: 'AMAZON.Time',
-                  valueElicitationSetting: {
-                    slotConstraint: 'Optional',
-                    promptSpecification: {
-                      maxRetries: 2,
-                      allowInterrupt: false,
-                      messageGroupsList: [say('Which number, or what time, would you like to choose?')],
-                      promptAttemptsSpecification: {
-                        Initial: voiceAttempt(),
-                        Retry1: voiceAttempt(),
-                        Retry2: voiceAttempt(),
-                      },
-                    },
-                    slotCaptureSetting: {
-                      elicitationCodeHook: { enableCodeHookInvocation: true },
-                    },
-                  },
-                },
               ],
               intentConfirmationSetting: {
                 promptSpecification: {
@@ -1877,8 +1919,6 @@ volumes:
                       { slotName: 'preferredTime', slotValueOverride: {} },
                       { slotName: 'preferredTimeBefore', slotValueOverride: {} },
                       { slotName: 'preferredTimeOfDay', slotValueOverride: {} },
-                      { slotName: 'selectedSlot', slotValueOverride: {} },
-                      { slotName: 'selectedTime', slotValueOverride: {} },
                     ],
                   },
                 },
@@ -1937,31 +1977,14 @@ volumes:
               dialogCodeHook: { enabled: true },
               fulfillmentCodeHook: { enabled: true },
               slotPriorities: [
-                { slotName: 'timeOfDay', priority: 1 },
-                { slotName: 'selectedSlot', priority: 2 },
+                { slotName: 'selectedSlot', priority: 1 },
+                { slotName: 'preferredDate', priority: 2 },
+                { slotName: 'preferredDateAfter', priority: 3 },
+                { slotName: 'preferredTime', priority: 4 },
+                { slotName: 'preferredTimeBefore', priority: 5 },
+                { slotName: 'preferredTimeOfDay', priority: 6 },
               ],
               slots: [
-                {
-                  name: 'timeOfDay',
-                  slotTypeName: 'TimeOfDay',
-                  valueElicitationSetting: {
-                    slotConstraint: 'Required',
-                    promptSpecification: {
-                      maxRetries: 2,
-                      allowInterrupt: false,
-                      messageGroupsList: [
-                        say(
-                          'What time of day works for you: morning, late morning, afternoon, or evening?',
-                        ),
-                      ],
-                      promptAttemptsSpecification: {
-                        Initial: voiceAttempt(),
-                        Retry1: voiceAttempt(),
-                        Retry2: voiceAttempt(),
-                      },
-                    },
-                  },
-                },
                 {
                   name: 'selectedSlot',
                   slotTypeName: 'AMAZON.Number',
@@ -1976,6 +1999,106 @@ volumes:
                         Retry1: voiceAttempt(),
                         Retry2: voiceAttempt(),
                       },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredDate',
+                  slotTypeName: 'AMAZON.Date',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Required',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('What day, and what time, would work for you?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredDateAfter',
+                  slotTypeName: 'AMAZON.Date',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('What day should we start searching from?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTime',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('What time would work for you?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTimeBefore',
+                  slotTypeName: 'AMAZON.Time',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('What time should it be before?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
+                    },
+                  },
+                },
+                {
+                  name: 'preferredTimeOfDay',
+                  slotTypeName: 'TimeOfDay',
+                  valueElicitationSetting: {
+                    slotConstraint: 'Optional',
+                    promptSpecification: {
+                      maxRetries: 2,
+                      allowInterrupt: false,
+                      messageGroupsList: [say('What time of day would work for you?')],
+                      promptAttemptsSpecification: {
+                        Initial: voiceAttempt(),
+                        Retry1: voiceAttempt(),
+                        Retry2: voiceAttempt(),
+                      },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
                     },
                   },
                 },
@@ -1997,7 +2120,14 @@ volumes:
                 declinationNextStep: {
                   dialogAction: { type: 'ElicitSlot', slotToElicit: 'selectedSlot' },
                   intent: {
-                    slots: [{ slotName: 'selectedSlot', slotValueOverride: {} }],
+                    slots: [
+                      { slotName: 'selectedSlot', slotValueOverride: {} },
+                      { slotName: 'preferredDate', slotValueOverride: {} },
+                      { slotName: 'preferredDateAfter', slotValueOverride: {} },
+                      { slotName: 'preferredTime', slotValueOverride: {} },
+                      { slotName: 'preferredTimeBefore', slotValueOverride: {} },
+                      { slotName: 'preferredTimeOfDay', slotValueOverride: {} },
+                    ],
                   },
                 },
               },
@@ -2011,7 +2141,7 @@ volumes:
         },
     ];
 
-    const speechBot = new lex.CfnBot(this, 'SpeechBot', {
+    this.speechBot = new lex.CfnBot(this, 'SpeechBot', {
       name: 'PhoneConnect-Med-FacilityInfoSpeech',
       roleArn: speechBotRole.roleArn,
       dataPrivacy: { ChildDirected: false },
@@ -2031,15 +2161,15 @@ volumes:
       .slice(0, 10);
 
     const speechBotVersion = new lex.CfnBotVersion(this, `SpeechBotVersion${speechBotLocalesHash}`, {
-      botId: speechBot.attrId,
+      botId: this.speechBot.attrId,
       botVersionLocaleSpecification: [
         { localeId: speechLocale, botVersionLocaleDetails: { sourceBotVersion: 'DRAFT' } },
         { localeId: speechLocaleEn, botVersionLocaleDetails: { sourceBotVersion: 'DRAFT' } },
       ],
     });
 
-    const speechBotAlias = new lex.CfnBotAlias(this, 'SpeechBotAlias', {
-      botId: speechBot.attrId,
+    this.speechBotAlias = new lex.CfnBotAlias(this, 'SpeechBotAlias', {
+      botId: this.speechBot.attrId,
       botVersion: speechBotVersion.attrBotVersion,
       botAliasName: 'live',
       botAliasLocaleSettings: [
@@ -2085,7 +2215,7 @@ volumes:
 
     facilityInfoSpeech.addPermission('LexInvoke', {
       principal: new iam.ServicePrincipal('lexv2.amazonaws.com'),
-      sourceArn: speechBotAlias.attrArn,
+      sourceArn: this.speechBotAlias.attrArn,
     });
 
     const speechBotConnectInstanceId = cdk.Arn.split(
@@ -2095,7 +2225,7 @@ volumes:
 
     const speechBotAssociation = {
       InstanceId: speechBotConnectInstanceId,
-      LexV2Bot: { AliasArn: speechBotAlias.attrArn },
+      LexV2Bot: { AliasArn: this.speechBotAlias.attrArn },
     };
 
     new cr.AwsCustomResource(this, 'SpeechBotConnectAssociation', {
@@ -2122,7 +2252,7 @@ volumes:
             'lex:UpdateResourcePolicy',
             'lex:DeleteResourcePolicy',
           ],
-          resources: [speechBotAlias.attrArn],
+          resources: [this.speechBotAlias.attrArn],
         }),
       ]),
       installLatestAwsSdk: false,
@@ -2200,7 +2330,7 @@ volumes:
     new cdk.CfnOutput(this, 'AppointmentRescheduleFunctionName', { value: appointmentReschedule.functionName });
     new cdk.CfnOutput(this, 'AgentAppointmentFunctionName', { value: agentAppointment.functionName });
     new cdk.CfnOutput(this, 'FacilityInfoSpeechFunctionName', { value: facilityInfoSpeech.functionName });
-    new cdk.CfnOutput(this, 'SpeechBotAliasArn', { value: speechBotAlias.attrArn });
+    new cdk.CfnOutput(this, 'SpeechBotAliasArn', { value: this.speechBotAlias.attrArn });
     new cdk.CfnOutput(this, 'DeployRoleArn', { value: deployRole.roleArn });
     new cdk.CfnOutput(this, 'MeasurementLogGroup', { value: measurements.logGroupName });
   }
