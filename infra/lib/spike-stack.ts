@@ -1,12 +1,8 @@
-import * as path from 'node:path';
 import * as cdk from 'aws-cdk-lib/core';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as lex from 'aws-cdk-lib/aws-lex';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as connect from 'aws-cdk-lib/aws-connect';
 import * as cr from 'aws-cdk-lib/custom-resources';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
 const polishUtterances = [
@@ -56,14 +52,8 @@ function fallbackIntent(closingMessage: string): lex.CfnBot.IntentProperty {
   };
 }
 
-export interface SpikeStackProps extends cdk.StackProps {
-  targetBotId: string;
-  targetBotAliasId: string;
-  targetBotAliasArn: string;
-}
-
 export class SpikeStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: SpikeStackProps) {
+  constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
     const connectInstanceArn: string | undefined = this.node.tryGetContext('connectInstanceArn');
@@ -183,44 +173,7 @@ export class SpikeStack extends cdk.Stack {
       installLatestAwsSdk: false,
     });
 
-    const repoRoot = path.join(__dirname, '../..');
-    const languageDetectSpike = new NodejsFunction(this, 'LanguageDetectSpike', {
-      functionName: 'phoneconnect-med-language-detect-spike',
-      entry: path.join(repoRoot, 'lambdas/language-detect-spike/index.ts'),
-      projectRoot: repoRoot,
-      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
-      runtime: lambda.Runtime.NODEJS_24_X,
-      timeout: cdk.Duration.seconds(55),
-      environment: { BOT_ID: props.targetBotId, BOT_ALIAS_ID: props.targetBotAliasId },
-    });
-    languageDetectSpike.configureAsyncInvoke({ retryAttempts: 0 });
-
-    languageDetectSpike.role?.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: ['kinesisvideo:GetDataEndpoint', 'kinesisvideo:GetMedia'],
-        resources: ['*'],
-      }),
-    );
-    languageDetectSpike.role?.addToPrincipalPolicy(
-      new iam.PolicyStatement({ actions: ['transcribe:StartStreamTranscription'], resources: ['*'] }),
-    );
-    languageDetectSpike.role?.addToPrincipalPolicy(
-      new iam.PolicyStatement({ actions: ['lex:RecognizeText'], resources: [props.targetBotAliasArn] }),
-    );
-
-    languageDetectSpike.addPermission('ConnectInvoke', {
-      principal: new iam.ServicePrincipal('connect.amazonaws.com'),
-      sourceArn: connectInstanceArn,
-    });
-
-    new connect.CfnIntegrationAssociation(this, 'LanguageDetectSpikeFunctionAssociation', {
-      instanceId: connectInstanceArn,
-      integrationType: 'LAMBDA_FUNCTION',
-      integrationArn: languageDetectSpike.functionArn,
-    });
-
     new cdk.CfnOutput(this, 'SpikeBotAliasArn', { value: botAlias.attrArn });
     new cdk.CfnOutput(this, 'SpikeConversationLogGroup', { value: conversations.logGroupName });
-    new cdk.CfnOutput(this, 'LanguageDetectSpikeFunctionName', { value: languageDetectSpike.functionName });
   }
 }

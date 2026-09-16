@@ -77,11 +77,11 @@ test('the telephony instance may invoke the function', () => {
   });
 });
 
-test('all ten keypad-invoked functions may be invoked by the telephony instance', () => {
+test('all eleven directly-invoked functions may be invoked by the telephony instance', () => {
   const permissions = template.findResources('AWS::Lambda::Permission', {
     Properties: { Principal: 'connect.amazonaws.com' },
   });
-  expect(Object.keys(permissions)).toHaveLength(10);
+  expect(Object.keys(permissions)).toHaveLength(11);
 });
 
 test('SendOtp and OtpVerify are not attached to the VPC', () => {
@@ -141,6 +141,36 @@ test('SendOtp and FacilityInfoSpeech may both publish to SNS', () => {
     },
   });
   expect(Object.keys(policies)).toHaveLength(2);
+});
+
+test('the language-detect Lambda is async-compatible: a timeout well under the KVS/Transcribe budget but above the synchronous 8s cap', () => {
+  const functions = template.findResources('AWS::Lambda::Function');
+  const languageDetectFn = Object.values(functions).find(
+    (fn) => fn.Properties.FunctionName === 'phoneconnect-med-language-detect',
+  );
+  expect(languageDetectFn).toBeDefined();
+  expect(languageDetectFn?.Properties.Timeout).toBeGreaterThan(8);
+  expect(languageDetectFn?.Properties.Timeout).toBeLessThanOrEqual(60);
+});
+
+test('the language-detect Lambda carries the real speech bot id and alias id as environment variables', () => {
+  const functions = template.findResources('AWS::Lambda::Function');
+  const languageDetectFn = Object.values(functions).find(
+    (fn) => fn.Properties.FunctionName === 'phoneconnect-med-language-detect',
+  );
+  const variables = languageDetectFn?.Properties.Environment?.Variables as Record<string, unknown> | undefined;
+  expect(variables?.BOT_ID).toBeDefined();
+  expect(variables?.BOT_ALIAS_ID).toBeDefined();
+});
+
+test('the telephony instance may invoke the language-detect Lambda', () => {
+  const permissions = template.findResources('AWS::Lambda::Permission', {
+    Properties: {
+      Principal: 'connect.amazonaws.com',
+      SourceArn: 'arn:aws:connect:eu-central-1:123456789012:instance/11111111-2222-3333-4444-555555555555',
+    },
+  });
+  expect(Object.keys(permissions).length).toBeGreaterThan(0);
 });
 
 test('the speech bot has all 6 global-layer intents plus AuthIntent, OtpIntent and BookingIntent under pl_PL', () => {
@@ -253,12 +283,12 @@ test('the bot association custom resource may associate and disassociate the bot
   });
 });
 
-test('all ten keypad-invoked functions are associated with the telephony instance', () => {
+test('all eleven directly-invoked functions are associated with the telephony instance', () => {
   const associations = template.findResources('AWS::Connect::IntegrationAssociation');
   const targets = Object.values(associations).map(
     (assoc) => (assoc.Properties.IntegrationArn as { 'Fn::GetAtt': [string, string] })['Fn::GetAtt'][0],
   );
-  expect(targets).toHaveLength(10);
+  expect(targets).toHaveLength(11);
   expect(targets.some((t) => t.startsWith('ConnectHealth'))).toBe(true);
   expect(targets.some((t) => t.startsWith('FacilityInfo'))).toBe(true);
   expect(targets.some((t) => t.startsWith('Authenticate'))).toBe(true);
@@ -269,6 +299,7 @@ test('all ten keypad-invoked functions are associated with the telephony instanc
   expect(targets.some((t) => t.startsWith('AppointmentCancel'))).toBe(true);
   expect(targets.some((t) => t.startsWith('AppointmentReschedule'))).toBe(true);
   expect(targets.some((t) => t.startsWith('AgentAppointment'))).toBe(true);
+  expect(targets.some((t) => t.startsWith('LanguageDetect'))).toBe(true);
 });
 
 test('the instance user data still installs docker', () => {

@@ -16,7 +16,7 @@ test('authenticates and stamps the otp auth path on a correct real code', async 
   });
   mock.restoreAll();
 
-  assert.deepEqual(result, { authenticated: 'true', patientId: '1' });
+  assert.deepEqual(result, { authenticated: 'true' });
   assert.equal(records()[0].authPath, 'otp');
 });
 
@@ -27,7 +27,7 @@ test('authenticates and stamps the demo auth path on a correct demo code', async
   });
   mock.restoreAll();
 
-  assert.deepEqual(result, { authenticated: 'true', patientId: '2' });
+  assert.deepEqual(result, { authenticated: 'true' });
   assert.equal(records()[0].authPath, 'demo');
 });
 

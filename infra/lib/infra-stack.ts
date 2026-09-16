@@ -40,7 +40,7 @@ function slotValue(value: string, synonyms: string[]): lex.CfnBot.SlotTypeValueP
 function keypadOnlyAttempt(maxLength: number): lex.CfnBot.PromptAttemptSpecificationProperty {
   return {
     allowedInputTypes: { allowAudioInput: false, allowDtmfInput: true },
-    allowInterrupt: false,
+    allowInterrupt: true,
     audioAndDtmfInputSpecification: {
       startTimeoutMs: 10000,
       dtmfSpecification: {
@@ -56,7 +56,7 @@ function keypadOnlyAttempt(maxLength: number): lex.CfnBot.PromptAttemptSpecifica
 function voiceAttempt(): lex.CfnBot.PromptAttemptSpecificationProperty {
   return {
     allowedInputTypes: { allowAudioInput: true, allowDtmfInput: false },
-    allowInterrupt: false,
+    allowInterrupt: true,
     audioAndDtmfInputSpecification: {
       startTimeoutMs: 8000,
       audioSpecification: {
@@ -1104,7 +1104,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [
                         say('Wprowadź numer PESEL na klawiaturze telefonu, a następnie naciśnij krzyżyk.'),
                       ],
@@ -1126,7 +1126,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [
                         say('Wprowadź swój numer telefonu na klawiaturze, a następnie naciśnij krzyżyk.'),
                       ],
@@ -1145,7 +1145,7 @@ volumes:
               intentConfirmationSetting: {
                 promptSpecification: {
                   maxRetries: 2,
-                  allowInterrupt: false,
+                  allowInterrupt: true,
                   messageGroupsList: [
                     saySSML(
                       'Podano numer PESEL <say-as interpret-as="digits">{pesel}</say-as> oraz numer telefonu ' +
@@ -1185,7 +1185,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [
                         say(
                           'Wprowadź otrzymany kod na klawiaturze telefonu, a następnie naciśnij krzyżyk. ' +
@@ -1226,13 +1226,16 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Do jakiego specjalisty chcą się Państwo umówić?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
                         Retry2: voiceAttempt(),
                       },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
                     },
                   },
                 },
@@ -1243,7 +1246,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Jaki dzień, i o której godzinie, Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1263,7 +1266,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Od jakiego dnia mamy szukać terminu?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1283,7 +1286,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('O której godzinie Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1303,7 +1306,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Do której godziny Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1323,7 +1326,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Jaka pora dnia Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1340,7 +1343,7 @@ volumes:
               intentConfirmationSetting: {
                 promptSpecification: {
                   maxRetries: 2,
-                  allowInterrupt: false,
+                  allowInterrupt: true,
                   messageGroupsList: [say('Czy się zgadza? Powiedz tak albo nie.')],
                   promptAttemptsSpecification: {
                     Initial: voiceAttempt(),
@@ -1379,7 +1382,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Który numer Państwo wybierają?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1393,7 +1396,7 @@ volumes:
               intentConfirmationSetting: {
                 promptSpecification: {
                   maxRetries: 2,
-                  allowInterrupt: false,
+                  allowInterrupt: true,
                   messageGroupsList: [say('Czy się zgadza? Powiedz tak albo nie.')],
                   promptAttemptsSpecification: {
                     Initial: voiceAttempt(),
@@ -1433,7 +1436,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Który numer Państwo wybierają?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1450,7 +1453,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Jaki dzień, i o której godzinie, Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1470,7 +1473,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Od jakiego dnia mamy szukać terminu?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1490,7 +1493,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('O której godzinie Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1510,7 +1513,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Do której godziny Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1530,7 +1533,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Jaka pora dnia Państwu odpowiada?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1547,7 +1550,7 @@ volumes:
               intentConfirmationSetting: {
                 promptSpecification: {
                   maxRetries: 2,
-                  allowInterrupt: false,
+                  allowInterrupt: true,
                   messageGroupsList: [say('Czy się zgadza? Powiedz tak albo nie.')],
                   promptAttemptsSpecification: {
                     Initial: voiceAttempt(),
@@ -1663,7 +1666,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [
                         say('Enter your PESEL number on the keypad, then press the pound key.'),
                       ],
@@ -1685,7 +1688,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [
                         say('Enter your phone number on the keypad, then press the pound key.'),
                       ],
@@ -1704,7 +1707,7 @@ volumes:
               intentConfirmationSetting: {
                 promptSpecification: {
                   maxRetries: 2,
-                  allowInterrupt: false,
+                  allowInterrupt: true,
                   messageGroupsList: [
                     saySSML(
                       'You entered PESEL number <say-as interpret-as="digits">{pesel}</say-as> and phone number ' +
@@ -1744,7 +1747,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [
                         say(
                           'Enter the code you received on the keypad, then press the pound key. ' +
@@ -1785,13 +1788,16 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Which specialist would you like to see?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
                         Retry1: voiceAttempt(),
                         Retry2: voiceAttempt(),
                       },
+                    },
+                    slotCaptureSetting: {
+                      elicitationCodeHook: { enableCodeHookInvocation: true },
                     },
                   },
                 },
@@ -1802,7 +1808,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What day, and what time, would work for you?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1822,7 +1828,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What day should we start searching from?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1842,7 +1848,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What time would work for you?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1862,7 +1868,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What time should it be before?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1882,7 +1888,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What time of day would work for you?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1899,7 +1905,7 @@ volumes:
               intentConfirmationSetting: {
                 promptSpecification: {
                   maxRetries: 2,
-                  allowInterrupt: false,
+                  allowInterrupt: true,
                   messageGroupsList: [say('Is that correct? Please say yes or no.')],
                   promptAttemptsSpecification: {
                     Initial: voiceAttempt(),
@@ -1938,7 +1944,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Which number would you like to choose?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -1952,7 +1958,7 @@ volumes:
               intentConfirmationSetting: {
                 promptSpecification: {
                   maxRetries: 2,
-                  allowInterrupt: false,
+                  allowInterrupt: true,
                   messageGroupsList: [say('Is that correct? Please say yes or no.')],
                   promptAttemptsSpecification: {
                     Initial: voiceAttempt(),
@@ -1992,7 +1998,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('Which number would you like to choose?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -2009,7 +2015,7 @@ volumes:
                     slotConstraint: 'Required',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What day, and what time, would work for you?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -2029,7 +2035,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What day should we start searching from?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -2049,7 +2055,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What time would work for you?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -2069,7 +2075,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What time should it be before?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -2089,7 +2095,7 @@ volumes:
                     slotConstraint: 'Optional',
                     promptSpecification: {
                       maxRetries: 2,
-                      allowInterrupt: false,
+                      allowInterrupt: true,
                       messageGroupsList: [say('What time of day would work for you?')],
                       promptAttemptsSpecification: {
                         Initial: voiceAttempt(),
@@ -2106,7 +2112,7 @@ volumes:
               intentConfirmationSetting: {
                 promptSpecification: {
                   maxRetries: 2,
-                  allowInterrupt: false,
+                  allowInterrupt: true,
                   messageGroupsList: [say('Is that correct? Please say yes or no.')],
                   promptAttemptsSpecification: {
                     Initial: voiceAttempt(),
@@ -2257,6 +2263,45 @@ volumes:
       ]),
       installLatestAwsSdk: false,
     });
+
+    const languageDetect = new NodejsFunction(this, 'LanguageDetect', {
+      functionName: 'phoneconnect-med-language-detect',
+      entry: path.join(repoRoot, 'lambdas/language-detect-spike/index.ts'),
+      projectRoot: repoRoot,
+      depsLockFilePath: path.join(repoRoot, 'package-lock.json'),
+      runtime: lambda.Runtime.NODEJS_24_X,
+      timeout: cdk.Duration.seconds(55),
+      environment: { BOT_ID: this.speechBot.attrId, BOT_ALIAS_ID: this.speechBotAlias.attrBotAliasId },
+      logGroup: measurements,
+      loggingFormat: lambda.LoggingFormat.JSON,
+    });
+    languageDetect.configureAsyncInvoke({ retryAttempts: 0 });
+
+    languageDetect.role?.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['kinesisvideo:GetDataEndpoint', 'kinesisvideo:GetMedia'],
+        resources: ['*'],
+      }),
+    );
+    languageDetect.role?.addToPrincipalPolicy(
+      new iam.PolicyStatement({ actions: ['transcribe:StartStreamTranscription'], resources: ['*'] }),
+    );
+    languageDetect.role?.addToPrincipalPolicy(
+      new iam.PolicyStatement({ actions: ['lex:RecognizeText'], resources: [this.speechBotAlias.attrArn] }),
+    );
+
+    languageDetect.addPermission('ConnectInvoke', {
+      principal: new iam.ServicePrincipal('connect.amazonaws.com'),
+      sourceArn: connectInstanceArn,
+    });
+
+    new connect.CfnIntegrationAssociation(this, 'LanguageDetectFunctionAssociation', {
+      instanceId: connectInstanceArn,
+      integrationType: 'LAMBDA_FUNCTION',
+      integrationArn: languageDetect.functionArn,
+    });
+
+    new cdk.CfnOutput(this, 'LanguageDetectFunctionName', { value: languageDetect.functionName });
 
     const githubOidcProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
       this,

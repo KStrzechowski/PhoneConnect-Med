@@ -13,6 +13,7 @@ const languageOptions = 'pl-PL,en-US';
 const sampleRateHertz = 8000;
 const audioCaptureMs = 9000;
 const silenceStopMs = 1500;
+const languageConfidenceThreshold = 0.7;
 
 export type LocaleId = 'pl_PL' | 'en_US';
 
@@ -159,7 +160,10 @@ async function detectLanguageAndTranscript(
       const results = event.TranscriptEvent?.Transcript?.Results ?? [];
       for (const result of results) {
         if (result.IsPartial) continue;
-        if (result.LanguageCode) languageCode = result.LanguageCode;
+        if (result.LanguageCode) {
+          const score = result.LanguageIdentification?.find((c) => c.LanguageCode === result.LanguageCode)?.Score ?? 0;
+          if (score >= languageConfidenceThreshold) languageCode = result.LanguageCode;
+        }
         const alternative = result.Alternatives?.[0]?.Transcript;
         if (alternative) {
           transcript = alternative;
@@ -202,9 +206,9 @@ export const handler = async (event: SpikeEvent): Promise<SpikeResult> => {
   const { languageCode, transcript, frameCount } = await detectLanguageAndTranscript(frames, transcribe);
   console.log(`[timing] detectLanguageAndTranscript done at ${elapsed()}: ${frameCount} frames, languageCode=${languageCode} transcript=${JSON.stringify(transcript)}`);
 
-  if (!transcript) {
-    console.log(`[timing] no transcript produced, skipping RecognizeText`);
-    return { languageCode, transcript, lexMessage: '', sessionState: undefined };
+  if (!transcript || !languageCode) {
+    console.log(`[timing] no transcript or no confident language, skipping RecognizeText`);
+    return { languageCode: '', transcript: '', lexMessage: '', sessionState: undefined };
   }
 
   const lex = new LexRuntimeV2Client({});

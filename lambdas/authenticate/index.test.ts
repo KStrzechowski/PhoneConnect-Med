@@ -55,7 +55,7 @@ test('starts an OTP challenge with a fresh code when the pair matches but the ca
   assert.equal(result.authenticated, 'false');
   assert.equal(result.otpRequired, 'true');
   assert.equal(result.isDemo, 'false');
-  assert.equal(result.phone, '+48000000000');
+  assert.equal(result.phone, sampleEvent.Details.Parameters.phone);
   assert.equal(result.patientId, '1');
   assert.match(result.code, /^\d{6}$/);
   assert.equal(result.firstName, 'Jan');
