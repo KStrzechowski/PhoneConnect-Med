@@ -103,7 +103,8 @@ const DAY_ORDINAL_WORDS: { word: string; day: number }[] = [
 // date recovery whatsoever, regardless of how well the month/ordinal parsing below worked.
 // Both grammatical cases are listed for "jutro"/"pojutrze" — same reason as ORDINAL_FORMS above:
 // "od jutra" (genitive, after a preposition) is at least as common as bare "jutro" (nominative).
-// "dziś"/"dzisiaj" are indeclinable adverbs, so they only ever have the one form.
+// "dziś"/"dzisiaj" are indeclinable adverbs, so they only ever have the one form. English has no
+// grammatical case to worry about, so it only needs the one entry per word.
 const RELATIVE_DAY_WORDS: { word: string; offsetDays: number }[] = [
   { word: 'pojutrze', offsetDays: 2 },
   { word: 'pojutrza', offsetDays: 2 },
@@ -111,6 +112,8 @@ const RELATIVE_DAY_WORDS: { word: string; offsetDays: number }[] = [
   { word: 'jutra', offsetDays: 1 },
   { word: 'dzisiaj', offsetDays: 0 },
   { word: 'dziś', offsetDays: 0 },
+  { word: 'tomorrow', offsetDays: 1 },
+  { word: 'today', offsetDays: 0 },
 ];
 
 const WEEKDAY_WORDS: { word: string; day: number }[] = [
@@ -121,6 +124,13 @@ const WEEKDAY_WORDS: { word: string; day: number }[] = [
   { word: 'piątek', day: 5 },
   { word: 'sobotę', day: 6 },
   { word: 'niedzielę', day: 0 },
+  { word: 'monday', day: 1 },
+  { word: 'tuesday', day: 2 },
+  { word: 'wednesday', day: 3 },
+  { word: 'thursday', day: 4 },
+  { word: 'friday', day: 5 },
+  { word: 'saturday', day: 6 },
+  { word: 'sunday', day: 0 },
 ];
 
 const nearestWeekday = (targetDay: number, now: Date): string => {
@@ -165,12 +175,13 @@ const findDateWord = (transcript: string, now: Date): { date: string; index: num
   return { date: new Date(candidate).toISOString().slice(0, 10), index };
 };
 
-const DATE_AFTER_MARKERS = ['od ', 'po '];
+const DATE_AFTER_MARKERS = ['od ', 'po ', 'from ', 'after '];
 
-// "od {date}"/"po {date}" means "starting from", not "exactly on" — the same distinction the
-// preferredDate vs preferredDateAfter slots make. Only a marker directly in front of the matched
-// date counts, so "po południu 24 września" (afternoon, on the 24th) doesn't get misread as
-// "after the 24th" just because the sentence contains "po" somewhere earlier.
+// "od {date}"/"po {date}"/"from {date}"/"after {date}" means "starting from", not "exactly on" —
+// the same distinction the preferredDate vs preferredDateAfter slots make. Only a marker directly
+// in front of the matched date counts, so "po południu 24 września" (afternoon, on the 24th)
+// doesn't get misread as "after the 24th" just because the sentence contains "po" somewhere
+// earlier.
 const fallbackDate = (transcript: string, now: Date = new Date()): { date?: string; dateAfter?: string } => {
   const found = findDateWord(transcript, now);
   if (!found) return {};
@@ -255,6 +266,45 @@ const HOUR_WORDS: { word: string; canonical: string }[] = [
   }),
 ].sort((a, b) => b.word.length - a.word.length);
 
+// English speakers say the hour as a word just as often as a digit — "monday three p.m." was
+// heard verbatim live, not "monday 3 p.m." An explicit am/pm marker right after the word resolves
+// it outright; without one it's exactly as ambiguous as the Polish words above, so it gets the
+// same resolveAmbiguousHour treatment. Word-boundary matching (not a bare substring check) matters
+// here specifically: "one"/"two" are short enough to otherwise match inside unrelated words like
+// "phone" or "someone".
+const ENGLISH_HOUR_WORDS: { hour: number; word: string }[] = [
+  { hour: 1, word: 'one' },
+  { hour: 2, word: 'two' },
+  { hour: 3, word: 'three' },
+  { hour: 4, word: 'four' },
+  { hour: 5, word: 'five' },
+  { hour: 6, word: 'six' },
+  { hour: 7, word: 'seven' },
+  { hour: 8, word: 'eight' },
+  { hour: 9, word: 'nine' },
+  { hour: 10, word: 'ten' },
+  { hour: 11, word: 'eleven' },
+  { hour: 12, word: 'twelve' },
+];
+
+const findEnglishHourWord = (
+  transcript: string,
+): { hour: number; index: number; meridiem?: 'am' | 'pm' } | undefined => {
+  for (const { hour, word } of ENGLISH_HOUR_WORDS) {
+    const match = transcript.match(new RegExp(`\\b${word}\\b`, 'i'));
+    if (!match || match.index === undefined) continue;
+    const after = transcript.slice(match.index, match.index + word.length + 12);
+    const markerMatch = after.match(/\b(a\.?\s?m\.?|p\.?\s?m\.?)\b/i);
+    const meridiem: 'am' | 'pm' | undefined = markerMatch
+      ? markerMatch[1].toLowerCase().startsWith('a')
+        ? 'am'
+        : 'pm'
+      : undefined;
+    return { hour, index: match.index, meridiem };
+  }
+  return undefined;
+};
+
 // Same problem as fallbackTimeOfDay, but for an exact clock time (e.g. "24 września o 17") —
 // Lex only tries to fill preferredDate while eliciting it, so a trailing "o 17" / "at 5pm" is
 // dropped. English ASR tends to normalize spoken hours to digits ("at five" -> "at 5") far more
@@ -282,16 +332,33 @@ const findTimeWord = (transcript: string): { time: string; index: number } | und
       }
     }
   }
+  const englishWord = findEnglishHourWord(transcript);
+  if (englishWord) {
+    let { hour } = englishWord;
+    if (englishWord.meridiem === 'pm' && hour < 12) hour += 12;
+    if (englishWord.meridiem === 'am' && hour === 12) hour = 0;
+    if (englishWord.meridiem) {
+      return { time: `${String(hour).padStart(2, '0')}:00`, index: englishWord.index };
+    }
+    const resolved = resolveAmbiguousHour(hour);
+    if (resolved !== undefined) {
+      return { time: `${String(resolved).padStart(2, '0')}:00`, index: englishWord.index };
+    }
+  }
+
   const wordMatch = HOUR_WORDS.find(({ word }) => transcript.includes(word));
   if (!wordMatch) return undefined;
   return { time: wordMatch.canonical, index: transcript.indexOf(wordMatch.word) };
 };
 
-// "do godziny {time}"/"przed {time}" means "no later than", not "at" — the same distinction the
-// preferredTime vs preferredTimeBefore slots make. A bare "do {time}" is deliberately not a
-// marker here (mirrors the same ambiguity call already made for bookingUtterances in
-// infra-stack.ts): "do dwudziestego" reads as "until the 20th [of the month]", not "before 20:00".
-const TIME_BEFORE_MARKERS = ['przed ', 'do godziny ', 'do godziną '];
+// "do godziny {time}"/"przed {time}"/"before {time}" means "no later than", not "at" — the same
+// distinction the preferredTime vs preferredTimeBefore slots make. A bare "do {time}" is
+// deliberately not a marker here (mirrors the same ambiguity call already made for
+// bookingUtterances in infra-stack.ts): "do dwudziestego" reads as "until the 20th [of the
+// month]", not "before 20:00". English "until" has the same date-shaped ambiguity in this bot's
+// own training utterances (bookingUtterancesEn uses "until {preferredDate}" for an exact day), so
+// it's left out here too — only "before" is unambiguous enough to trust.
+const TIME_BEFORE_MARKERS = ['przed ', 'do godziny ', 'do godziną ', 'before '];
 
 const fallbackTime = (transcript: string): { time?: string; timeBefore?: string } => {
   const found = findTimeWord(transcript);

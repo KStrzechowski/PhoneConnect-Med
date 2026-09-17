@@ -1157,6 +1157,98 @@ test('BookingIntent dialog hook recovers a "starting from" date and a "before" t
   assert.equal(url.includes('maxTime=10%3A00'), true);
 });
 
+test('BookingIntent dialog hook recovers an English weekday and a word-form hour together from one bare reply ("monday three p.m."), the exact phrase seen live', async () => {
+  mockFetchSequence([{ times: ['15:00'] }]);
+  const result = await handler({
+    ...bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'laryngolog', preferredDate: null, preferredTime: null },
+      { authenticated: 'true' },
+    ),
+    bot: { localeId: 'en_US' },
+    inputTranscript: 'monday three p.m.',
+  });
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.bookingDate, isoNearestWeekday(1));
+  assert.equal(result.sessionState.sessionAttributes.bookingTime, '15:00');
+});
+
+test('BookingIntent dialog hook recovers an English relative day word ("tomorrow") from the raw transcript', async () => {
+  mockFetchSequence([{ times: ['09:00'] }]);
+  const result = await handler({
+    ...bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', preferredDate: null },
+      { authenticated: 'true' },
+    ),
+    bot: { localeId: 'en_US' },
+    inputTranscript: 'tomorrow',
+  });
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.bookingDate, isoDateOffset(1));
+});
+
+test('BookingIntent dialog hook resolves an ambiguous English word-form hour with no am/pm marker via clinic hours ("five" -> 17:00)', async () => {
+  mockFetchSequence([{ times: ['17:00'] }]);
+  const result = await handler({
+    ...bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', preferredDate: '2026-09-24', preferredTime: null },
+      { authenticated: 'true' },
+    ),
+    bot: { localeId: 'en_US' },
+    inputTranscript: 'on September 24 at five',
+  });
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.bookingTime, '17:00');
+});
+
+test('BookingIntent dialog hook does not mistake "phone"/"someone" for the hour word "one"', async () => {
+  mockFetchSequence([{ times: ['08:00'] }]);
+  const result = await handler({
+    ...bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', preferredDate: '2026-09-24', preferredTime: null },
+      { authenticated: 'true' },
+    ),
+    bot: { localeId: 'en_US' },
+    inputTranscript: 'on September 24, someone will call my phone',
+  });
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.bookingTime, '08:00');
+});
+
+test('BookingIntent dialog hook reads "from {weekday}" and "before {hour}" in English the same way as "od"/"przed" in Polish', async () => {
+  const fetchSpy = mock.method(
+    globalThis,
+    'fetch',
+    async () => new Response(JSON.stringify({ nearest: { date: '2026-09-26', time: '09:00' } })),
+  );
+  const result = await handler({
+    ...bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', preferredDate: null },
+      { authenticated: 'true' },
+    ),
+    bot: { localeId: 'en_US' },
+    inputTranscript: 'from monday, before ten',
+  });
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.sessionAttributes.bookingDate, '2026-09-26');
+  const url = String(fetchSpy.mock.calls[0].arguments[0]);
+  assert.equal(url.includes(`minDate=${isoNearestWeekday(1)}`), true);
+  assert.equal(url.includes('maxTime=10%3A00'), true);
+});
+
 test('BookingIntent dialog hook translates a time-of-day word into a min/max window when no date is given', async () => {
   const fetchSpy = mock.method(
     globalThis,
