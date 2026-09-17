@@ -1,71 +1,88 @@
 {
   "Version": "2019-10-30",
-  "StartAction": "5fd8b757-3e76-4e8c-bd73-dc15fef37522",
+  "StartAction": "6c6c736f-c51d-435a-8883-453b2eb1422b",
   "Metadata": {
     "entryPointPosition": {
-      "x": -185.6,
-      "y": 259.2
+      "x": -443.2,
+      "y": 238.4
     },
     "ActionMetadata": {
-      "PlayGreeting": {
+      "TransferToAppointmentRescheduleFlow": {
         "position": {
-          "x": 304.8,
-          "y": 156.8
+          "x": 1890.4,
+          "y": 518.4
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "keypad-appointment-reschedule-flow"
+          }
+        },
+        "ContactFlow": {
+          "text": "keypad-appointment-reschedule-flow"
         }
       },
-      "PlayFacilityAnswer": {
+      "6c6c736f-c51d-435a-8883-453b2eb1422b": {
         "position": {
-          "x": 1203.2,
-          "y": -140.8
+          "x": -264.8,
+          "y": 148.8
+        },
+        "parameters": {
+          "DataTableId": {
+            "displayName": "FacilityInfoPrompts"
+          }
         }
       },
-      "SetFacilityAnswer": {
+      "TransferToAppointmentListFlow": {
         "position": {
-          "x": 1000,
-          "y": -280
-        }
-      },
-      "PlayRepeat": {
-        "position": {
-          "x": 588.8,
-          "y": 400
-        }
-      },
-      "5fd8b757-3e76-4e8c-bd73-dc15fef37522": {
-        "position": {
-          "x": -2.4,
-          "y": 188
+          "x": 1880,
+          "y": 154.4
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "keypad-appointment-list-flow"
+          }
+        },
+        "ContactFlow": {
+          "text": "keypad-appointment-list-flow"
         }
       },
       "SetAttempts2": {
         "position": {
-          "x": 1065.6,
-          "y": 598.4
+          "x": 1373.6,
+          "y": 1185.6
         },
         "dynamicParams": []
       },
       "SetAttempts1": {
         "position": {
-          "x": 1083.2,
-          "y": 821.6
+          "x": 1364,
+          "y": 1407.2
         },
         "dynamicParams": []
       },
-      "668c6aa1-b66d-4961-8c22-86df2dfef1c7": {
+      "SetFacilityAnswer": {
         "position": {
-          "x": 1341.6,
-          "y": 596.8
-        }
+          "x": 1169.6,
+          "y": -639.2
+        },
+        "dynamicParams": []
+      },
+      "copyPrompts": {
+        "position": {
+          "x": 33.6,
+          "y": 149.6
+        },
+        "dynamicParams": []
       },
       "IncrementFailedAttempts": {
         "position": {
-          "x": 820,
-          "y": 617.6
+          "x": 1129.6,
+          "y": 1067.2
         },
         "conditions": [],
         "conditionMetadata": [
           {
-            "id": "c31e82f8-95e4-47a3-bbb4-1b2fd6793247",
+            "id": "0925d12a-858a-4cf5-a8b9-2b0c3c24209c",
             "operator": {
               "name": "Equals",
               "value": "Equals",
@@ -74,7 +91,7 @@
             "value": "2"
           },
           {
-            "id": "bd87c56e-34a7-4ffd-9934-fdd8d6dd7919",
+            "id": "84e45f8d-09e5-484e-a34d-771e1054593b",
             "operator": {
               "name": "Equals",
               "value": "Equals",
@@ -84,150 +101,272 @@
           }
         ]
       },
+      "668c6aa1-b66d-4961-8c22-86df2dfef1c7": {
+        "position": {
+          "x": 1611.2,
+          "y": 1162.4
+        }
+      },
+      "PlayFacilityAnswer": {
+        "position": {
+          "x": 1440,
+          "y": -635.2
+        }
+      },
       "InvokeFacilityInfo": {
         "position": {
-          "x": 844,
-          "y": -134.4
+          "x": 860.8,
+          "y": -643.2
         },
         "parameters": {
           "LambdaFunctionARN": {
-            "displayName": "REPLACE_WITH_FACILITY_INFO_FUNCTION_ARN"
+            "displayName": "phoneconnect-med-facility-info"
           }
         },
         "dynamicMetadata": {
           "variant": false
         }
       },
+      "TransferToAppointmentCancelFlow": {
+        "position": {
+          "x": 1891.2,
+          "y": 336.8
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "keypad-appointment-cancel-flow"
+          }
+        },
+        "ContactFlow": {
+          "text": "keypad-appointment-cancel-flow"
+        }
+      },
+      "61421746-8da8-4f67-a2ff-4c2e50fbbcdd": {
+        "position": {
+          "x": 1150.4,
+          "y": 491.2
+        },
+        "dynamicParams": []
+      },
+      "4b11c474-b779-42c3-b374-8174aaefad94": {
+        "position": {
+          "x": 1145.6,
+          "y": 291.2
+        },
+        "dynamicParams": []
+      },
+      "ba45c3f3-16b3-454b-8967-57081b21a5d1": {
+        "position": {
+          "x": 1149.6,
+          "y": 86.4
+        },
+        "dynamicParams": []
+      },
       "MainMenu": {
         "position": {
-          "x": 588.8,
-          "y": 137.6
+          "x": 384,
+          "y": 101.6
         },
         "conditionMetadata": [
           {
-            "id": "8a932989-5530-41a2-8c0d-7085cd466d5b",
+            "id": "0d614c3a-6b97-4e7c-93ec-64f5e9bcbea0",
             "value": "1"
           },
           {
-            "id": "01379dfd-e67d-49f1-9c24-e36d48c57630",
+            "id": "2aff677b-1be9-471c-a52b-be29fb3ab51f",
+            "value": "2"
+          },
+          {
+            "id": "ec84506c-6fe2-45c7-9fe4-2669e3e8a2ab",
+            "value": "3"
+          },
+          {
+            "id": "1526170c-5fbd-42e7-910e-e085be2126a0",
+            "value": "4"
+          },
+          {
+            "id": "4da5c919-2bb4-4f01-af42-39ae3f094e62",
+            "value": "5"
+          },
+          {
+            "id": "29246783-5f0b-4044-8e6f-f5bb78ca6e59",
             "value": "0"
           },
           {
-            "id": "fb2b0387-2077-4dce-ad29-f0cd273ea2dc",
+            "id": "ece9478e-e68c-4108-bbfa-d7b0bdc817ce",
             "value": "*"
           }
         ]
       },
-      "CheckAuthForBooking": {
+      "9862b54b-eca0-4c57-a399-96849691e34d": {
         "position": {
-          "x": 844,
-          "y": 200
-        }
-      },
-      "TransferToBookingFlow": {
-        "position": {
-          "x": 1080,
-          "y": 60
-        }
-      },
-      "CheckAuthForAppointmentList": {
-        "position": {
-          "x": 844,
-          "y": 480
-        }
-      },
-      "TransferToAppointmentListFlow": {
-        "position": {
-          "x": 1080,
-          "y": 480
-        }
-      },
-      "CheckAuthForAppointmentCancel": {
-        "position": {
-          "x": 844,
-          "y": 720
-        }
-      },
-      "TransferToAppointmentCancelFlow": {
-        "position": {
-          "x": 1080,
-          "y": 720
-        }
+          "x": 1139.2,
+          "y": -111.2
+        },
+        "dynamicParams": []
       },
       "CheckAuthForAppointmentReschedule": {
         "position": {
-          "x": 844,
-          "y": 960
-        }
+          "x": 1378.4,
+          "y": 491.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "fbb50e56-6490-4007-a4ee-89a5c4c364c9",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
       },
-      "TransferToAppointmentRescheduleFlow": {
+      "CheckAuthForAppointmentCancel": {
         "position": {
-          "x": 1080,
-          "y": 960
-        }
+          "x": 1375.2,
+          "y": 290.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "531374f1-4fa3-4652-ae88-6e2672ebb9bb",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "CheckAuthForAppointmentList": {
+        "position": {
+          "x": 1370.4,
+          "y": 88.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "2f8b3c58-62c3-425c-8e87-c23fb542c2ea",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
       },
       "TransferToAuthenticateFlow": {
         "position": {
-          "x": 1080,
-          "y": 340
+          "x": 1886.4,
+          "y": -250.4
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "keypad-authenticate-flow"
+          }
+        },
+        "ContactFlow": {
+          "text": "keypad-authenticate-flow"
         }
       },
-      "SetTransferReasonCallerRequest": {
+      "CheckAuthForBooking": {
         "position": {
-          "x": 1474.4,
-          "y": 40
+          "x": 1378.4,
+          "y": -113.6
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "623fecc0-7171-44bf-872b-21955625c72e",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "TransferToBookingFlow": {
+        "position": {
+          "x": 1884.8,
+          "y": -62.4
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "keypad-booking-flow"
+          }
+        },
+        "ContactFlow": {
+          "text": "keypad-booking-flow"
         }
       },
       "SetTransferReasonFailedAttempts": {
         "position": {
-          "x": 1474.4,
-          "y": 197.6
-        }
+          "x": 1373.6,
+          "y": 967.2
+        },
+        "dynamicParams": []
       },
       "SetTransferReasonFacilityError": {
         "position": {
-          "x": 1474.4,
-          "y": 360
+          "x": 1344.8,
+          "y": -439.2
+        },
+        "dynamicParams": []
+      },
+      "SetTransferReasonCallerRequest": {
+        "position": {
+          "x": 822.4,
+          "y": 735.2
+        },
+        "dynamicParams": []
+      },
+      "DisconnectFallback": {
+        "position": {
+          "x": 2298.4,
+          "y": 51.2
         }
       },
       "InvokeAgentHandoverModule": {
         "position": {
-          "x": 1748,
-          "y": 183.2
+          "x": 1898.4,
+          "y": 724.8
         },
         "parameters": {
           "FlowModuleId": {
-            "displayName": "REPLACE_WITH_AGENT_HANDOVER_MODULE_ARN"
+            "displayName": "agent-handover-module",
+            "Alias": {
+              "displayName": "$LATEST"
+            }
           }
-        }
-      },
-      "DisconnectFallback": {
-        "position": {
-          "x": 2032.8,
-          "y": 225.6
-        }
+        },
+        "contactFlowModuleName": "agent-handover-module"
       }
     },
     "Annotations": [],
-    "name": "Main Menu - Facility Info (S-01)",
-    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is.",
+    "name": "keypad-facility-info-main-menu-flow",
+    "description": "",
     "type": "contactFlow",
-    "status": "published",
+    "status": "PUBLISHED",
     "hash": {}
   },
   "Actions": [
     {
       "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "Witamy w Przychodni Zdrowie."
+        "ContactFlowId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/contact-flow/91874010-75f1-4dd4-b369-e5f7b22777a1"
       },
-      "Identifier": "PlayGreeting",
-      "Type": "MessageParticipant",
+      "Identifier": "TransferToAppointmentRescheduleFlow",
+      "Type": "TransferToFlow",
       "Transitions": {
-        "NextAction": "MainMenu",
+        "NextAction": "DisconnectFallback",
         "Errors": [
           {
-            "NextAction": "MainMenu",
+            "NextAction": "DisconnectFallback",
             "ErrorType": "NoMatchingError"
           }
         ]
@@ -235,16 +374,35 @@
     },
     {
       "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "Nasz adres to $.External.address. Jesteśmy czynni od $.External.opensAt do $.External.closesAt, $.External.openDays."
+        "DataTableId": "cc791e93-f884-4778-9d10-50fb6733fc91",
+        "Queries": [
+          {
+            "QueryName": "FacilityInfoPrompts",
+            "Attributes": [
+              "mainMenu",
+              "invalidInput",
+              "addrFrag2",
+              "addrFrag4",
+              "addrFrag3",
+              "addrSuffix",
+              "addrPrefix"
+            ],
+            "PrimaryValues": [
+              {
+                "AttributeName": "locale",
+                "Value": "$.Attributes.locale"
+              }
+            ]
+          }
+        ]
       },
-      "Identifier": "PlayFacilityAnswer",
-      "Type": "MessageParticipant",
+      "Identifier": "6c6c736f-c51d-435a-8883-453b2eb1422b",
+      "Type": "EvaluateDataTableValues",
       "Transitions": {
-        "NextAction": "MainMenu",
+        "NextAction": "copyPrompts",
         "Errors": [
           {
-            "NextAction": "MainMenu",
+            "NextAction": "copyPrompts",
             "ErrorType": "NoMatchingError"
           }
         ]
@@ -252,48 +410,18 @@
     },
     {
       "Parameters": {
-        "Attributes": {
-          "lastMessageText": "Nasz adres to $.External.address. Jesteśmy czynni od $.External.opensAt do $.External.closesAt, $.External.openDays."
-        },
-        "TargetContact": "Current"
+        "ContactFlowId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/contact-flow/42234d1e-bf2d-46a2-8839-13c8f5bbf5cc"
       },
-      "Identifier": "SetFacilityAnswer",
-      "Type": "UpdateContactAttributes",
+      "Identifier": "TransferToAppointmentListFlow",
+      "Type": "TransferToFlow",
       "Transitions": {
-        "NextAction": "PlayFacilityAnswer",
+        "NextAction": "DisconnectFallback",
         "Errors": [
           {
-            "NextAction": "PlayFacilityAnswer",
+            "NextAction": "DisconnectFallback",
             "ErrorType": "NoMatchingError"
           }
         ]
-      }
-    },
-    {
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.lastMessageText"
-      },
-      "Identifier": "PlayRepeat",
-      "Type": "MessageParticipant",
-      "Transitions": {
-        "NextAction": "MainMenu",
-        "Errors": [
-          {
-            "NextAction": "MainMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Parameters": {
-        "FlowLoggingBehavior": "Enabled"
-      },
-      "Identifier": "5fd8b757-3e76-4e8c-bd73-dc15fef37522",
-      "Type": "UpdateFlowLoggingBehavior",
-      "Transitions": {
-        "NextAction": "PlayGreeting"
       }
     },
     {
@@ -336,11 +464,38 @@
     },
     {
       "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "Nie otrzymaliśmy poprawnego inputu. Spróbuj ponownie."
+        "Attributes": {
+          "lastMessageText": "<speak>$.Attributes.addrPrefix $.External.address $.Attributes.addrFrag2 $.External.opensAt $.Attributes.addrFrag3 $.External.closesAt $.Attributes.addrFrag4 $.External.openDays $.Attributes.addrSuffix</speak>"
+        },
+        "TargetContact": "Current"
       },
-      "Identifier": "668c6aa1-b66d-4961-8c22-86df2dfef1c7",
-      "Type": "MessageParticipant",
+      "Identifier": "SetFacilityAnswer",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "PlayFacilityAnswer",
+        "Errors": [
+          {
+            "NextAction": "PlayFacilityAnswer",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "addrPrefix": "$.DataTables.FacilityInfoPrompts.addrPrefix",
+          "addrSuffix": "$.DataTables.FacilityInfoPrompts.addrSuffix",
+          "mainMenu": "$.DataTables.FacilityInfoPrompts.mainMenu",
+          "invalidInput": "$.DataTables.FacilityInfoPrompts.invalidInput",
+          "addrFrag2": "$.DataTables.FacilityInfoPrompts.addrFrag2",
+          "addrFrag3": "$.DataTables.FacilityInfoPrompts.addrFrag3",
+          "addrFrag4": "$.DataTables.FacilityInfoPrompts.addrFrag4"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "copyPrompts",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
         "NextAction": "MainMenu",
         "Errors": [
@@ -389,7 +544,41 @@
     },
     {
       "Parameters": {
-        "LambdaFunctionARN": "REPLACE_WITH_FACILITY_INFO_FUNCTION_ARN",
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.invalidInput"
+      },
+      "Identifier": "668c6aa1-b66d-4961-8c22-86df2dfef1c7",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "MainMenu",
+        "Errors": [
+          {
+            "NextAction": "MainMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "SSML": "$.Attributes.lastMessageText"
+      },
+      "Identifier": "PlayFacilityAnswer",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "MainMenu",
+        "Errors": [
+          {
+            "NextAction": "MainMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-facility-info",
         "InvocationTimeLimitSeconds": "3",
         "InvocationType": "SYNCHRONOUS",
         "LambdaInvocationAttributes": {
@@ -413,7 +602,80 @@
     },
     {
       "Parameters": {
-        "Text": "Naciśnij 1, aby usłyszeć adres i godziny otwarcia. Naciśnij 2, aby umówić wizytę. Naciśnij 3, aby usłyszeć swoje wizyty. Naciśnij 4, aby odwołać wizytę. Naciśnij 5, aby przełożyć wizytę. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć.",
+        "ContactFlowId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/contact-flow/cb1acc43-b28e-4823-9dd4-157c900e071d"
+      },
+      "Identifier": "TransferToAppointmentCancelFlow",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "DisconnectFallback",
+        "Errors": [
+          {
+            "NextAction": "DisconnectFallback",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "selectedIntet": "reschedule"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "61421746-8da8-4f67-a2ff-4c2e50fbbcdd",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "CheckAuthForAppointmentReschedule",
+        "Errors": [
+          {
+            "NextAction": "CheckAuthForAppointmentReschedule",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "selectedIntet": "cancel"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "4b11c474-b779-42c3-b374-8174aaefad94",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "CheckAuthForAppointmentCancel",
+        "Errors": [
+          {
+            "NextAction": "CheckAuthForAppointmentCancel",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "selectedIntet": "list"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "ba45c3f3-16b3-454b-8967-57081b21a5d1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "CheckAuthForAppointmentList",
+        "Errors": [
+          {
+            "NextAction": "CheckAuthForAppointmentList",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.mainMenu",
         "StoreInput": "False",
         "InputTimeLimitSeconds": "5"
       },
@@ -432,7 +694,7 @@
             }
           },
           {
-            "NextAction": "CheckAuthForBooking",
+            "NextAction": "9862b54b-eca0-4c57-a399-96849691e34d",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -441,7 +703,7 @@
             }
           },
           {
-            "NextAction": "CheckAuthForAppointmentList",
+            "NextAction": "ba45c3f3-16b3-454b-8967-57081b21a5d1",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -450,7 +712,7 @@
             }
           },
           {
-            "NextAction": "CheckAuthForAppointmentCancel",
+            "NextAction": "4b11c474-b779-42c3-b374-8174aaefad94",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -459,7 +721,7 @@
             }
           },
           {
-            "NextAction": "CheckAuthForAppointmentReschedule",
+            "NextAction": "61421746-8da8-4f67-a2ff-4c2e50fbbcdd",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -477,7 +739,7 @@
             }
           },
           {
-            "NextAction": "PlayRepeat",
+            "NextAction": "copyPrompts",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -504,42 +766,18 @@
     },
     {
       "Parameters": {
-        "Attribute": "$.Attributes.authenticated"
+        "Attributes": {
+          "selectedIntet": "book"
+        },
+        "TargetContact": "Current"
       },
-      "Identifier": "CheckAuthForBooking",
-      "Type": "Compare",
+      "Identifier": "9862b54b-eca0-4c57-a399-96849691e34d",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
-        "NextAction": "TransferToAuthenticateFlow",
-        "Conditions": [
-          {
-            "NextAction": "TransferToBookingFlow",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "true"
-              ]
-            }
-          }
-        ],
+        "NextAction": "CheckAuthForBooking",
         "Errors": [
           {
-            "NextAction": "TransferToAuthenticateFlow",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Parameters": {
-        "ContactFlowId": "REPLACE_WITH_BOOKING_FLOW_ARN"
-      },
-      "Identifier": "TransferToBookingFlow",
-      "Type": "TransferToFlow",
-      "Transitions": {
-        "NextAction": "DisconnectFallback",
-        "Errors": [
-          {
-            "NextAction": "DisconnectFallback",
+            "NextAction": "CheckAuthForBooking",
             "ErrorType": "NoMatchingError"
           }
         ]
@@ -547,93 +785,7 @@
     },
     {
       "Parameters": {
-        "Attribute": "$.Attributes.authenticated"
-      },
-      "Identifier": "CheckAuthForAppointmentList",
-      "Type": "Compare",
-      "Transitions": {
-        "NextAction": "TransferToAuthenticateFlow",
-        "Conditions": [
-          {
-            "NextAction": "TransferToAppointmentListFlow",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "true"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "TransferToAuthenticateFlow",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Parameters": {
-        "ContactFlowId": "REPLACE_WITH_APPOINTMENT_LIST_FLOW_ARN"
-      },
-      "Identifier": "TransferToAppointmentListFlow",
-      "Type": "TransferToFlow",
-      "Transitions": {
-        "NextAction": "DisconnectFallback",
-        "Errors": [
-          {
-            "NextAction": "DisconnectFallback",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Parameters": {
-        "Attribute": "$.Attributes.authenticated"
-      },
-      "Identifier": "CheckAuthForAppointmentCancel",
-      "Type": "Compare",
-      "Transitions": {
-        "NextAction": "TransferToAuthenticateFlow",
-        "Conditions": [
-          {
-            "NextAction": "TransferToAppointmentCancelFlow",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "true"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "TransferToAuthenticateFlow",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Parameters": {
-        "ContactFlowId": "REPLACE_WITH_APPOINTMENT_CANCEL_FLOW_ARN"
-      },
-      "Identifier": "TransferToAppointmentCancelFlow",
-      "Type": "TransferToFlow",
-      "Transitions": {
-        "NextAction": "DisconnectFallback",
-        "Errors": [
-          {
-            "NextAction": "DisconnectFallback",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Parameters": {
-        "Attribute": "$.Attributes.authenticated"
+        "ComparisonValue": "$.Attributes.authenticated"
       },
       "Identifier": "CheckAuthForAppointmentReschedule",
       "Type": "Compare",
@@ -660,23 +812,61 @@
     },
     {
       "Parameters": {
-        "ContactFlowId": "REPLACE_WITH_APPOINTMENT_RESCHEDULE_FLOW_ARN"
+        "ComparisonValue": "$.Attributes.authenticated"
       },
-      "Identifier": "TransferToAppointmentRescheduleFlow",
-      "Type": "TransferToFlow",
+      "Identifier": "CheckAuthForAppointmentCancel",
+      "Type": "Compare",
       "Transitions": {
-        "NextAction": "DisconnectFallback",
+        "NextAction": "TransferToAuthenticateFlow",
+        "Conditions": [
+          {
+            "NextAction": "TransferToAppointmentCancelFlow",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
         "Errors": [
           {
-            "NextAction": "DisconnectFallback",
-            "ErrorType": "NoMatchingError"
+            "NextAction": "TransferToAuthenticateFlow",
+            "ErrorType": "NoMatchingCondition"
           }
         ]
       }
     },
     {
       "Parameters": {
-        "ContactFlowId": "REPLACE_WITH_AUTHENTICATE_FLOW_ARN"
+        "ComparisonValue": "$.Attributes.authenticated"
+      },
+      "Identifier": "CheckAuthForAppointmentList",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "TransferToAuthenticateFlow",
+        "Conditions": [
+          {
+            "NextAction": "TransferToAppointmentListFlow",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "TransferToAuthenticateFlow",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/contact-flow/f57aef7d-a6ae-4729-8c4d-72d201c62e3b"
       },
       "Identifier": "TransferToAuthenticateFlow",
       "Type": "TransferToFlow",
@@ -692,18 +882,42 @@
     },
     {
       "Parameters": {
-        "Attributes": {
-          "transferReason": "Klient poprosił o kontakt z konsultantem."
-        },
-        "TargetContact": "Current"
+        "ComparisonValue": "$.Attributes.authenticated"
       },
-      "Identifier": "SetTransferReasonCallerRequest",
-      "Type": "UpdateContactAttributes",
+      "Identifier": "CheckAuthForBooking",
+      "Type": "Compare",
       "Transitions": {
-        "NextAction": "InvokeAgentHandoverModule",
+        "NextAction": "TransferToAuthenticateFlow",
+        "Conditions": [
+          {
+            "NextAction": "TransferToBookingFlow",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
         "Errors": [
           {
-            "NextAction": "InvokeAgentHandoverModule",
+            "NextAction": "TransferToAuthenticateFlow",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/contact-flow/e4c5f822-0edf-4894-baad-00cc7e0d0d21"
+      },
+      "Identifier": "TransferToBookingFlow",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "DisconnectFallback",
+        "Errors": [
+          {
+            "NextAction": "DisconnectFallback",
             "ErrorType": "NoMatchingError"
           }
         ]
@@ -749,15 +963,18 @@
     },
     {
       "Parameters": {
-        "FlowModuleId": "REPLACE_WITH_AGENT_HANDOVER_MODULE_ARN"
+        "Attributes": {
+          "transferReason": "Klient poprosił o kontakt z konsultantem."
+        },
+        "TargetContact": "Current"
       },
-      "Identifier": "InvokeAgentHandoverModule",
-      "Type": "InvokeFlowModule",
+      "Identifier": "SetTransferReasonCallerRequest",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
-        "NextAction": "DisconnectFallback",
+        "NextAction": "InvokeAgentHandoverModule",
         "Errors": [
           {
-            "NextAction": "DisconnectFallback",
+            "NextAction": "InvokeAgentHandoverModule",
             "ErrorType": "NoMatchingError"
           }
         ]
@@ -768,6 +985,26 @@
       "Identifier": "DisconnectFallback",
       "Type": "DisconnectParticipant",
       "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "FlowModuleId": "cd835b16-5581-440a-8070-435b63e0b234:$LATEST"
+      },
+      "Identifier": "InvokeAgentHandoverModule",
+      "Type": "InvokeFlowModule",
+      "Transitions": {
+        "NextAction": "DisconnectFallback",
+        "Errors": [
+          {
+            "NextAction": "DisconnectFallback",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "DisconnectFallback",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
     }
   ]
 }

@@ -2,46 +2,93 @@
   "Version": "2019-10-30",
   "StartAction": "setQueue",
   "Metadata": {
-    "entryPointPosition": { "x": 40, "y": 40 },
+    "entryPointPosition": {
+      "x": -60.8,
+      "y": 90.4
+    },
     "ActionMetadata": {
-      "setQueue": { "position": { "x": 40, "y": 40 } },
-      "transferToQueue": { "position": { "x": 240, "y": 40 } },
-      "endModule": { "position": { "x": 440, "y": 40 } }
+      "setQueue": {
+        "position": {
+          "x": 130.4,
+          "y": 27.2
+        }
+      },
+      "transferToQueue": {
+        "position": {
+          "x": 448,
+          "y": 17.6
+        }
+      },
+      "endModule": {
+        "position": {
+          "x": 776.8,
+          "y": 32.8
+        }
+      }
     },
     "Annotations": [],
-    "name": "Agent Handover (S-11)",
-    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is. Callers are responsible for setting transferReason (and, when known, firstName/lastName/authenticated/patientId/pesel/phone) as contact attributes before invoking this module.",
-    "type": "contactFlowModule",
-    "status": "SAVED",
+    "name": "agent-handover-module",
+    "description": "",
+    "status": "published",
+    "settings": {},
     "hash": {}
   },
   "Actions": [
     {
+      "Parameters": {
+        "QueueId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/queue/ae03bee7-891d-488f-9169-7577d0ee426f"
+      },
       "Identifier": "setQueue",
       "Type": "UpdateContactTargetQueue",
-      "Parameters": { "QueueId": "REPLACE_WITH_QUEUE_ARN" },
       "Transitions": {
         "NextAction": "transferToQueue",
-        "Errors": [{ "NextAction": "transferToQueue", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "transferToQueue",
-      "Type": "TransferContactToQueue",
-      "Parameters": {},
-      "Transitions": {
-        "NextAction": "endModule",
         "Errors": [
-          { "NextAction": "endModule", "ErrorType": "QueueAtCapacity" },
-          { "NextAction": "endModule", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "transferToQueue",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
+      "Parameters": {},
+      "Identifier": "transferToQueue",
+      "Type": "TransferContactToQueue",
+      "Transitions": {
+        "NextAction": "endModule",
+        "Errors": [
+          {
+            "NextAction": "endModule",
+            "ErrorType": "QueueAtCapacity"
+          },
+          {
+            "NextAction": "endModule",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
       "Identifier": "endModule",
       "Type": "EndFlowModuleExecution",
-      "Parameters": {},
       "Transitions": {}
     }
-  ]
+  ],
+  "Settings": {
+    "InputParameters": [],
+    "OutputParameters": [],
+    "Transitions": [
+      {
+        "DisplayName": "Success",
+        "ReferenceName": "Success",
+        "Description": ""
+      },
+      {
+        "DisplayName": "Error",
+        "ReferenceName": "Error",
+        "Description": ""
+      }
+    ]
+  }
 }

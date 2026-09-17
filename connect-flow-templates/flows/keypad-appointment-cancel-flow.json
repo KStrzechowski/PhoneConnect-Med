@@ -1,473 +1,619 @@
 {
   "Version": "2019-10-30",
-  "StartAction": "copyPrompts",
+  "StartAction": "960c598b-11ea-4edb-a185-d9d9851f4774",
   "Metadata": {
     "entryPointPosition": {
-      "x": 40,
-      "y": 40
+      "x": -1857.6,
+      "y": 175.2
     },
     "ActionMetadata": {
-      "copyPrompts": {
+      "giveUpInputMsg": {
         "position": {
-          "x": 140,
-          "y": 40
-        }
-      },
-      "checkLocaleForVoice": {
-        "position": {
-          "x": 190,
-          "y": 40
-        }
-      },
-      "setVoiceEn": {
-        "position": {
-          "x": 220,
-          "y": -40
-        }
-      },
-      "setVoicePl": {
-        "position": {
-          "x": 220,
-          "y": 100
-        }
-      },
-      "initAttempts": {
-        "position": {
-          "x": 240,
-          "y": 40
-        }
-      },
-      "invokeList": {
-        "position": {
-          "x": 440,
-          "y": 40
-        }
-      },
-      "checkNeedsAuth": {
-        "position": {
-          "x": 640,
-          "y": 40
-        }
-      },
-      "checkReachable": {
-        "position": {
-          "x": 840,
-          "y": 40
-        }
-      },
-      "checkHasAppointments": {
-        "position": {
-          "x": 1040,
-          "y": 40
-        }
-      },
-      "setNeedsAuthMsg": {
-        "position": {
-          "x": 840,
-          "y": -220
-        }
-      },
-      "playNeedsAuthMsg": {
-        "position": {
-          "x": 1040,
-          "y": -220
-        }
-      },
-      "setEmptyMsg": {
-        "position": {
-          "x": 1240,
-          "y": 220
-        }
-      },
-      "playEmptyMsg": {
-        "position": {
-          "x": 1440,
-          "y": 220
-        }
-      },
-      "setSelectionMsg": {
-        "position": {
-          "x": 1240,
-          "y": 40
-        }
-      },
-      "selectionMenu": {
-        "position": {
-          "x": 1440,
-          "y": 40
-        }
-      },
-      "setSelected1": {
-        "position": {
-          "x": 1640,
-          "y": -140
-        }
-      },
-      "setSelected2": {
-        "position": {
-          "x": 1640,
-          "y": -80
-        }
-      },
-      "setSelected3": {
-        "position": {
-          "x": 1640,
-          "y": -20
-        }
-      },
-      "repeatSelection": {
-        "position": {
-          "x": 1440,
-          "y": 260
-        }
-      },
-      "invokeConfirm": {
-        "position": {
-          "x": 1840,
-          "y": 40
-        }
-      },
-      "checkConfirmReachable": {
-        "position": {
-          "x": 2040,
-          "y": 40
-        }
-      },
-      "checkFound": {
-        "position": {
-          "x": 2240,
-          "y": 40
-        }
-      },
-      "setConfirmMsg": {
-        "position": {
-          "x": 2440,
-          "y": 40
-        }
-      },
-      "confirmMenu": {
-        "position": {
-          "x": 2640,
-          "y": 40
-        }
-      },
-      "repeatConfirm": {
-        "position": {
-          "x": 2640,
-          "y": 260
-        }
-      },
-      "playDeclineMsg": {
-        "position": {
-          "x": 2840,
-          "y": 220
-        }
-      },
-      "invokeCancel": {
-        "position": {
-          "x": 2840,
-          "y": -80
-        }
-      },
-      "checkCancelReachable": {
-        "position": {
-          "x": 3040,
-          "y": -80
+          "x": 1295.2,
+          "y": 1016.8
         }
       },
       "checkCancelFound": {
         "position": {
-          "x": 3240,
-          "y": -80
-        }
+          "x": 4161.6,
+          "y": -875.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "678a35ff-b6a3-4119-afb7-275e8b7b95c9",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
       },
       "checkCancelled": {
         "position": {
-          "x": 3440,
-          "y": -80
-        }
+          "x": 4429.6,
+          "y": -878.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "ec87bbd1-4275-4e8e-8383-080533dfd84a",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
       },
-      "setSuccessMsg": {
+      "giveUpSelectionMsg": {
         "position": {
-          "x": 3640,
-          "y": -140
-        }
-      },
-      "setCancelFailMsg": {
-        "position": {
-          "x": 3640,
-          "y": -20
-        }
-      },
-      "bumpSelectionInputAttempts": {
-        "position": {
-          "x": 1440,
-          "y": 500
-        }
-      },
-      "setSelInputAttempts1": {
-        "position": {
-          "x": 1240,
-          "y": 500
-        }
-      },
-      "setSelInputAttempts2": {
-        "position": {
-          "x": 1240,
-          "y": 620
-        }
-      },
-      "bumpConfirmInputAttempts": {
-        "position": {
-          "x": 2640,
-          "y": 500
-        }
-      },
-      "setConfInputAttempts1": {
-        "position": {
-          "x": 2440,
-          "y": 500
-        }
-      },
-      "setConfInputAttempts2": {
-        "position": {
-          "x": 2440,
-          "y": 620
-        }
-      },
-      "giveUpInputMsg": {
-        "position": {
-          "x": 1840,
-          "y": 620
+          "x": 3960,
+          "y": 764.8
         }
       },
       "bumpSelectionAttempts": {
         "position": {
-          "x": 2440,
-          "y": 320
-        }
-      },
-      "setSelAttempts1": {
-        "position": {
-          "x": 2240,
-          "y": 320
-        }
+          "x": 3551.2,
+          "y": 862.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "43f29bd0-b7db-4102-a96d-59ec204d0ff5",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "2"
+          },
+          {
+            "id": "fe4e6a22-6ea4-4ffe-b75b-7581c4083b2d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "1"
+          }
+        ]
       },
       "setSelAttempts2": {
         "position": {
-          "x": 2240,
-          "y": 440
-        }
+          "x": 3965.6,
+          "y": 954.4
+        },
+        "dynamicParams": []
+      },
+      "setSelAttempts1": {
+        "position": {
+          "x": 3958.4,
+          "y": 1202.4
+        },
+        "dynamicParams": []
       },
       "setNotFoundMsg": {
         "position": {
-          "x": 2440,
-          "y": 440
+          "x": 4357.6,
+          "y": 1183.2
+        },
+        "dynamicParams": []
+      },
+      "50414ef4-8100-4163-be09-6cad871a8968": {
+        "position": {
+          "x": 3534.4,
+          "y": -380.8
         }
+      },
+      "checkReachable": {
+        "position": {
+          "x": -188.8,
+          "y": 34.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "413b0020-8e16-419a-bd7b-918b1379b63c",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "setNeedsAuthMsg": {
+        "position": {
+          "x": -192,
+          "y": -211.2
+        },
+        "dynamicParams": []
       },
       "playNotFoundMsg": {
         "position": {
-          "x": 2640,
-          "y": 440
+          "x": 4644,
+          "y": 1190.4
         }
       },
-      "giveUpSelectionMsg": {
+      "checkNeedsAuth": {
         "position": {
-          "x": 2640,
-          "y": 560
+          "x": -428,
+          "y": 24
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "f3e32777-a3cd-4090-8dc9-c52734dd1e2e",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "invokeList": {
+        "position": {
+          "x": -683.2,
+          "y": 128
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "phoneconnect-med-appointment-cancel"
+          }
+        },
+        "dynamicMetadata": {
+          "step": false,
+          "authenticated": false,
+          "patientId": false,
+          "locale": false
         }
+      },
+      "checkConfirmReachable": {
+        "position": {
+          "x": 1888,
+          "y": -368.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "f131b732-50d0-4fa7-9a35-6d04f0f58bb9",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "invokeConfirm": {
+        "position": {
+          "x": 1626.4,
+          "y": -372
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "phoneconnect-med-appointment-cancel"
+          }
+        },
+        "dynamicMetadata": {
+          "step": false,
+          "selectedSlot": false,
+          "authenticated": false,
+          "patientId": false,
+          "locale": false
+        }
+      },
+      "checkCancelReachable": {
+        "position": {
+          "x": 3916,
+          "y": -876.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "8fe83d5d-761b-4b1d-951d-40f43ee41cfe",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
       },
       "errorTransfer": {
         "position": {
-          "x": 440,
-          "y": 560
+          "x": 4250.4,
+          "y": -454.4
         }
       },
-      "transferToMainMenu": {
+      "setEmptyMsg": {
         "position": {
-          "x": 3840,
-          "y": 620
+          "x": 401.6,
+          "y": 179.2
+        },
+        "dynamicParams": []
+      },
+      "initAttempts": {
+        "position": {
+          "x": -951.2,
+          "y": 120
+        },
+        "dynamicParams": []
+      },
+      "copyPrompts": {
+        "position": {
+          "x": -1340.8,
+          "y": 95.2
+        },
+        "dynamicParams": []
+      },
+      "960c598b-11ea-4edb-a185-d9d9851f4774": {
+        "position": {
+          "x": -1695.2,
+          "y": 95.2
+        },
+        "parameters": {
+          "DataTableId": {
+            "displayName": "AppointmentCancelPrompts"
+          }
         }
       },
-      "transferToAuthenticatedMenu": {
+      "checkHasAppointments": {
         "position": {
-          "x": 3840,
-          "y": -140
+          "x": 110.4,
+          "y": 4.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "8555e6f8-4f5c-41e1-bbd9-898a1749fdb4",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          },
+          {
+            "id": "8e278cb2-6829-4759-b096-2727dbfba264",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "false"
+          }
+        ]
+      },
+      "setSelInputAttempts2": {
+        "position": {
+          "x": 1288.8,
+          "y": 812.8
+        },
+        "dynamicParams": []
+      },
+      "bumpSelectionInputAttempts": {
+        "position": {
+          "x": 964,
+          "y": 896.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "de44e136-6b90-4a38-9ee3-37f7e54db1e0",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "2"
+          },
+          {
+            "id": "e72bdd23-80fd-43c6-931b-698bb1973160",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "1"
+          }
+        ]
+      },
+      "setSelInputAttempts1": {
+        "position": {
+          "x": 1294.4,
+          "y": 1231.2
+        },
+        "dynamicParams": []
+      },
+      "setSelected1": {
+        "position": {
+          "x": 1192.8,
+          "y": -600.8
+        },
+        "dynamicParams": []
+      },
+      "setSelected2": {
+        "position": {
+          "x": 1193.6,
+          "y": -378.4
+        },
+        "dynamicParams": []
+      },
+      "setSelected3": {
+        "position": {
+          "x": 1199.2,
+          "y": -171.2
+        },
+        "dynamicParams": []
+      },
+      "setSelectionMsg": {
+        "position": {
+          "x": 410.4,
+          "y": -28.8
+        },
+        "dynamicParams": []
+      },
+      "selectionMenu": {
+        "position": {
+          "x": 679.2,
+          "y": -22.4
+        },
+        "conditionMetadata": [
+          {
+            "id": "78c23e8c-4621-4c14-ac3d-5273e3827493",
+            "value": "1"
+          },
+          {
+            "id": "8059f5e1-9dcb-444d-ac99-3b82cf290bab",
+            "value": "2"
+          },
+          {
+            "id": "02dcb6f9-a9cf-4fde-b518-f4b480755767",
+            "value": "3"
+          },
+          {
+            "id": "cbeecac6-0564-44c5-9fc6-34cd1fdd8026",
+            "value": "0"
+          },
+          {
+            "id": "4f905cfd-8c62-4aae-8c01-43d1f098d642",
+            "value": "*"
+          },
+          {
+            "id": "c0781d96-7433-4388-adcb-62b7e22d8be7",
+            "value": "#"
+          }
+        ]
+      },
+      "checkFound": {
+        "position": {
+          "x": 2145.6,
+          "y": -357.6
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "0b2aa0ec-cec8-4758-b408-083f33a4e669",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "setConfInputAttempts2": {
+        "position": {
+          "x": 3546.4,
+          "y": -145.6
+        },
+        "dynamicParams": []
+      },
+      "setConfInputAttempts1": {
+        "position": {
+          "x": 3541.6,
+          "y": 116
+        },
+        "dynamicParams": []
+      },
+      "bumpConfirmInputAttempts": {
+        "position": {
+          "x": 3064.8,
+          "y": -225.6
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "2c86ca26-8fed-4813-bf17-c2468f7d7be1",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "2"
+          },
+          {
+            "id": "15c89ac2-46b8-415e-acd8-24ea1f1dc4b9",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "1"
+          }
+        ]
+      },
+      "invokeCancel": {
+        "position": {
+          "x": 3471.2,
+          "y": -1018.4
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "phoneconnect-med-appointment-cancel"
+          }
+        },
+        "dynamicMetadata": {
+          "step": false,
+          "selectedSlot": false,
+          "authenticated": false,
+          "patientId": false,
+          "locale": false
         }
       },
       "transferQueue": {
         "position": {
-          "x": 3840,
-          "y": 320
+          "x": 5030.4,
+          "y": 282.4
+        }
+      },
+      "transferToMainMenu": {
+        "position": {
+          "x": 5033.6,
+          "y": 549.6
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "keypad-facility-info-main-menu-flow"
+          }
+        },
+        "ContactFlow": {
+          "text": "keypad-facility-info-main-menu-flow"
+        }
+      },
+      "setConfirmMsg": {
+        "position": {
+          "x": 2400.8,
+          "y": -352.8
+        },
+        "dynamicParams": []
+      },
+      "confirmMenu": {
+        "position": {
+          "x": 2840,
+          "y": -817.6
+        },
+        "conditionMetadata": [
+          {
+            "id": "46549ab0-14b9-423a-b90a-eb7506003ac0",
+            "value": "1"
+          },
+          {
+            "id": "0b4b99dc-a105-4f7e-bedf-6792b3ec778e",
+            "value": "2"
+          },
+          {
+            "id": "0357685f-3768-4848-8119-ae40836bc247",
+            "value": "0"
+          },
+          {
+            "id": "9b389b8e-e754-4d54-b167-5af06dc3691a",
+            "value": "*"
+          },
+          {
+            "id": "c19f11cf-fab7-408f-bbb6-59898dbe4586",
+            "value": "#"
+          }
+        ]
+      },
+      "setSuccessMsg": {
+        "position": {
+          "x": 4734.4,
+          "y": -864
+        }
+      },
+      "setCancelFailMsg": {
+        "position": {
+          "x": 4748.8,
+          "y": -632.8
+        }
+      },
+      "playNeedsAuthMsg": {
+        "position": {
+          "x": 116,
+          "y": -221.6
         }
       },
       "disconnectEnd": {
         "position": {
-          "x": 4040,
-          "y": 320
+          "x": 5401.6,
+          "y": 308.8
+        }
+      },
+      "playEmptyMsg": {
+        "position": {
+          "x": 680,
+          "y": 1169.6
+        }
+      },
+      "playDeclineMsg": {
+        "position": {
+          "x": 3465.6,
+          "y": -825.6
+        }
+      },
+      "transferToAuthenticatedMenu": {
+        "position": {
+          "x": 5034.4,
+          "y": 21.6
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "keypad-facility-info-main-menu-flow"
+          }
+        },
+        "ContactFlow": {
+          "text": "keypad-facility-info-main-menu-flow"
         }
       }
     },
     "Annotations": [],
-    "name": "Appointment Cancel (S-07, keypad)",
-    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is. Only reachable once $.Attributes.authenticated is 'true' (gated by the caller before transferring here). Single flow shared by both locales via $.Attributes.locale, forwarded as the 'locale' parameter on every Appointment Cancel Lambda invoke so its own locale branch (day labels, specialty display name) fires correctly. MANUAL STEP (not expressible in this JSON - the Data Table block has no published Flow Language schema): after importing, insert a Data Table block as the true first action, Evaluate action, table 'AppointmentCancelPrompts', one query named 'AppointmentCancelPrompts', Primary Attribute locale=$.Attributes.locale, Query Attributes = every column listed in connect-flow-templates/data-tables.md's AppointmentCancelPrompts section. Set this flow's StartAction to your new block's Identifier, and its Success transition to 'copyPrompts' (currently the StartAction as a placeholder).",
+    "name": "keypad-appointment-cancel-flow",
+    "description": "",
     "type": "contactFlow",
-    "status": "SAVED",
+    "status": "published",
     "hash": {}
   },
   "Actions": [
     {
-      "Identifier": "copyPrompts",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
-        "Attributes": {
-          "needsAuthMsg": "$.DataTables.AppointmentCancelPrompts.needsAuthMsg",
-          "emptyMsg": "$.DataTables.AppointmentCancelPrompts.emptyMsg",
-          "selectionPrefix": "$.DataTables.AppointmentCancelPrompts.selectionPrefix",
-          "selectionFrag2": "$.DataTables.AppointmentCancelPrompts.selectionFrag2",
-          "selectionFrag3": "$.DataTables.AppointmentCancelPrompts.selectionFrag3",
-          "selectionSuffix": "$.DataTables.AppointmentCancelPrompts.selectionSuffix",
-          "confirmPrefix": "$.DataTables.AppointmentCancelPrompts.confirmPrefix",
-          "confirmSuffix": "$.DataTables.AppointmentCancelPrompts.confirmSuffix",
-          "declineMsg": "$.DataTables.AppointmentCancelPrompts.declineMsg",
-          "successMsg": "$.DataTables.AppointmentCancelPrompts.successMsg",
-          "cancelFailMsg": "$.DataTables.AppointmentCancelPrompts.cancelFailMsg",
-          "giveUpInputMsg": "$.DataTables.AppointmentCancelPrompts.giveUpInputMsg",
-          "notFoundMsg": "$.DataTables.AppointmentCancelPrompts.notFoundMsg",
-          "giveUpSelectionMsg": "$.DataTables.AppointmentCancelPrompts.giveUpSelectionMsg",
-          "errorTransfer": "$.DataTables.AppointmentCancelPrompts.errorTransfer"
-        },
-        "TargetContact": "Current"
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.giveUpInputMsg"
       },
+      "Identifier": "giveUpInputMsg",
+      "Type": "MessageParticipant",
       "Transitions": {
-        "NextAction": "checkLocaleForVoice",
+        "NextAction": "transferQueue",
         "Errors": [
           {
-            "NextAction": "checkLocaleForVoice",
+            "NextAction": "transferQueue",
             "ErrorType": "NoMatchingError"
           }
         ]
       }
     },
     {
-      "Identifier": "checkLocaleForVoice",
-      "Type": "Compare",
       "Parameters": {
-        "ComparisonValue": "$.Attributes.locale"
+        "ComparisonValue": "$.External.found"
       },
+      "Identifier": "checkCancelFound",
+      "Type": "Compare",
       "Transitions": {
-        "NextAction": "setVoicePl",
+        "NextAction": "setCancelFailMsg",
         "Conditions": [
           {
-            "NextAction": "setVoiceEn",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "en"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "setVoicePl",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setVoiceEn",
-      "Type": "UpdateContactTextToSpeechVoice",
-      "Parameters": {
-        "TextToSpeechEngine": "Neural",
-        "TextToSpeechVoice": "Joanna"
-      },
-      "Transitions": {
-        "NextAction": "initAttempts",
-        "Errors": [
-          {
-            "NextAction": "initAttempts",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setVoicePl",
-      "Type": "UpdateContactTextToSpeechVoice",
-      "Parameters": {
-        "TextToSpeechEngine": "Neural",
-        "TextToSpeechVoice": "Ola"
-      },
-      "Transitions": {
-        "NextAction": "initAttempts",
-        "Errors": [
-          {
-            "NextAction": "initAttempts",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "initAttempts",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "cancelInputAttempts": "0",
-          "cancelSelectionAttempts": "0"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "invokeList",
-        "Errors": [
-          {
-            "NextAction": "invokeList",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "invokeList",
-      "Type": "InvokeLambdaFunction",
-      "Parameters": {
-        "LambdaFunctionARN": "REPLACE_WITH_APPOINTMENT_CANCEL_FUNCTION_ARN",
-        "InvocationType": "SYNCHRONOUS",
-        "InvocationTimeLimitSeconds": "8",
-        "LambdaInvocationAttributes": {
-          "step": "list",
-          "authenticated": "$.Attributes.authenticated",
-          "patientId": "$.Attributes.patientId",
-          "locale": "$.Attributes.locale"
-        },
-        "ResponseValidation": {
-          "ResponseType": "STRING_MAP"
-        }
-      },
-      "Transitions": {
-        "NextAction": "checkNeedsAuth",
-        "Errors": [
-          {
-            "NextAction": "errorTransfer",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "checkNeedsAuth",
-      "Type": "Compare",
-      "Parameters": {
-        "ComparisonValue": "$.External.needsAuth"
-      },
-      "Transitions": {
-        "NextAction": "checkReachable",
-        "Conditions": [
-          {
-            "NextAction": "setNeedsAuthMsg",
+            "NextAction": "checkCancelled",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -478,18 +624,172 @@
         ],
         "Errors": [
           {
-            "NextAction": "checkReachable",
+            "NextAction": "setCancelFailMsg",
             "ErrorType": "NoMatchingCondition"
           }
         ]
       }
     },
     {
-      "Identifier": "checkReachable",
+      "Parameters": {
+        "ComparisonValue": "$.External.cancelled"
+      },
+      "Identifier": "checkCancelled",
       "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setCancelFailMsg",
+        "Conditions": [
+          {
+            "NextAction": "setSuccessMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setCancelFailMsg",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.giveUpSelectionMsg"
+      },
+      "Identifier": "giveUpSelectionMsg",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "transferQueue",
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.cancelSelectionAttempts"
+      },
+      "Identifier": "bumpSelectionAttempts",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setSelAttempts1",
+        "Conditions": [
+          {
+            "NextAction": "giveUpSelectionMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSelAttempts2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setSelAttempts1",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "cancelSelectionAttempts": "2"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSelAttempts2",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setNotFoundMsg",
+        "Errors": [
+          {
+            "NextAction": "setNotFoundMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "cancelSelectionAttempts": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSelAttempts1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setNotFoundMsg",
+        "Errors": [
+          {
+            "NextAction": "setNotFoundMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.notFoundMsg"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setNotFoundMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "playNotFoundMsg",
+        "Errors": [
+          {
+            "NextAction": "playNotFoundMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.giveUpInputMsg"
+      },
+      "Identifier": "50414ef4-8100-4163-be09-6cad871a8968",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "transferQueue",
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
       "Parameters": {
         "ComparisonValue": "$.External.reachable"
       },
+      "Identifier": "checkReachable",
+      "Type": "Compare",
       "Transitions": {
         "NextAction": "errorTransfer",
         "Conditions": [
@@ -512,11 +812,312 @@
       }
     },
     {
-      "Identifier": "checkHasAppointments",
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.needsAuthMsg"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setNeedsAuthMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "playNeedsAuthMsg",
+        "Errors": [
+          {
+            "NextAction": "playNeedsAuthMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.lastMessageText"
+      },
+      "Identifier": "playNotFoundMsg",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "invokeList",
+        "Errors": [
+          {
+            "NextAction": "invokeList",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.needsAuth"
+      },
+      "Identifier": "checkNeedsAuth",
       "Type": "Compare",
+      "Transitions": {
+        "NextAction": "checkReachable",
+        "Conditions": [
+          {
+            "NextAction": "setNeedsAuthMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "checkReachable",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-appointment-cancel",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "step": "list",
+          "authenticated": "$.Attributes.authenticated",
+          "patientId": "$.Attributes.patientId",
+          "locale": "$.Attributes.locale"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "invokeList",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "checkNeedsAuth",
+        "Errors": [
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.reachable"
+      },
+      "Identifier": "checkConfirmReachable",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "errorTransfer",
+        "Conditions": [
+          {
+            "NextAction": "checkFound",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-appointment-cancel",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "step": "confirm",
+          "selectedSlot": "$.Attributes.selectedSlot",
+          "authenticated": "$.Attributes.authenticated",
+          "patientId": "$.Attributes.patientId",
+          "locale": "$.Attributes.locale"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "invokeConfirm",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "checkConfirmReachable",
+        "Errors": [
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.reachable"
+      },
+      "Identifier": "checkCancelReachable",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "errorTransfer",
+        "Conditions": [
+          {
+            "NextAction": "checkCancelFound",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.errorTransfer"
+      },
+      "Identifier": "errorTransfer",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "transferQueue",
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.emptyMsg"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setEmptyMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "playEmptyMsg",
+        "Errors": [
+          {
+            "NextAction": "playEmptyMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "cancelInputAttempts": "0",
+          "cancelSelectionAttempts": "0"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "initAttempts",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeList",
+        "Errors": [
+          {
+            "NextAction": "invokeList",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "needsAuthMsg": "$.DataTables.AppointmentCancelPrompts.needsAuthMsg",
+          "emptyMsg": "$.DataTables.AppointmentCancelPrompts.emptyMsg",
+          "selectionPrefix": "$.DataTables.AppointmentCancelPrompts.selectionPrefix",
+          "selectionSuffix": "$.DataTables.AppointmentCancelPrompts.selectionSuffix",
+          "confirmPrefix": "$.DataTables.AppointmentCancelPrompts.confirmPrefix",
+          "confirmSuffix": "$.DataTables.AppointmentCancelPrompts.confirmSuffix",
+          "declineMsg": "$.DataTables.AppointmentCancelPrompts.declineMsg",
+          "successMsg": "$.DataTables.AppointmentCancelPrompts.successMsg",
+          "cancelFailMsg": "$.DataTables.AppointmentCancelPrompts.cancelFailMsg",
+          "giveUpInputMsg": "$.DataTables.AppointmentCancelPrompts.giveUpInputMsg",
+          "notFoundMsg": "$.DataTables.AppointmentCancelPrompts.notFoundMsg",
+          "giveUpSelectionMsg": "$.DataTables.AppointmentCancelPrompts.giveUpSelectionMsg",
+          "errorTransfer": "$.DataTables.AppointmentCancelPrompts.errorTransfer"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "copyPrompts",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "initAttempts",
+        "Errors": [
+          {
+            "NextAction": "initAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "DataTableId": "c1fcade8-7b0d-4b2c-93cd-a5c8b1f5f0f0",
+        "Queries": [
+          {
+            "QueryName": "AppointmentCancelPrompts",
+            "Attributes": [
+              "confirmPrefix",
+              "giveUpSelectionMsg",
+              "emptyMsg",
+              "confirmSuffix",
+              "selectionSuffix",
+              "successMsg",
+              "giveUpInputMsg",
+              "needsAuthMsg",
+              "notFoundMsg",
+              "errorTransfer",
+              "selectionPrefix",
+              "declineMsg",
+              "cancelFailMsg"
+            ],
+            "PrimaryValues": [
+              {
+                "AttributeName": "locale",
+                "Value": "$.Attributes.locale"
+              }
+            ]
+          }
+        ]
+      },
+      "Identifier": "960c598b-11ea-4edb-a185-d9d9851f4774",
+      "Type": "EvaluateDataTableValues",
+      "Transitions": {
+        "NextAction": "copyPrompts",
+        "Errors": [
+          {
+            "NextAction": "copyPrompts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
       "Parameters": {
         "ComparisonValue": "$.External.hasAppointments"
       },
+      "Identifier": "checkHasAppointments",
+      "Type": "Compare",
       "Transitions": {
         "NextAction": "errorTransfer",
         "Conditions": [
@@ -548,86 +1149,14 @@
       }
     },
     {
-      "Identifier": "setNeedsAuthMsg",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "$.Attributes.needsAuthMsg"
+          "cancelInputAttempts": "2"
         },
         "TargetContact": "Current"
       },
-      "Transitions": {
-        "NextAction": "playNeedsAuthMsg",
-        "Errors": [
-          {
-            "NextAction": "playNeedsAuthMsg",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "playNeedsAuthMsg",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.lastMessageText"
-      },
-      "Transitions": {
-        "NextAction": "transferToAuthenticatedMenu",
-        "Errors": [
-          {
-            "NextAction": "transferToAuthenticatedMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setEmptyMsg",
+      "Identifier": "setSelInputAttempts2",
       "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "$.Attributes.emptyMsg"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "playEmptyMsg",
-        "Errors": [
-          {
-            "NextAction": "playEmptyMsg",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "playEmptyMsg",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.lastMessageText"
-      },
-      "Transitions": {
-        "NextAction": "transferToAuthenticatedMenu",
-        "Errors": [
-          {
-            "NextAction": "transferToAuthenticatedMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setSelectionMsg",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "$.Attributes.selectionPrefix$.External.appt1$.Attributes.selectionFrag2$.External.appt2$.Attributes.selectionFrag3$.External.appt3$.Attributes.selectionSuffix"
-        },
-        "TargetContact": "Current"
-      },
       "Transitions": {
         "NextAction": "selectionMenu",
         "Errors": [
@@ -639,13 +1168,144 @@
       }
     },
     {
-      "Identifier": "selectionMenu",
-      "Type": "GetParticipantInput",
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.cancelInputAttempts"
+      },
+      "Identifier": "bumpSelectionInputAttempts",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setSelInputAttempts1",
+        "Conditions": [
+          {
+            "NextAction": "giveUpInputMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSelInputAttempts2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setSelInputAttempts1",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "cancelInputAttempts": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSelInputAttempts1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "selectionMenu",
+        "Errors": [
+          {
+            "NextAction": "selectionMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "selectedSlot": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSelected1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeConfirm",
+        "Errors": [
+          {
+            "NextAction": "invokeConfirm",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "selectedSlot": "2"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSelected2",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeConfirm",
+        "Errors": [
+          {
+            "NextAction": "invokeConfirm",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "selectedSlot": "3"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSelected3",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeConfirm",
+        "Errors": [
+          {
+            "NextAction": "invokeConfirm",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.selectionPrefix$.External.apptsList$.Attributes.selectionSuffix"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSelectionMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "selectionMenu",
+        "Errors": [
+          {
+            "NextAction": "selectionMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
       "Parameters": {
         "StoreInput": "False",
-        "Text": "$.Attributes.lastMessageText",
-        "InputTimeLimitSeconds": "10"
+        "InputTimeLimitSeconds": "10",
+        "SSML": "$.Attributes.lastMessageText"
       },
+      "Identifier": "selectionMenu",
+      "Type": "GetParticipantInput",
       "Transitions": {
         "NextAction": "bumpSelectionInputAttempts",
         "Conditions": [
@@ -686,7 +1346,7 @@
             }
           },
           {
-            "NextAction": "repeatSelection",
+            "NextAction": "setSelectionMsg",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -707,154 +1367,25 @@
         "Errors": [
           {
             "NextAction": "bumpSelectionInputAttempts",
-            "ErrorType": "NoMatchingCondition"
-          },
-          {
-            "NextAction": "bumpSelectionInputAttempts",
             "ErrorType": "InputTimeLimitExceeded"
           },
           {
             "NextAction": "bumpSelectionInputAttempts",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setSelected1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "selectedSlot": "1"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "invokeConfirm",
-        "Errors": [
-          {
-            "NextAction": "invokeConfirm",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setSelected2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "selectedSlot": "2"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "invokeConfirm",
-        "Errors": [
-          {
-            "NextAction": "invokeConfirm",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setSelected3",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "selectedSlot": "3"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "invokeConfirm",
-        "Errors": [
-          {
-            "NextAction": "invokeConfirm",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "repeatSelection",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.lastMessageText"
-      },
-      "Transitions": {
-        "NextAction": "selectionMenu",
-        "Errors": [
-          {
-            "NextAction": "selectionMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "invokeConfirm",
-      "Type": "InvokeLambdaFunction",
-      "Parameters": {
-        "LambdaFunctionARN": "REPLACE_WITH_APPOINTMENT_CANCEL_FUNCTION_ARN",
-        "InvocationType": "SYNCHRONOUS",
-        "InvocationTimeLimitSeconds": "8",
-        "LambdaInvocationAttributes": {
-          "step": "confirm",
-          "selectedSlot": "$.Attributes.selectedSlot",
-          "authenticated": "$.Attributes.authenticated",
-          "patientId": "$.Attributes.patientId",
-          "locale": "$.Attributes.locale"
-        },
-        "ResponseValidation": {
-          "ResponseType": "STRING_MAP"
-        }
-      },
-      "Transitions": {
-        "NextAction": "checkConfirmReachable",
-        "Errors": [
-          {
-            "NextAction": "errorTransfer",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "checkConfirmReachable",
-      "Type": "Compare",
-      "Parameters": {
-        "ComparisonValue": "$.External.reachable"
-      },
-      "Transitions": {
-        "NextAction": "errorTransfer",
-        "Conditions": [
-          {
-            "NextAction": "checkFound",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "true"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "errorTransfer",
             "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bumpSelectionInputAttempts",
+            "ErrorType": "NoMatchingError"
           }
         ]
       }
     },
     {
-      "Identifier": "checkFound",
-      "Type": "Compare",
       "Parameters": {
         "ComparisonValue": "$.External.found"
       },
+      "Identifier": "checkFound",
+      "Type": "Compare",
       "Transitions": {
         "NextAction": "bumpSelectionAttempts",
         "Conditions": [
@@ -877,14 +1408,14 @@
       }
     },
     {
-      "Identifier": "setConfirmMsg",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "$.Attributes.confirmPrefix$.External.message$.Attributes.confirmSuffix"
+          "cancelInputAttempts": "2"
         },
         "TargetContact": "Current"
       },
+      "Identifier": "setConfInputAttempts2",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
         "NextAction": "confirmMenu",
         "Errors": [
@@ -896,13 +1427,149 @@
       }
     },
     {
-      "Identifier": "confirmMenu",
-      "Type": "GetParticipantInput",
+      "Parameters": {
+        "Attributes": {
+          "cancelInputAttempts": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setConfInputAttempts1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "confirmMenu",
+        "Errors": [
+          {
+            "NextAction": "confirmMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.cancelInputAttempts"
+      },
+      "Identifier": "bumpConfirmInputAttempts",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setConfInputAttempts1",
+        "Conditions": [
+          {
+            "NextAction": "50414ef4-8100-4163-be09-6cad871a8968",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setConfInputAttempts2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setConfInputAttempts1",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-appointment-cancel",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "step": "cancel",
+          "selectedSlot": "$.Attributes.selectedSlot",
+          "authenticated": "$.Attributes.authenticated",
+          "patientId": "$.Attributes.patientId",
+          "locale": "$.Attributes.locale"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "invokeCancel",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "checkCancelReachable",
+        "Errors": [
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "transferQueue",
+      "Type": "TransferContactToQueue",
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "QueueAtCapacity"
+          },
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/contact-flow/b4a58524-197b-4ce3-976d-346b3da22706"
+      },
+      "Identifier": "transferToMainMenu",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.confirmPrefix$.External.message$.Attributes.confirmSuffix"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setConfirmMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "confirmMenu",
+        "Errors": [
+          {
+            "NextAction": "confirmMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
       "Parameters": {
         "StoreInput": "False",
-        "Text": "$.Attributes.lastMessageText",
-        "InputTimeLimitSeconds": "10"
+        "InputTimeLimitSeconds": "10",
+        "SSML": "$.Attributes.lastMessageText"
       },
+      "Identifier": "confirmMenu",
+      "Type": "GetParticipantInput",
       "Transitions": {
         "NextAction": "bumpConfirmInputAttempts",
         "Conditions": [
@@ -934,7 +1601,7 @@
             }
           },
           {
-            "NextAction": "repeatConfirm",
+            "NextAction": "setConfirmMsg",
             "Condition": {
               "Operator": "Equals",
               "Operands": [
@@ -955,169 +1622,26 @@
         "Errors": [
           {
             "NextAction": "bumpConfirmInputAttempts",
-            "ErrorType": "NoMatchingCondition"
-          },
-          {
-            "NextAction": "bumpConfirmInputAttempts",
             "ErrorType": "InputTimeLimitExceeded"
           },
           {
             "NextAction": "bumpConfirmInputAttempts",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "repeatConfirm",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.lastMessageText"
-      },
-      "Transitions": {
-        "NextAction": "confirmMenu",
-        "Errors": [
-          {
-            "NextAction": "confirmMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "playDeclineMsg",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.declineMsg"
-      },
-      "Transitions": {
-        "NextAction": "transferToAuthenticatedMenu",
-        "Errors": [
-          {
-            "NextAction": "transferToAuthenticatedMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "invokeCancel",
-      "Type": "InvokeLambdaFunction",
-      "Parameters": {
-        "LambdaFunctionARN": "REPLACE_WITH_APPOINTMENT_CANCEL_FUNCTION_ARN",
-        "InvocationType": "SYNCHRONOUS",
-        "InvocationTimeLimitSeconds": "8",
-        "LambdaInvocationAttributes": {
-          "step": "cancel",
-          "selectedSlot": "$.Attributes.selectedSlot",
-          "authenticated": "$.Attributes.authenticated",
-          "patientId": "$.Attributes.patientId",
-          "locale": "$.Attributes.locale"
-        },
-        "ResponseValidation": {
-          "ResponseType": "STRING_MAP"
-        }
-      },
-      "Transitions": {
-        "NextAction": "checkCancelReachable",
-        "Errors": [
-          {
-            "NextAction": "errorTransfer",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "checkCancelReachable",
-      "Type": "Compare",
-      "Parameters": {
-        "ComparisonValue": "$.External.reachable"
-      },
-      "Transitions": {
-        "NextAction": "errorTransfer",
-        "Conditions": [
-          {
-            "NextAction": "checkCancelFound",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "true"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "errorTransfer",
             "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bumpConfirmInputAttempts",
+            "ErrorType": "NoMatchingError"
           }
         ]
       }
     },
     {
-      "Identifier": "checkCancelFound",
-      "Type": "Compare",
-      "Parameters": {
-        "ComparisonValue": "$.External.found"
-      },
-      "Transitions": {
-        "NextAction": "setCancelFailMsg",
-        "Conditions": [
-          {
-            "NextAction": "checkCancelled",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "true"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "setCancelFailMsg",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "checkCancelled",
-      "Type": "Compare",
-      "Parameters": {
-        "ComparisonValue": "$.External.cancelled"
-      },
-      "Transitions": {
-        "NextAction": "setCancelFailMsg",
-        "Conditions": [
-          {
-            "NextAction": "setSuccessMsg",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "true"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "setCancelFailMsg",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setSuccessMsg",
-      "Type": "MessageParticipant",
       "Parameters": {
         "SkipWhenDTMFBufferEnabled": "false",
         "Text": "$.Attributes.successMsg"
       },
+      "Identifier": "setSuccessMsg",
+      "Type": "MessageParticipant",
       "Transitions": {
         "NextAction": "transferToAuthenticatedMenu",
         "Errors": [
@@ -1129,12 +1653,12 @@
       }
     },
     {
-      "Identifier": "setCancelFailMsg",
-      "Type": "MessageParticipant",
       "Parameters": {
         "SkipWhenDTMFBufferEnabled": "false",
         "Text": "$.Attributes.cancelFailMsg"
       },
+      "Identifier": "setCancelFailMsg",
+      "Type": "MessageParticipant",
       "Transitions": {
         "NextAction": "transferToAuthenticatedMenu",
         "Errors": [
@@ -1146,369 +1670,77 @@
       }
     },
     {
-      "Identifier": "bumpSelectionInputAttempts",
-      "Type": "Compare",
-      "Parameters": {
-        "ComparisonValue": "$.Attributes.cancelInputAttempts"
-      },
-      "Transitions": {
-        "NextAction": "setSelInputAttempts1",
-        "Conditions": [
-          {
-            "NextAction": "giveUpInputMsg",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "2"
-              ]
-            }
-          },
-          {
-            "NextAction": "setSelInputAttempts2",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "1"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "setSelInputAttempts1",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setSelInputAttempts1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "cancelInputAttempts": "1"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "selectionMenu",
-        "Errors": [
-          {
-            "NextAction": "selectionMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setSelInputAttempts2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "cancelInputAttempts": "2"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "selectionMenu",
-        "Errors": [
-          {
-            "NextAction": "selectionMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "bumpConfirmInputAttempts",
-      "Type": "Compare",
-      "Parameters": {
-        "ComparisonValue": "$.Attributes.cancelInputAttempts"
-      },
-      "Transitions": {
-        "NextAction": "setConfInputAttempts1",
-        "Conditions": [
-          {
-            "NextAction": "giveUpInputMsg",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "2"
-              ]
-            }
-          },
-          {
-            "NextAction": "setConfInputAttempts2",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "1"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "setConfInputAttempts1",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setConfInputAttempts1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "cancelInputAttempts": "1"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "confirmMenu",
-        "Errors": [
-          {
-            "NextAction": "confirmMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setConfInputAttempts2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "cancelInputAttempts": "2"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "confirmMenu",
-        "Errors": [
-          {
-            "NextAction": "confirmMenu",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "giveUpInputMsg",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.giveUpInputMsg"
-      },
-      "Transitions": {
-        "NextAction": "transferQueue",
-        "Errors": [
-          {
-            "NextAction": "transferQueue",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "bumpSelectionAttempts",
-      "Type": "Compare",
-      "Parameters": {
-        "ComparisonValue": "$.Attributes.cancelSelectionAttempts"
-      },
-      "Transitions": {
-        "NextAction": "setSelAttempts1",
-        "Conditions": [
-          {
-            "NextAction": "giveUpSelectionMsg",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "2"
-              ]
-            }
-          },
-          {
-            "NextAction": "setSelAttempts2",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "1"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "setSelAttempts1",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setSelAttempts1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "cancelSelectionAttempts": "1"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "setNotFoundMsg",
-        "Errors": [
-          {
-            "NextAction": "setNotFoundMsg",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setSelAttempts2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "cancelSelectionAttempts": "2"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "setNotFoundMsg",
-        "Errors": [
-          {
-            "NextAction": "setNotFoundMsg",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setNotFoundMsg",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "$.Attributes.notFoundMsg"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "playNotFoundMsg",
-        "Errors": [
-          {
-            "NextAction": "playNotFoundMsg",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "playNotFoundMsg",
-      "Type": "MessageParticipant",
       "Parameters": {
         "SkipWhenDTMFBufferEnabled": "false",
         "Text": "$.Attributes.lastMessageText"
       },
-      "Transitions": {
-        "NextAction": "invokeList",
-        "Errors": [
-          {
-            "NextAction": "invokeList",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "giveUpSelectionMsg",
+      "Identifier": "playNeedsAuthMsg",
       "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.giveUpSelectionMsg"
-      },
       "Transitions": {
-        "NextAction": "transferQueue",
+        "NextAction": "transferToAuthenticatedMenu",
         "Errors": [
           {
-            "NextAction": "transferQueue",
+            "NextAction": "transferToAuthenticatedMenu",
             "ErrorType": "NoMatchingError"
           }
         ]
       }
     },
     {
-      "Identifier": "errorTransfer",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.errorTransfer"
-      },
-      "Transitions": {
-        "NextAction": "transferQueue",
-        "Errors": [
-          {
-            "NextAction": "transferQueue",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "transferToMainMenu",
-      "Type": "TransferToFlow",
-      "Parameters": {
-        "ContactFlowId": "REPLACE_WITH_MAIN_MENU_FLOW_ARN"
-      },
-      "Transitions": {
-        "NextAction": "disconnectEnd",
-        "Errors": [
-          {
-            "NextAction": "disconnectEnd",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "transferToAuthenticatedMenu",
-      "Type": "TransferToFlow",
-      "Parameters": {
-        "ContactFlowId": "REPLACE_WITH_AUTHENTICATED_MENU_FLOW_ARN"
-      },
-      "Transitions": {
-        "NextAction": "disconnectEnd",
-        "Errors": [
-          {
-            "NextAction": "disconnectEnd",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "transferQueue",
-      "Type": "TransferContactToQueue",
       "Parameters": {},
-      "Transitions": {
-        "NextAction": "disconnectEnd",
-        "Errors": [
-          {
-            "NextAction": "disconnectEnd",
-            "ErrorType": "QueueAtCapacity"
-          },
-          {
-            "NextAction": "disconnectEnd",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
       "Identifier": "disconnectEnd",
       "Type": "DisconnectParticipant",
-      "Parameters": {},
       "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.lastMessageText"
+      },
+      "Identifier": "playEmptyMsg",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "transferToAuthenticatedMenu",
+        "Errors": [
+          {
+            "NextAction": "transferToAuthenticatedMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.declineMsg"
+      },
+      "Identifier": "playDeclineMsg",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "transferToAuthenticatedMenu",
+        "Errors": [
+          {
+            "NextAction": "transferToAuthenticatedMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/contact-flow/b4a58524-197b-4ce3-976d-346b3da22706"
+      },
+      "Identifier": "transferToAuthenticatedMenu",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
     }
   ]
 }

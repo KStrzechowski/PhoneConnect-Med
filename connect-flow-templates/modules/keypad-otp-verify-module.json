@@ -2,231 +2,691 @@
   "Version": "2019-10-30",
   "StartAction": "initOtpAttempts",
   "Metadata": {
-    "entryPointPosition": { "x": 40, "y": 40 },
+    "entryPointPosition": {
+      "x": -1243.2,
+      "y": 116
+    },
     "ActionMetadata": {
-      "initOtpAttempts": { "position": { "x": 40, "y": 40 } },
-      "setMenuMsg": { "position": { "x": 240, "y": 40 } },
-      "menuPrompt": { "position": { "x": 440, "y": 40 } },
-      "repeatMenu": { "position": { "x": 440, "y": 280 } },
-      "setCodeMsg": { "position": { "x": 640, "y": 40 } },
-      "codePrompt": { "position": { "x": 840, "y": 40 } },
-      "saveEnteredCode": { "position": { "x": 1040, "y": 40 } },
-      "invokeVerify": { "position": { "x": 1240, "y": 40 } },
-      "checkVerify": { "position": { "x": 1440, "y": 40 } },
-      "setAuthAttrs": { "position": { "x": 1640, "y": 40 } },
-      "invokeResend": { "position": { "x": 440, "y": 500 } },
-      "saveResentCode": { "position": { "x": 640, "y": 500 } },
-      "bumpOtpAttempts": { "position": { "x": 1240, "y": 320 } },
-      "setAttempts1": { "position": { "x": 1040, "y": 320 } },
-      "setAttempts2": { "position": { "x": 1040, "y": 500 } },
-      "endModule": { "position": { "x": 1840, "y": 40 } }
+      "initOtpAttempts": {
+        "position": {
+          "x": -1074.4,
+          "y": 25.6
+        },
+        "dynamicParams": []
+      },
+      "setAuthAttrs": {
+        "position": {
+          "x": 1904.8,
+          "y": -484.8
+        },
+        "dynamicParams": []
+      },
+      "checkVerify": {
+        "position": {
+          "x": 1659.2,
+          "y": -491.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "539dc3a9-8e5b-479c-927f-97d8644b36d3",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "invokeVerify": {
+        "position": {
+          "x": 1435.2,
+          "y": -496.8
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-otp-verify"
+          }
+        },
+        "dynamicMetadata": {
+          "enteredCode": false,
+          "expectedCode": false,
+          "isDemo": false,
+          "patientId": false
+        }
+      },
+      "saveEnteredCode": {
+        "position": {
+          "x": 1188,
+          "y": -495.2
+        },
+        "dynamicParams": []
+      },
+      "codePrompt": {
+        "position": {
+          "x": 943.2,
+          "y": -497.6
+        },
+        "conditionMetadata": [],
+        "countryCodePrefix": "+1"
+      },
+      "endModule": {
+        "position": {
+          "x": 2237.6,
+          "y": -82.4
+        }
+      },
+      "bumpOtpAttempts": {
+        "position": {
+          "x": 852.8,
+          "y": 243.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "c4c6f1f5-05e8-49f2-a507-ece3b1d252ea",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "2"
+          },
+          {
+            "id": "49b9adf3-5d44-4cc4-8f47-e07b6247fd22",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "1"
+          }
+        ]
+      },
+      "setCodeMsg": {
+        "position": {
+          "x": 709.6,
+          "y": -505.6
+        },
+        "parameters": {
+          "Attributes": {
+            "lastMessageText": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "lastMessageText"
+        ]
+      },
+      "d197133c-157c-4471-ba89-109a0cdb88db": {
+        "position": {
+          "x": -804.8,
+          "y": 35.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "a1c5952b-04a7-4099-99cd-764babcc3ff0",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "pl"
+          }
+        ]
+      },
+      "setAttempts1": {
+        "position": {
+          "x": 1256,
+          "y": 580
+        },
+        "dynamicParams": []
+      },
+      "setAttempts2": {
+        "position": {
+          "x": 1255.2,
+          "y": 380.8
+        },
+        "dynamicParams": []
+      },
+      "saveResentCode": {
+        "position": {
+          "x": 1301.6,
+          "y": -82.4
+        },
+        "dynamicParams": []
+      },
+      "invokeResend": {
+        "position": {
+          "x": 839.2,
+          "y": -246.4
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-send-otp"
+          }
+        },
+        "dynamicMetadata": {
+          "code": false,
+          "phone": false,
+          "isDemo": false,
+          "isResend": false
+        }
+      },
+      "menuPrompt": {
+        "position": {
+          "x": 350.4,
+          "y": -301.6
+        },
+        "conditionMetadata": [
+          {
+            "id": "1ac58587-0a58-44db-8e84-f7cc9f337b11",
+            "value": "1"
+          },
+          {
+            "id": "1c41f8b2-145e-40f4-b1b4-88cb14518275",
+            "value": "9"
+          },
+          {
+            "id": "dd2c6cd1-d978-4879-ac29-08c9b0e1d71d",
+            "value": "*"
+          },
+          {
+            "id": "7c7cd0d7-db57-440b-8461-877bf1dc353c",
+            "value": "0"
+          }
+        ]
+      },
+      "38f87cc3-b687-4a3a-a455-8bdaad1af398": {
+        "position": {
+          "x": -462.4,
+          "y": 150.4
+        }
+      },
+      "278c3af7-7891-49b5-b8cd-8bc5f297a4a6": {
+        "position": {
+          "x": -456.8,
+          "y": -86.4
+        }
+      },
+      "setMenuMsg": {
+        "position": {
+          "x": 36.8,
+          "y": -249.6
+        },
+        "parameters": {
+          "Attributes": {
+            "lastMessageText": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "lastMessageText"
+        ]
+      }
     },
     "Annotations": [],
-    "name": "Keypad OTP Verify (S-04)",
-    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is. Expects isDemo/code/phone/patientId already set as contact attributes by the caller (keypad-authenticate-flow.json's non-shortcut branch) before this module is invoked.",
-    "type": "contactFlowModule",
-    "status": "SAVED",
+    "name": "keypad-otp-verify-module",
+    "description": "",
+    "status": "published",
+    "settings": {},
     "hash": {}
   },
   "Actions": [
     {
-      "Identifier": "initOtpAttempts",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "otpAttempts": "0" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMenuMsg",
-        "Errors": [{ "NextAction": "setMenuMsg", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setMenuMsg",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Aby wprowadzić otrzymany kod, naciśnij jeden. Aby otrzymać nowy kod, naciśnij dziewięć."
+          "otpAttempts": "0"
         },
         "TargetContact": "Current"
       },
+      "Identifier": "initOtpAttempts",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
-        "NextAction": "menuPrompt",
-        "Errors": [{ "NextAction": "menuPrompt", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "menuPrompt",
-      "Type": "GetParticipantInput",
-      "Parameters": {
-        "Text": "$.Attributes.lastMessageText",
-        "InputTimeLimitSeconds": "10",
-        "DTMFConfiguration": { "DisableCancelKey": "False", "InterdigitTimeLimitSeconds": "5" }
-      },
-      "Transitions": {
-        "NextAction": "bumpOtpAttempts",
-        "Conditions": [
-          { "NextAction": "setCodeMsg", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
-          { "NextAction": "invokeResend", "Condition": { "Operator": "Equals", "Operands": ["9"] } },
-          { "NextAction": "repeatMenu", "Condition": { "Operator": "Equals", "Operands": ["*"] } },
-          { "NextAction": "endModule", "Condition": { "Operator": "Equals", "Operands": ["0"] } }
-        ],
+        "NextAction": "d197133c-157c-4471-ba89-109a0cdb88db",
         "Errors": [
-          { "NextAction": "bumpOtpAttempts", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "bumpOtpAttempts", "ErrorType": "InputTimeLimitExceeded" },
-          { "NextAction": "bumpOtpAttempts", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "d197133c-157c-4471-ba89-109a0cdb88db",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
-      "Identifier": "repeatMenu",
-      "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
-      "Transitions": {
-        "NextAction": "menuPrompt",
-        "Errors": [{ "NextAction": "menuPrompt", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setCodeMsg",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
-        "Attributes": { "lastMessageText": "Wprowadź otrzymany kod, a następnie naciśnij krzyżyk." },
+        "Attributes": {
+          "authenticated": "true"
+        },
         "TargetContact": "Current"
       },
-      "Transitions": {
-        "NextAction": "codePrompt",
-        "Errors": [{ "NextAction": "codePrompt", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "codePrompt",
-      "Type": "GetParticipantInput",
-      "Parameters": {
-        "StoreInput": "True",
-        "InputTimeLimitSeconds": "15",
-        "Text": "$.Attributes.lastMessageText",
-        "DTMFConfiguration": { "DisableCancelKey": "False", "InterdigitTimeLimitSeconds": "5" },
-        "InputValidation": { "CustomValidation": { "MaximumLength": "6" } }
-      },
-      "Transitions": {
-        "NextAction": "saveEnteredCode",
-        "Errors": [{ "NextAction": "bumpOtpAttempts", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "saveEnteredCode",
+      "Identifier": "setAuthAttrs",
       "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "enteredCode": "$.StoredCustomerInput" }, "TargetContact": "Current" },
       "Transitions": {
-        "NextAction": "invokeVerify",
-        "Errors": [{ "NextAction": "invokeVerify", "ErrorType": "NoMatchingError" }]
+        "NextAction": "endModule",
+        "Errors": [
+          {
+            "NextAction": "endModule",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "invokeVerify",
-      "Type": "InvokeExternalResource",
       "Parameters": {
-        "FunctionArn": "REPLACE_WITH_OTP_VERIFY_FUNCTION_ARN",
+        "ComparisonValue": "$.External.authenticated"
+      },
+      "Identifier": "checkVerify",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "bumpOtpAttempts",
+        "Conditions": [
+          {
+            "NextAction": "setAuthAttrs",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpOtpAttempts",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-otp-verify",
         "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
         "LambdaInvocationAttributes": {
           "enteredCode": "$.Attributes.enteredCode",
           "expectedCode": "$.Attributes.code",
           "isDemo": "$.Attributes.isDemo",
           "patientId": "$.Attributes.patientId"
         },
-        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
       },
+      "Identifier": "invokeVerify",
+      "Type": "InvokeLambdaFunction",
       "Transitions": {
         "NextAction": "checkVerify",
-        "Errors": [{ "NextAction": "bumpOtpAttempts", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "bumpOtpAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "checkVerify",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.authenticated" },
-      "Transitions": {
-        "NextAction": "bumpOtpAttempts",
-        "Conditions": [
-          { "NextAction": "setAuthAttrs", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "bumpOtpAttempts", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "setAuthAttrs",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
-        "Attributes": { "authenticated": "true", "patientId": "$.External.patientId" },
+        "Attributes": {
+          "enteredCode": "$.StoredCustomerInput"
+        },
         "TargetContact": "Current"
       },
+      "Identifier": "saveEnteredCode",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
-        "NextAction": "endModule",
-        "Errors": [{ "NextAction": "endModule", "ErrorType": "NoMatchingError" }]
+        "NextAction": "invokeVerify",
+        "Errors": [
+          {
+            "NextAction": "invokeVerify",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "invokeResend",
-      "Type": "InvokeExternalResource",
       "Parameters": {
-        "FunctionArn": "REPLACE_WITH_SEND_OTP_FUNCTION_ARN",
+        "StoreInput": "True",
+        "InputTimeLimitSeconds": "15",
+        "Text": "$.Attributes.lastMessageText",
+        "InputValidation": {
+          "CustomValidation": {
+            "MaximumLength": "6"
+          }
+        }
+      },
+      "Identifier": "codePrompt",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "saveEnteredCode",
+        "Errors": [
+          {
+            "NextAction": "bumpOtpAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "endModule",
+      "Type": "EndFlowModuleExecution",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.otpAttempts"
+      },
+      "Identifier": "bumpOtpAttempts",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setAttempts1",
+        "Conditions": [
+          {
+            "NextAction": "endModule",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setAttempts2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setAttempts1",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.FlowAttributes.EnterOTP"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setCodeMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "codePrompt",
+        "Errors": [
+          {
+            "NextAction": "codePrompt",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.locale"
+      },
+      "Identifier": "d197133c-157c-4471-ba89-109a0cdb88db",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "38f87cc3-b687-4a3a-a455-8bdaad1af398",
+        "Conditions": [
+          {
+            "NextAction": "278c3af7-7891-49b5-b8cd-8bc5f297a4a6",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "pl"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "38f87cc3-b687-4a3a-a455-8bdaad1af398",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "otpAttempts": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setAttempts1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMenuMsg",
+        "Errors": [
+          {
+            "NextAction": "setMenuMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "otpAttempts": "2"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setAttempts2",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMenuMsg",
+        "Errors": [
+          {
+            "NextAction": "setMenuMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "code": "$.External.code"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "saveResentCode",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMenuMsg",
+        "Errors": [
+          {
+            "NextAction": "setMenuMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-send-otp",
         "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
         "LambdaInvocationAttributes": {
           "code": "$.Attributes.code",
           "phone": "$.Attributes.phone",
           "isDemo": "$.Attributes.isDemo",
           "isResend": "true"
         },
-        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
       },
+      "Identifier": "invokeResend",
+      "Type": "InvokeLambdaFunction",
       "Transitions": {
         "NextAction": "saveResentCode",
-        "Errors": [{ "NextAction": "setMenuMsg", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "setMenuMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "saveResentCode",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "code": "$.External.code" }, "TargetContact": "Current" },
+      "Parameters": {
+        "Text": "$.Attributes.lastMessageText",
+        "StoreInput": "False",
+        "InputTimeLimitSeconds": "10"
+      },
+      "Identifier": "menuPrompt",
+      "Type": "GetParticipantInput",
       "Transitions": {
-        "NextAction": "setMenuMsg",
-        "Errors": [{ "NextAction": "setMenuMsg", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "bumpOtpAttempts",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.Attributes.otpAttempts" },
-      "Transitions": {
-        "NextAction": "setAttempts1",
+        "NextAction": "bumpOtpAttempts",
         "Conditions": [
-          { "NextAction": "endModule", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setAttempts2", "Condition": { "Operator": "Equals", "Operands": ["1"] } }
+          {
+            "NextAction": "setCodeMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "invokeResend",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "9"
+              ]
+            }
+          },
+          {
+            "NextAction": "setMenuMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "*"
+              ]
+            }
+          },
+          {
+            "NextAction": "endModule",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
+          }
         ],
-        "Errors": [{ "NextAction": "setAttempts1", "ErrorType": "NoMatchingCondition" }]
+        "Errors": [
+          {
+            "NextAction": "bumpOtpAttempts",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "bumpOtpAttempts",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bumpOtpAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "setAttempts1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "otpAttempts": "1" }, "TargetContact": "Current" },
+      "Parameters": {
+        "FlowAttributes": {
+          "PreOTP": {
+            "Value": "To enter the code you received, press one. To receive a new code, press nine."
+          },
+          "EnterOTP": {
+            "Value": "Enter the code you received, then press the number sign."
+          }
+        }
+      },
+      "Identifier": "38f87cc3-b687-4a3a-a455-8bdaad1af398",
+      "Type": "UpdateFlowAttributes",
       "Transitions": {
         "NextAction": "setMenuMsg",
-        "Errors": [{ "NextAction": "setMenuMsg", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "setMenuMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "setAttempts2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "otpAttempts": "2" }, "TargetContact": "Current" },
+      "Parameters": {
+        "FlowAttributes": {
+          "PreOTP": {
+            "Value": "Aby wprowadzić otrzymany kod, naciśnij jeden. Aby otrzymać nowy kod, naciśnij dziewięć."
+          },
+          "EnterOTP": {
+            "Value": "Wprowadź otrzymany kod, a następnie naciśnij krzyżyk."
+          }
+        }
+      },
+      "Identifier": "278c3af7-7891-49b5-b8cd-8bc5f297a4a6",
+      "Type": "UpdateFlowAttributes",
       "Transitions": {
         "NextAction": "setMenuMsg",
-        "Errors": [{ "NextAction": "setMenuMsg", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "setMenuMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "endModule",
-      "Type": "EndFlowModuleExecution",
-      "Parameters": {},
-      "Transitions": {}
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.FlowAttributes.PreOTP"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setMenuMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "menuPrompt",
+        "Errors": [
+          {
+            "NextAction": "menuPrompt",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
     }
-  ]
+  ],
+  "Settings": {
+    "InputParameters": [],
+    "OutputParameters": [],
+    "Transitions": [
+      {
+        "DisplayName": "Success",
+        "ReferenceName": "Success",
+        "Description": ""
+      },
+      {
+        "DisplayName": "Error",
+        "ReferenceName": "Error",
+        "Description": ""
+      }
+    ]
+  }
 }

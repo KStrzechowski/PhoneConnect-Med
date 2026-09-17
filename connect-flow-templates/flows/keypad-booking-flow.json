@@ -1,663 +1,1131 @@
 {
   "Version": "2019-10-30",
-  "StartAction": "voice",
+  "StartAction": "ff8b45ee-9c05-482f-9287-bc637eca5098",
   "Metadata": {
-    "entryPointPosition": { "x": 40, "y": 40 },
+    "entryPointPosition": {
+      "x": -1764,
+      "y": 139.2
+    },
     "ActionMetadata": {
-      "voice": { "position": { "x": 40, "y": 40 } },
-      "initAttempts": { "position": { "x": 240, "y": 40 } },
-      "setMsgSpecialtyPage1": { "position": { "x": 440, "y": 40 } },
-      "specialtyMenuPage1": { "position": { "x": 640, "y": 40 } },
-      "setSpecialty1": { "position": { "x": 840, "y": -320 } },
-      "setSpecialty2": { "position": { "x": 840, "y": -260 } },
-      "setSpecialty3": { "position": { "x": 840, "y": -200 } },
-      "setSpecialty4": { "position": { "x": 840, "y": -140 } },
-      "setSpecialty5": { "position": { "x": 840, "y": -80 } },
-      "setSpecialty6": { "position": { "x": 840, "y": -20 } },
-      "setSpecialty7": { "position": { "x": 840, "y": 40 } },
-      "setSpecialty8": { "position": { "x": 840, "y": 100 } },
-      "repeatSpecialtyPage1": { "position": { "x": 640, "y": 260 } },
-      "setMsgSpecialtyPage2": { "position": { "x": 840, "y": 320 } },
-      "specialtyMenuPage2": { "position": { "x": 1040, "y": 320 } },
-      "setSpecialty9": { "position": { "x": 1240, "y": 160 } },
-      "setSpecialty10": { "position": { "x": 1240, "y": 220 } },
-      "setSpecialty11": { "position": { "x": 1240, "y": 280 } },
-      "setSpecialty12": { "position": { "x": 1240, "y": 340 } },
-      "setSpecialty13": { "position": { "x": 1240, "y": 400 } },
-      "setSpecialty14": { "position": { "x": 1240, "y": 460 } },
-      "setSpecialty15": { "position": { "x": 1240, "y": 520 } },
-      "repeatSpecialtyPage2": { "position": { "x": 1040, "y": 540 } },
-      "setMsgTimeOfDay": { "position": { "x": 1440, "y": 40 } },
-      "timeOfDayMenu": { "position": { "x": 1640, "y": 40 } },
-      "setTimeRano": { "position": { "x": 1840, "y": -140 } },
-      "setTimePrzedPoludniem": { "position": { "x": 1840, "y": -80 } },
-      "setTimePoPoludniu": { "position": { "x": 1840, "y": -20 } },
-      "setTimeWieczorem": { "position": { "x": 1840, "y": 40 } },
-      "repeatTimeOfDay": { "position": { "x": 1640, "y": 260 } },
-      "invokeDays": { "position": { "x": 2040, "y": 40 } },
-      "checkDaysReachable": { "position": { "x": 2240, "y": 40 } },
-      "checkDaysAvailable": { "position": { "x": 2440, "y": 40 } },
-      "setDaysMsg": { "position": { "x": 2640, "y": 40 } },
-      "daysMenu": { "position": { "x": 2840, "y": 40 } },
-      "setDayChoice1": { "position": { "x": 3040, "y": -80 } },
-      "setDayChoice2": { "position": { "x": 3040, "y": -20 } },
-      "setDayChoice3": { "position": { "x": 3040, "y": 40 } },
-      "repeatDays": { "position": { "x": 2840, "y": 260 } },
-      "invokeTimes": { "position": { "x": 3240, "y": 40 } },
-      "checkTimesReachable": { "position": { "x": 3440, "y": 40 } },
-      "checkTimesAvailable": { "position": { "x": 3640, "y": 40 } },
-      "setTimesMsg": { "position": { "x": 3840, "y": 40 } },
-      "timesMenu": { "position": { "x": 4040, "y": 40 } },
-      "setTimeChoice1": { "position": { "x": 4240, "y": -80 } },
-      "setTimeChoice2": { "position": { "x": 4240, "y": -20 } },
-      "setTimeChoice3": { "position": { "x": 4240, "y": 40 } },
-      "repeatTimes": { "position": { "x": 4040, "y": 260 } },
-      "invokeConfirm": { "position": { "x": 4440, "y": 40 } },
-      "checkConfirmReachable": { "position": { "x": 4640, "y": 40 } },
-      "checkConfirmAvailable": { "position": { "x": 4840, "y": 40 } },
-      "setConfirmMsg": { "position": { "x": 5040, "y": 40 } },
-      "confirmPrompt": { "position": { "x": 5240, "y": 40 } },
-      "repeatConfirmBooking": { "position": { "x": 5240, "y": 260 } },
-      "invokeBook": { "position": { "x": 5440, "y": -80 } },
-      "checkBookReachable": { "position": { "x": 5640, "y": -80 } },
-      "checkBooked": { "position": { "x": 5840, "y": -80 } },
-      "successMsg": { "position": { "x": 6040, "y": -140 } },
-      "failMsg": { "position": { "x": 6040, "y": -20 } },
-      "bumpInputAttempts": { "position": { "x": 640, "y": 500 } },
-      "setInputAttempts1": { "position": { "x": 440, "y": 500 } },
-      "setInputAttempts2": { "position": { "x": 440, "y": 620 } },
-      "giveUpInputMsg": { "position": { "x": 840, "y": 620 } },
-      "bumpAvailabilityAttempts": { "position": { "x": 2440, "y": 320 } },
-      "setAvailAttempts1": { "position": { "x": 2240, "y": 320 } },
-      "setAvailAttempts2": { "position": { "x": 2240, "y": 440 } },
-      "setNoAvailabilityMsg": { "position": { "x": 2440, "y": 440 } },
-      "playNoAvailability": { "position": { "x": 2640, "y": 440 } },
-      "giveUpAvailabilityMsg": { "position": { "x": 2640, "y": 560 } },
-      "errorTransfer": { "position": { "x": 2040, "y": 560 } },
-      "transferToMainMenu": { "position": { "x": 6240, "y": 620 } },
-      "transferQueue": { "position": { "x": 6240, "y": 320 } },
-      "disconnectEnd": { "position": { "x": 6440, "y": 320 } }
+      "setAvailAttempts2": {
+        "position": {
+          "x": 4412.8,
+          "y": -568
+        },
+        "dynamicParams": []
+      },
+      "setAvailAttempts1": {
+        "position": {
+          "x": 4419.2,
+          "y": -363.2
+        },
+        "dynamicParams": []
+      },
+      "setNoAvailabilityMsg": {
+        "position": {
+          "x": 4789.6,
+          "y": -427.2
+        },
+        "dynamicParams": []
+      },
+      "bumpAvailabilityAttempts": {
+        "position": {
+          "x": 4110.4,
+          "y": -490.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "c8d61231-cfb3-4cc0-9816-c6c3bc5181d7",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "2"
+          },
+          {
+            "id": "b3644a3d-f757-44bd-a38a-cdc2d2dfc59b",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "1"
+          }
+        ]
+      },
+      "giveUpInputMsg": {
+        "position": {
+          "x": 1931.2,
+          "y": 1270.4
+        }
+      },
+      "giveUpAvailabilityMsg": {
+        "position": {
+          "x": 4417.6,
+          "y": -759.2
+        }
+      },
+      "checkDaysReachable": {
+        "position": {
+          "x": 3605.6,
+          "y": -712
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "bf86cc64-b214-4591-9e74-dcbabef8d192",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "failMsg": {
+        "position": {
+          "x": 12810.4,
+          "y": -2220.8
+        }
+      },
+      "checkTimesReachable": {
+        "position": {
+          "x": 7155.2,
+          "y": -1574.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "a55df069-9a93-42be-80d7-1dd63095f167",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "invokeTimes": {
+        "position": {
+          "x": 6797.6,
+          "y": -1568
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "phoneconnect-med-booking"
+          }
+        },
+        "dynamicMetadata": {
+          "step": false,
+          "specialty": false,
+          "timeOfDay": false,
+          "dayChoice": false,
+          "authenticated": false,
+          "patientId": false,
+          "locale": false
+        }
+      },
+      "checkConfirmReachable": {
+        "position": {
+          "x": 9759.2,
+          "y": -1951.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "7e7a7629-ab7c-4db2-95fe-1a84b7426119",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "invokeConfirm": {
+        "position": {
+          "x": 9479.2,
+          "y": -1956.8
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "phoneconnect-med-booking"
+          }
+        },
+        "dynamicMetadata": {
+          "step": false,
+          "specialty": false,
+          "timeOfDay": false,
+          "dayChoice": false,
+          "timeChoice": false,
+          "authenticated": false,
+          "patientId": false,
+          "locale": false
+        }
+      },
+      "copyPrompts": {
+        "position": {
+          "x": -1300,
+          "y": 64.8
+        },
+        "dynamicParams": []
+      },
+      "ff8b45ee-9c05-482f-9287-bc637eca5098": {
+        "position": {
+          "x": -1586.4,
+          "y": 64
+        },
+        "parameters": {
+          "DataTableId": {
+            "displayName": "BookingPrompts"
+          }
+        }
+      },
+      "setInputAttempts2": {
+        "position": {
+          "x": 1931.2,
+          "y": 1476.8
+        },
+        "dynamicParams": []
+      },
+      "setInputAttempts1": {
+        "position": {
+          "x": 1935.2,
+          "y": 1717.6
+        },
+        "dynamicParams": []
+      },
+      "playNoAvailability": {
+        "position": {
+          "x": 5012.8,
+          "y": -427.2
+        }
+      },
+      "initAttempts": {
+        "position": {
+          "x": -1024,
+          "y": 68
+        },
+        "dynamicParams": []
+      },
+      "setMsgSpecialtyPage1": {
+        "position": {
+          "x": -700.8,
+          "y": -153.6
+        },
+        "dynamicParams": []
+      },
+      "setMsgSpecialtyPage2": {
+        "position": {
+          "x": 269.6,
+          "y": 19.2
+        },
+        "dynamicParams": []
+      },
+      "setTimeRano": {
+        "position": {
+          "x": 3032,
+          "y": -1696
+        },
+        "dynamicParams": []
+      },
+      "setTimePrzedPoludniem": {
+        "position": {
+          "x": 3034.4,
+          "y": -1500
+        },
+        "dynamicParams": []
+      },
+      "setTimePoPoludniu": {
+        "position": {
+          "x": 3032,
+          "y": -1304.8
+        },
+        "dynamicParams": []
+      },
+      "setTimeWieczorem": {
+        "position": {
+          "x": 3031.2,
+          "y": -1110.4
+        },
+        "dynamicParams": []
+      },
+      "setDayChoice1": {
+        "position": {
+          "x": 6212,
+          "y": -2018.4
+        },
+        "dynamicParams": []
+      },
+      "setDayChoice2": {
+        "position": {
+          "x": 6211.2,
+          "y": -1826.4
+        },
+        "dynamicParams": []
+      },
+      "setDayChoice3": {
+        "position": {
+          "x": 6215.2,
+          "y": -1626.4
+        },
+        "dynamicParams": []
+      },
+      "setTimeChoice1": {
+        "position": {
+          "x": 9156,
+          "y": -2357.6
+        },
+        "dynamicParams": []
+      },
+      "setTimeChoice2": {
+        "position": {
+          "x": 9159.2,
+          "y": -2131.2
+        },
+        "dynamicParams": []
+      },
+      "setTimeChoice3": {
+        "position": {
+          "x": 9156,
+          "y": -1922.4
+        },
+        "dynamicParams": []
+      },
+      "invokeDays": {
+        "position": {
+          "x": 3298.4,
+          "y": -725.6
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "phoneconnect-med-booking"
+          }
+        },
+        "dynamicMetadata": {
+          "step": false,
+          "specialty": false,
+          "timeOfDay": false,
+          "authenticated": false,
+          "patientId": false,
+          "locale": false
+        }
+      },
+      "bumpInputAttempts": {
+        "position": {
+          "x": 1586.4,
+          "y": 1454.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "922e3d05-a366-46a0-9c00-f766712fd252",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "2"
+          },
+          {
+            "id": "4b40d9c4-38aa-4408-ae8f-bb98c32c8533",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "1"
+          }
+        ]
+      },
+      "transferQueue": {
+        "position": {
+          "x": 12868,
+          "y": -451.2
+        }
+      },
+      "setSpecialty1": {
+        "position": {
+          "x": 259.2,
+          "y": -1560
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty2": {
+        "position": {
+          "x": 259.2,
+          "y": -1360.8
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty3": {
+        "position": {
+          "x": 259.2,
+          "y": -1165.6
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty4": {
+        "position": {
+          "x": 260,
+          "y": -972.8
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty5": {
+        "position": {
+          "x": 260.8,
+          "y": -780
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty6": {
+        "position": {
+          "x": 258.4,
+          "y": -592
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty7": {
+        "position": {
+          "x": 251.2,
+          "y": -396.8
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty8": {
+        "position": {
+          "x": 251.2,
+          "y": -194.4
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty9": {
+        "position": {
+          "x": 1236,
+          "y": -1457.6
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty10": {
+        "position": {
+          "x": 1240,
+          "y": -1269.6
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty11": {
+        "position": {
+          "x": 1232.8,
+          "y": -1079.2
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty12": {
+        "position": {
+          "x": 1233.6,
+          "y": -887.2
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty13": {
+        "position": {
+          "x": 1229.6,
+          "y": -697.6
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty14": {
+        "position": {
+          "x": 1240,
+          "y": -504.8
+        },
+        "dynamicParams": []
+      },
+      "setSpecialty15": {
+        "position": {
+          "x": 1250.4,
+          "y": -312.8
+        },
+        "dynamicParams": []
+      },
+      "setMsgTimeOfDay": {
+        "position": {
+          "x": 1810.4,
+          "y": -1634.4
+        },
+        "dynamicParams": []
+      },
+      "checkTimesAvailable": {
+        "position": {
+          "x": 7435.2,
+          "y": -1565.6
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "e4dca3b1-db28-4f0a-9349-ef3c1dad125e",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "setTimesMsg": {
+        "position": {
+          "x": 7761.6,
+          "y": -1567.2
+        },
+        "dynamicParams": []
+      },
+      "checkDaysAvailable": {
+        "position": {
+          "x": 3859.2,
+          "y": -710.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "175e30cf-bff4-4cfe-bbcd-cf555039e92c",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "setDaysMsg": {
+        "position": {
+          "x": 4353.6,
+          "y": -1168.8
+        },
+        "dynamicParams": []
+      },
+      "checkBookReachable": {
+        "position": {
+          "x": 12128.8,
+          "y": -2503.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "5257f12c-bd49-4441-b889-c19874c8307d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "errorTransfer": {
+        "position": {
+          "x": 4132.8,
+          "y": -106.4
+        }
+      },
+      "invokeBook": {
+        "position": {
+          "x": 11692.8,
+          "y": -2512
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "phoneconnect-med-booking"
+          }
+        },
+        "dynamicMetadata": {
+          "step": false,
+          "specialty": false,
+          "timeOfDay": false,
+          "dayChoice": false,
+          "timeChoice": false,
+          "authenticated": false,
+          "patientId": false,
+          "locale": false
+        }
+      },
+      "checkBooked": {
+        "position": {
+          "x": 12489.6,
+          "y": -2484
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "a11ee9b7-083c-4ea5-94fd-999260cf7a3c",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "checkConfirmAvailable": {
+        "position": {
+          "x": 10039.2,
+          "y": -1932
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "6ee28260-fd7f-49ea-a684-f9ab1f473b55",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "setConfirmMsg": {
+        "position": {
+          "x": 10300.8,
+          "y": -1965.6
+        },
+        "dynamicParams": []
+      },
+      "disconnectEnd": {
+        "position": {
+          "x": 13985.6,
+          "y": -953.6
+        }
+      },
+      "specialtyMenuPage1": {
+        "position": {
+          "x": -359.2,
+          "y": -42.4
+        },
+        "conditionMetadata": [
+          {
+            "id": "b6c1f01e-5c2a-4ca7-8249-6fc29fb169fb",
+            "value": "1"
+          },
+          {
+            "id": "19635509-d363-418d-b38a-154380512b53",
+            "value": "2"
+          },
+          {
+            "id": "34296f47-c0ff-494d-89f4-531beb98fdf0",
+            "value": "3"
+          },
+          {
+            "id": "3ad3e839-8682-451a-97c8-d07ec7a06486",
+            "value": "4"
+          },
+          {
+            "id": "f430e825-37f0-490c-a0e7-fed4f19874a8",
+            "value": "5"
+          },
+          {
+            "id": "ce775a09-0fae-4b40-be3c-ab458954c3b1",
+            "value": "6"
+          },
+          {
+            "id": "20dcdc0d-7663-4a58-9308-29ff4a819cc6",
+            "value": "7"
+          },
+          {
+            "id": "a58a7545-6d17-41f3-8957-ff072b1f2a92",
+            "value": "8"
+          },
+          {
+            "id": "cdc6f971-a63e-46a9-a3a4-b638d5d4467c",
+            "value": "9"
+          },
+          {
+            "id": "db37f2a1-b85e-4298-a0c3-4fab07cc117b",
+            "value": "0"
+          },
+          {
+            "id": "903b0449-7c21-48be-bd43-a620fbfe40dc",
+            "value": "*"
+          },
+          {
+            "id": "6b3f8be5-31c2-45d2-9639-6ffc7d37acd7",
+            "value": "#"
+          }
+        ]
+      },
+      "specialtyMenuPage2": {
+        "position": {
+          "x": 904.8,
+          "y": 44
+        },
+        "conditionMetadata": [
+          {
+            "id": "6a0259ed-fd2c-420c-a388-e66d4d94ab60",
+            "value": "1"
+          },
+          {
+            "id": "549d3043-e9bf-4619-a452-302268383ee2",
+            "value": "2"
+          },
+          {
+            "id": "fcd5678c-c7ae-478e-93c4-3387a1d4a0c6",
+            "value": "3"
+          },
+          {
+            "id": "69cc00fc-be17-4795-a1db-d7465d199905",
+            "value": "4"
+          },
+          {
+            "id": "39358cd1-facd-4db1-88f7-eb2ad4606414",
+            "value": "5"
+          },
+          {
+            "id": "eeb9d426-ea6d-47fe-a8ff-bbc78518dbf0",
+            "value": "6"
+          },
+          {
+            "id": "c582234d-0ee1-4baa-a435-c5772f1359c2",
+            "value": "7"
+          },
+          {
+            "id": "f8f7aaef-4180-436b-b8c2-2e483f2c1bee",
+            "value": "0"
+          },
+          {
+            "id": "403615c9-6926-4df2-8d5b-6bbcb04f5cbe",
+            "value": "*"
+          },
+          {
+            "id": "4a7b898b-d193-4a73-89dc-f69cfea5ea33",
+            "value": "#"
+          }
+        ]
+      },
+      "timeOfDayMenu": {
+        "position": {
+          "x": 2516.8,
+          "y": -1169.6
+        },
+        "conditionMetadata": [
+          {
+            "id": "f94d53d6-5694-4c81-86a8-096bb26afd51",
+            "value": "1"
+          },
+          {
+            "id": "534af63d-d1f4-472d-8840-2314ddb21a9b",
+            "value": "2"
+          },
+          {
+            "id": "9b856013-9f92-43a5-8eae-f1a401b74ae7",
+            "value": "3"
+          },
+          {
+            "id": "b3ab12e1-84c3-482b-a6c6-a2484edb82ba",
+            "value": "4"
+          },
+          {
+            "id": "ca85db71-3665-49af-8105-933abc23ec5c",
+            "value": "0"
+          },
+          {
+            "id": "dc204db5-0784-4282-bc09-552ff950cf1c",
+            "value": "*"
+          },
+          {
+            "id": "83bccf5a-aed3-46e1-baf8-0afac1dc2f57",
+            "value": "#"
+          }
+        ]
+      },
+      "timesMenu": {
+        "position": {
+          "x": 8278.4,
+          "y": -2012.8
+        },
+        "conditionMetadata": [
+          {
+            "id": "728489aa-c24f-4239-bbe6-0917f5e54757",
+            "value": "1"
+          },
+          {
+            "id": "f40b6866-50ca-475c-aec2-03824b49867c",
+            "value": "2"
+          },
+          {
+            "id": "15e8bd9a-d0e6-42ff-b77c-cd3ec5702aad",
+            "value": "3"
+          },
+          {
+            "id": "8cec8713-90bd-41c5-bc4d-6f1f14f5223b",
+            "value": "0"
+          },
+          {
+            "id": "8ca12e13-4acc-42bb-b19e-0d30a8a25e8c",
+            "value": "*"
+          },
+          {
+            "id": "9f526a2a-44da-4e82-91a4-5770a9cf6353",
+            "value": "#"
+          }
+        ]
+      },
+      "daysMenu": {
+        "position": {
+          "x": 5619.2,
+          "y": -1362.4
+        },
+        "conditionMetadata": [
+          {
+            "id": "fbbeb2e6-5f20-402c-9a13-bbda8414ede3",
+            "value": "1"
+          },
+          {
+            "id": "9f0f72ad-1165-4314-95ad-68a198f72ae1",
+            "value": "2"
+          },
+          {
+            "id": "941517b2-e1ef-4b00-8fb9-ed8126c2b101",
+            "value": "3"
+          },
+          {
+            "id": "b171a751-4878-4991-b139-0fc90ad99e7a",
+            "value": "0"
+          },
+          {
+            "id": "fa6db620-eeed-403b-b64c-e2a555d17d5d",
+            "value": "*"
+          },
+          {
+            "id": "61ae04ba-0869-4742-a58f-6d8ad90655aa",
+            "value": "#"
+          }
+        ]
+      },
+      "successMsg": {
+        "position": {
+          "x": 12816,
+          "y": -2469.6
+        }
+      },
+      "confirmPrompt": {
+        "position": {
+          "x": 10843.2,
+          "y": -2231.2
+        },
+        "conditionMetadata": [
+          {
+            "id": "31acc1ca-bfe5-48da-b3aa-921c1520b4fd",
+            "value": "1"
+          },
+          {
+            "id": "452a539a-b631-4484-a29d-497c834a7b8e",
+            "value": "2"
+          },
+          {
+            "id": "b3f969a1-c748-4ba9-9071-2d17b73a4d09",
+            "value": "0"
+          },
+          {
+            "id": "7b00d962-dcd5-451d-b8e0-d0e0160924df",
+            "value": "*"
+          },
+          {
+            "id": "7fad1bed-2395-4c7b-a54a-f7fb4ba387fa",
+            "value": "#"
+          }
+        ]
+      },
+      "transferToMainMenu": {
+        "position": {
+          "x": 13240.8,
+          "y": -1640
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "keypad-facility-info-main-menu-flow"
+          }
+        },
+        "ContactFlow": {
+          "text": "keypad-facility-info-main-menu-flow"
+        }
+      }
     },
     "Annotations": [],
-    "name": "Booking (S-05, keypad)",
-    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is. Only reachable once $.Attributes.authenticated is 'true' (gated by the caller before transferring here).",
+    "name": "keypad-booking-flow",
+    "description": "",
     "type": "contactFlow",
-    "status": "SAVED",
+    "status": "published",
     "hash": {}
   },
   "Actions": [
     {
-      "Identifier": "voice",
-      "Type": "UpdateContactTextToSpeechVoice",
-      "Parameters": { "TextToSpeechEngine": "Neural", "TextToSpeechVoice": "Ola" },
-      "Transitions": {
-        "NextAction": "initAttempts",
-        "Errors": [{ "NextAction": "initAttempts", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "initAttempts",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": { "bookingInputAttempts": "0", "availabilityAttempts": "0" },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "setMsgSpecialtyPage1",
-        "Errors": [{ "NextAction": "setMsgSpecialtyPage1", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setMsgSpecialtyPage1",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Wybierz specjalizację. Naciśnij 1 - kardiolog, 2 - dermatolog, 3 - okulista, 4 - laryngolog, 5 - neurolog, 6 - ortopeda, 7 - internista, 8 - ginekolog. Naciśnij 9, aby usłyszeć kolejne specjalizacje. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć. Naciśnij krzyżyk, aby wrócić do menu głównego."
+          "availabilityAttempts": "2"
         },
         "TargetContact": "Current"
       },
+      "Identifier": "setAvailAttempts2",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
-        "NextAction": "specialtyMenuPage1",
-        "Errors": [{ "NextAction": "specialtyMenuPage1", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "specialtyMenuPage1",
-      "Type": "GetParticipantInput",
-      "Parameters": { "Text": "$.Attributes.lastMessageText", "InputTimeLimitSeconds": "10" },
-      "Transitions": {
-        "NextAction": "bumpInputAttempts",
-        "Conditions": [
-          { "NextAction": "setSpecialty1", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
-          { "NextAction": "setSpecialty2", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setSpecialty3", "Condition": { "Operator": "Equals", "Operands": ["3"] } },
-          { "NextAction": "setSpecialty4", "Condition": { "Operator": "Equals", "Operands": ["4"] } },
-          { "NextAction": "setSpecialty5", "Condition": { "Operator": "Equals", "Operands": ["5"] } },
-          { "NextAction": "setSpecialty6", "Condition": { "Operator": "Equals", "Operands": ["6"] } },
-          { "NextAction": "setSpecialty7", "Condition": { "Operator": "Equals", "Operands": ["7"] } },
-          { "NextAction": "setSpecialty8", "Condition": { "Operator": "Equals", "Operands": ["8"] } },
-          { "NextAction": "setMsgSpecialtyPage2", "Condition": { "Operator": "Equals", "Operands": ["9"] } },
-          { "NextAction": "transferQueue", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
-          { "NextAction": "repeatSpecialtyPage1", "Condition": { "Operator": "Equals", "Operands": ["*"] } },
-          { "NextAction": "transferToMainMenu", "Condition": { "Operator": "Equals", "Operands": ["#"] } }
-        ],
+        "NextAction": "setNoAvailabilityMsg",
         "Errors": [
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "InputTimeLimitExceeded" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "setNoAvailabilityMsg",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
-      "Identifier": "setSpecialty1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "kardiolog" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "dermatolog" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty3",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "okulista" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty4",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "laryngolog" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty5",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "neurolog" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty6",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "ortopeda" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty7",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "internista" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty8",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "ginekolog" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "repeatSpecialtyPage1",
-      "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
-      "Transitions": {
-        "NextAction": "specialtyMenuPage1",
-        "Errors": [{ "NextAction": "specialtyMenuPage1", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setMsgSpecialtyPage2",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Kolejne specjalizacje. Naciśnij 1 - pediatra, 2 - endokrynolog, 3 - chirurg, 4 - urolog, 5 - psychiatra, 6 - alergolog, 7 - reumatolog. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć. Naciśnij krzyżyk, aby wrócić do menu głównego."
+          "availabilityAttempts": "1"
         },
         "TargetContact": "Current"
       },
+      "Identifier": "setAvailAttempts1",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
-        "NextAction": "specialtyMenuPage2",
-        "Errors": [{ "NextAction": "specialtyMenuPage2", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "specialtyMenuPage2",
-      "Type": "GetParticipantInput",
-      "Parameters": { "Text": "$.Attributes.lastMessageText", "InputTimeLimitSeconds": "10" },
-      "Transitions": {
-        "NextAction": "bumpInputAttempts",
-        "Conditions": [
-          { "NextAction": "setSpecialty9", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
-          { "NextAction": "setSpecialty10", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setSpecialty11", "Condition": { "Operator": "Equals", "Operands": ["3"] } },
-          { "NextAction": "setSpecialty12", "Condition": { "Operator": "Equals", "Operands": ["4"] } },
-          { "NextAction": "setSpecialty13", "Condition": { "Operator": "Equals", "Operands": ["5"] } },
-          { "NextAction": "setSpecialty14", "Condition": { "Operator": "Equals", "Operands": ["6"] } },
-          { "NextAction": "setSpecialty15", "Condition": { "Operator": "Equals", "Operands": ["7"] } },
-          { "NextAction": "transferQueue", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
-          { "NextAction": "repeatSpecialtyPage2", "Condition": { "Operator": "Equals", "Operands": ["*"] } },
-          { "NextAction": "transferToMainMenu", "Condition": { "Operator": "Equals", "Operands": ["#"] } }
-        ],
+        "NextAction": "setNoAvailabilityMsg",
         "Errors": [
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "InputTimeLimitExceeded" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "setNoAvailabilityMsg",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
-      "Identifier": "setSpecialty9",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "pediatra" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty10",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "endokrynolog" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty11",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "chirurg" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty12",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "urolog" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty13",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "psychiatra" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty14",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "alergolog" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setSpecialty15",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "specialty": "reumatolog" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgTimeOfDay",
-        "Errors": [{ "NextAction": "setMsgTimeOfDay", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "repeatSpecialtyPage2",
-      "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
-      "Transitions": {
-        "NextAction": "specialtyMenuPage2",
-        "Errors": [{ "NextAction": "specialtyMenuPage2", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setMsgTimeOfDay",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "Wybierz porę dnia. Naciśnij 1 - rano, 2 - przed południem, 3 - po południu, 4 - wieczorem. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć. Naciśnij krzyżyk, aby wrócić do menu głównego."
+          "lastMessageText": "$.Attributes.noAvailability"
         },
         "TargetContact": "Current"
       },
+      "Identifier": "setNoAvailabilityMsg",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
-        "NextAction": "timeOfDayMenu",
-        "Errors": [{ "NextAction": "timeOfDayMenu", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "timeOfDayMenu",
-      "Type": "GetParticipantInput",
-      "Parameters": { "Text": "$.Attributes.lastMessageText", "InputTimeLimitSeconds": "10" },
-      "Transitions": {
-        "NextAction": "bumpInputAttempts",
-        "Conditions": [
-          { "NextAction": "setTimeRano", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
-          { "NextAction": "setTimePrzedPoludniem", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setTimePoPoludniu", "Condition": { "Operator": "Equals", "Operands": ["3"] } },
-          { "NextAction": "setTimeWieczorem", "Condition": { "Operator": "Equals", "Operands": ["4"] } },
-          { "NextAction": "transferQueue", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
-          { "NextAction": "repeatTimeOfDay", "Condition": { "Operator": "Equals", "Operands": ["*"] } },
-          { "NextAction": "transferToMainMenu", "Condition": { "Operator": "Equals", "Operands": ["#"] } }
-        ],
+        "NextAction": "playNoAvailability",
         "Errors": [
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "InputTimeLimitExceeded" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "playNoAvailability",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
-      "Identifier": "setTimeRano",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "timeOfDay": "rano" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeDays",
-        "Errors": [{ "NextAction": "invokeDays", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setTimePrzedPoludniem",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "timeOfDay": "przed południem" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeDays",
-        "Errors": [{ "NextAction": "invokeDays", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setTimePoPoludniu",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "timeOfDay": "po południu" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeDays",
-        "Errors": [{ "NextAction": "invokeDays", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setTimeWieczorem",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "timeOfDay": "wieczorem" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeDays",
-        "Errors": [{ "NextAction": "invokeDays", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "repeatTimeOfDay",
-      "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
-      "Transitions": {
-        "NextAction": "timeOfDayMenu",
-        "Errors": [{ "NextAction": "timeOfDayMenu", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "invokeDays",
-      "Type": "InvokeExternalResource",
       "Parameters": {
-        "FunctionArn": "REPLACE_WITH_BOOKING_FUNCTION_ARN",
-        "InvocationTimeLimitSeconds": "8",
-        "LambdaInvocationAttributes": {
-          "step": "days",
-          "specialty": "$.Attributes.specialty",
-          "timeOfDay": "$.Attributes.timeOfDay",
-          "authenticated": "$.Attributes.authenticated",
-          "patientId": "$.Attributes.patientId"
-        },
-        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+        "ComparisonValue": "$.Attributes.availabilityAttempts"
       },
+      "Identifier": "bumpAvailabilityAttempts",
+      "Type": "Compare",
       "Transitions": {
-        "NextAction": "checkDaysReachable",
-        "Errors": [{ "NextAction": "errorTransfer", "ErrorType": "NoMatchingError" }]
+        "NextAction": "setAvailAttempts1",
+        "Conditions": [
+          {
+            "NextAction": "giveUpAvailabilityMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setAvailAttempts2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setAvailAttempts1",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
       }
     },
     {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.giveUpInput"
+      },
+      "Identifier": "giveUpInputMsg",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "transferQueue",
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.giveUpAvailability"
+      },
+      "Identifier": "giveUpAvailabilityMsg",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "transferQueue",
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.reachable"
+      },
       "Identifier": "checkDaysReachable",
       "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.reachable" },
       "Transitions": {
         "NextAction": "errorTransfer",
         "Conditions": [
-          { "NextAction": "checkDaysAvailable", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "errorTransfer", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "checkDaysAvailable",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.available" },
-      "Transitions": {
-        "NextAction": "bumpAvailabilityAttempts",
-        "Conditions": [
-          { "NextAction": "setDaysMsg", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "bumpAvailabilityAttempts", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "setDaysMsg",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "Mam wolne terminy: 1 - $.External.day1, 2 - $.External.day2, 3 - $.External.day3. Który termin Pani/Panu odpowiada? Naciśnij odpowiedni numer. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć. Naciśnij krzyżyk, aby wrócić do menu głównego."
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "daysMenu",
-        "Errors": [{ "NextAction": "daysMenu", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "daysMenu",
-      "Type": "GetParticipantInput",
-      "Parameters": { "Text": "$.Attributes.lastMessageText", "InputTimeLimitSeconds": "10" },
-      "Transitions": {
-        "NextAction": "bumpInputAttempts",
-        "Conditions": [
-          { "NextAction": "setDayChoice1", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
-          { "NextAction": "setDayChoice2", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setDayChoice3", "Condition": { "Operator": "Equals", "Operands": ["3"] } },
-          { "NextAction": "transferQueue", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
-          { "NextAction": "repeatDays", "Condition": { "Operator": "Equals", "Operands": ["*"] } },
-          { "NextAction": "transferToMainMenu", "Condition": { "Operator": "Equals", "Operands": ["#"] } }
+          {
+            "NextAction": "checkDaysAvailable",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
         ],
         "Errors": [
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "InputTimeLimitExceeded" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingCondition"
+          }
         ]
       }
     },
     {
-      "Identifier": "setDayChoice1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "dayChoice": "1" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeTimes",
-        "Errors": [{ "NextAction": "invokeTimes", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setDayChoice2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "dayChoice": "2" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeTimes",
-        "Errors": [{ "NextAction": "invokeTimes", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setDayChoice3",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "dayChoice": "3" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeTimes",
-        "Errors": [{ "NextAction": "invokeTimes", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "repeatDays",
-      "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
-      "Transitions": {
-        "NextAction": "daysMenu",
-        "Errors": [{ "NextAction": "daysMenu", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "invokeTimes",
-      "Type": "InvokeExternalResource",
       "Parameters": {
-        "FunctionArn": "REPLACE_WITH_BOOKING_FUNCTION_ARN",
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.failMsg"
+      },
+      "Identifier": "failMsg",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "invokeDays",
+        "Errors": [
+          {
+            "NextAction": "invokeDays",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.reachable"
+      },
+      "Identifier": "checkTimesReachable",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "errorTransfer",
+        "Conditions": [
+          {
+            "NextAction": "checkTimesAvailable",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-booking",
         "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
         "LambdaInvocationAttributes": {
           "step": "times",
           "specialty": "$.Attributes.specialty",
           "timeOfDay": "$.Attributes.timeOfDay",
           "dayChoice": "$.Attributes.dayChoice",
           "authenticated": "$.Attributes.authenticated",
-          "patientId": "$.Attributes.patientId"
+          "patientId": "$.Attributes.patientId",
+          "locale": "$.Attributes.locale"
         },
-        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
       },
+      "Identifier": "invokeTimes",
+      "Type": "InvokeLambdaFunction",
       "Transitions": {
         "NextAction": "checkTimesReachable",
-        "Errors": [{ "NextAction": "errorTransfer", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "checkTimesReachable",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.reachable" },
-      "Transitions": {
-        "NextAction": "errorTransfer",
-        "Conditions": [
-          { "NextAction": "checkTimesAvailable", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "errorTransfer", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "checkTimesAvailable",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.available" },
-      "Transitions": {
-        "NextAction": "bumpAvailabilityAttempts",
-        "Conditions": [
-          { "NextAction": "setTimesMsg", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "bumpAvailabilityAttempts", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "setTimesMsg",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "$.External.date. Wolne godziny: 1 - $.External.time1, 2 - $.External.time2, 3 - $.External.time3. Którą godzinę Pani/Pan wybiera? Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć. Naciśnij krzyżyk, aby wrócić do menu głównego."
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "timesMenu",
-        "Errors": [{ "NextAction": "timesMenu", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "timesMenu",
-      "Type": "GetParticipantInput",
-      "Parameters": { "Text": "$.Attributes.lastMessageText", "InputTimeLimitSeconds": "10" },
-      "Transitions": {
-        "NextAction": "bumpInputAttempts",
-        "Conditions": [
-          { "NextAction": "setTimeChoice1", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
-          { "NextAction": "setTimeChoice2", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setTimeChoice3", "Condition": { "Operator": "Equals", "Operands": ["3"] } },
-          { "NextAction": "transferQueue", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
-          { "NextAction": "repeatTimes", "Condition": { "Operator": "Equals", "Operands": ["*"] } },
-          { "NextAction": "transferToMainMenu", "Condition": { "Operator": "Equals", "Operands": ["#"] } }
-        ],
         "Errors": [
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "InputTimeLimitExceeded" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
-      "Identifier": "setTimeChoice1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "timeChoice": "1" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeConfirm",
-        "Errors": [{ "NextAction": "invokeConfirm", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setTimeChoice2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "timeChoice": "2" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeConfirm",
-        "Errors": [{ "NextAction": "invokeConfirm", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setTimeChoice3",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "timeChoice": "3" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "invokeConfirm",
-        "Errors": [{ "NextAction": "invokeConfirm", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "repeatTimes",
-      "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
-      "Transitions": {
-        "NextAction": "timesMenu",
-        "Errors": [{ "NextAction": "timesMenu", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "invokeConfirm",
-      "Type": "InvokeExternalResource",
       "Parameters": {
-        "FunctionArn": "REPLACE_WITH_BOOKING_FUNCTION_ARN",
+        "ComparisonValue": "$.External.reachable"
+      },
+      "Identifier": "checkConfirmReachable",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "errorTransfer",
+        "Conditions": [
+          {
+            "NextAction": "checkConfirmAvailable",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-booking",
         "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
         "LambdaInvocationAttributes": {
           "step": "confirm",
           "specialty": "$.Attributes.specialty",
@@ -665,88 +1133,931 @@
           "dayChoice": "$.Attributes.dayChoice",
           "timeChoice": "$.Attributes.timeChoice",
           "authenticated": "$.Attributes.authenticated",
-          "patientId": "$.Attributes.patientId"
+          "patientId": "$.Attributes.patientId",
+          "locale": "$.Attributes.locale"
         },
-        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
       },
+      "Identifier": "invokeConfirm",
+      "Type": "InvokeLambdaFunction",
       "Transitions": {
         "NextAction": "checkConfirmReachable",
-        "Errors": [{ "NextAction": "errorTransfer", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "checkConfirmReachable",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.reachable" },
-      "Transitions": {
-        "NextAction": "errorTransfer",
-        "Conditions": [
-          { "NextAction": "checkConfirmAvailable", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "errorTransfer", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "checkConfirmAvailable",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.available" },
-      "Transitions": {
-        "NextAction": "bumpAvailabilityAttempts",
-        "Conditions": [
-          { "NextAction": "setConfirmMsg", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "bumpAvailabilityAttempts", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "setConfirmMsg",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "$.External.message Aby potwierdzić, naciśnij 1. Aby wybrać inny termin, naciśnij 2. Naciśnij 0, aby połączyć się z konsultantem. Naciśnij gwiazdkę, aby powtórzyć. Naciśnij krzyżyk, aby wrócić do menu głównego."
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "confirmPrompt",
-        "Errors": [{ "NextAction": "confirmPrompt", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "confirmPrompt",
-      "Type": "GetParticipantInput",
-      "Parameters": { "Text": "$.Attributes.lastMessageText", "InputTimeLimitSeconds": "10" },
-      "Transitions": {
-        "NextAction": "bumpInputAttempts",
-        "Conditions": [
-          { "NextAction": "invokeBook", "Condition": { "Operator": "Equals", "Operands": ["1"] } },
-          { "NextAction": "invokeDays", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "transferQueue", "Condition": { "Operator": "Equals", "Operands": ["0"] } },
-          { "NextAction": "repeatConfirmBooking", "Condition": { "Operator": "Equals", "Operands": ["*"] } },
-          { "NextAction": "transferToMainMenu", "Condition": { "Operator": "Equals", "Operands": ["#"] } }
-        ],
         "Errors": [
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "InputTimeLimitExceeded" },
-          { "NextAction": "bumpInputAttempts", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
-      "Identifier": "repeatConfirmBooking",
-      "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
+      "Parameters": {
+        "Attributes": {
+          "specialtyPage1": "$.DataTables.BookingPrompts.specialtyPage1",
+          "specialtyPage2": "$.DataTables.BookingPrompts.specialtyPage2",
+          "timeOfDayMenu": "$.DataTables.BookingPrompts.timeOfDayMenu",
+          "daysPrefix": "$.DataTables.BookingPrompts.daysPrefix",
+          "daysSuffix": "$.DataTables.BookingPrompts.daysSuffix",
+          "timesMid1": "$.DataTables.BookingPrompts.timesMid1",
+          "timesSuffix": "$.DataTables.BookingPrompts.timesSuffix",
+          "confirmSuffix": "$.DataTables.BookingPrompts.confirmSuffix",
+          "noAvailability": "$.DataTables.BookingPrompts.noAvailability",
+          "giveUpAvailability": "$.DataTables.BookingPrompts.giveUpAvailability",
+          "giveUpInput": "$.DataTables.BookingPrompts.giveUpInput",
+          "errorTransfer": "$.DataTables.BookingPrompts.errorTransfer",
+          "successMsg": "$.DataTables.BookingPrompts.successMsg",
+          "failMsg": "$.DataTables.BookingPrompts.failMsg"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "copyPrompts",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
-        "NextAction": "confirmPrompt",
-        "Errors": [{ "NextAction": "confirmPrompt", "ErrorType": "NoMatchingError" }]
+        "NextAction": "initAttempts",
+        "Errors": [
+          {
+            "NextAction": "initAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "invokeBook",
-      "Type": "InvokeExternalResource",
       "Parameters": {
-        "FunctionArn": "REPLACE_WITH_BOOKING_FUNCTION_ARN",
+        "DataTableId": "67ffdb82-db6f-4fb4-aec2-62984efbe009",
+        "Queries": [
+          {
+            "QueryName": "BookingPrompts",
+            "Attributes": [
+              "timesSuffix",
+              "timeOfDayMenu",
+              "confirmSuffix",
+              "specialtyPage1",
+              "successMsg",
+              "giveUpAvailability",
+              "errorTransfer",
+              "timesMid1",
+              "giveUpInput",
+              "failMsg",
+              "daysSuffix",
+              "noAvailability",
+              "daysPrefix",
+              "specialtyPage2"
+            ],
+            "PrimaryValues": [
+              {
+                "AttributeName": "locale",
+                "Value": "$.Attributes.locale"
+              }
+            ]
+          }
+        ]
+      },
+      "Identifier": "ff8b45ee-9c05-482f-9287-bc637eca5098",
+      "Type": "EvaluateDataTableValues",
+      "Transitions": {
+        "NextAction": "copyPrompts",
+        "Errors": [
+          {
+            "NextAction": "copyPrompts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "bookingInputAttempts": "2"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setInputAttempts2",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgSpecialtyPage1",
+        "Errors": [
+          {
+            "NextAction": "setMsgSpecialtyPage1",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "bookingInputAttempts": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setInputAttempts1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgSpecialtyPage1",
+        "Errors": [
+          {
+            "NextAction": "setMsgSpecialtyPage1",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.lastMessageText"
+      },
+      "Identifier": "playNoAvailability",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "setMsgSpecialtyPage1",
+        "Errors": [
+          {
+            "NextAction": "setMsgSpecialtyPage1",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "bookingInputAttempts": "0",
+          "availabilityAttempts": "0"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "initAttempts",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgSpecialtyPage1",
+        "Errors": [
+          {
+            "NextAction": "setMsgSpecialtyPage1",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.specialtyPage1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setMsgSpecialtyPage1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "specialtyMenuPage1",
+        "Errors": [
+          {
+            "NextAction": "specialtyMenuPage1",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.specialtyPage2"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setMsgSpecialtyPage2",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "specialtyMenuPage2",
+        "Errors": [
+          {
+            "NextAction": "specialtyMenuPage2",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "timeOfDay": "rano"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setTimeRano",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeDays",
+        "Errors": [
+          {
+            "NextAction": "invokeDays",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "timeOfDay": "przed południem"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setTimePrzedPoludniem",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeDays",
+        "Errors": [
+          {
+            "NextAction": "invokeDays",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "timeOfDay": "po południu"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setTimePoPoludniu",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeDays",
+        "Errors": [
+          {
+            "NextAction": "invokeDays",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "timeOfDay": "wieczorem"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setTimeWieczorem",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeDays",
+        "Errors": [
+          {
+            "NextAction": "invokeDays",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "dayChoice": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setDayChoice1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeTimes",
+        "Errors": [
+          {
+            "NextAction": "invokeTimes",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "dayChoice": "2"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setDayChoice2",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeTimes",
+        "Errors": [
+          {
+            "NextAction": "invokeTimes",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "dayChoice": "3"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setDayChoice3",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeTimes",
+        "Errors": [
+          {
+            "NextAction": "invokeTimes",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "timeChoice": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setTimeChoice1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeConfirm",
+        "Errors": [
+          {
+            "NextAction": "invokeConfirm",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "timeChoice": "2"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setTimeChoice2",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeConfirm",
+        "Errors": [
+          {
+            "NextAction": "invokeConfirm",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "timeChoice": "3"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setTimeChoice3",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeConfirm",
+        "Errors": [
+          {
+            "NextAction": "invokeConfirm",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-booking",
         "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "step": "days",
+          "specialty": "$.Attributes.specialty",
+          "timeOfDay": "$.Attributes.timeOfDay",
+          "authenticated": "$.Attributes.authenticated",
+          "patientId": "$.Attributes.patientId",
+          "locale": "$.Attributes.locale"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "invokeDays",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "checkDaysReachable",
+        "Errors": [
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.bookingInputAttempts"
+      },
+      "Identifier": "bumpInputAttempts",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setInputAttempts1",
+        "Conditions": [
+          {
+            "NextAction": "giveUpInputMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setInputAttempts2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setInputAttempts1",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "transferQueue",
+      "Type": "TransferContactToQueue",
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "QueueAtCapacity"
+          },
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "kardiolog"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "dermatolog"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty2",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "okulista"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty3",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "laryngolog"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty4",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "neurolog"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty5",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "ortopeda"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty6",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "internista"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty7",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "ginekolog"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty8",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "pediatra"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty9",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "endokrynolog"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty10",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "chirurg"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty11",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "urolog"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty12",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "psychiatra"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty13",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "alergolog"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty14",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "specialty": "reumatolog"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setSpecialty15",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "setMsgTimeOfDay",
+        "Errors": [
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.timeOfDayMenu"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setMsgTimeOfDay",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "timeOfDayMenu",
+        "Errors": [
+          {
+            "NextAction": "timeOfDayMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.available"
+      },
+      "Identifier": "checkTimesAvailable",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "bumpAvailabilityAttempts",
+        "Conditions": [
+          {
+            "NextAction": "setTimesMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpAvailabilityAttempts",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "<speak>$.External.date$.Attributes.timesMid1 $.External.timesList$.Attributes.timesSuffix"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setTimesMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "timesMenu",
+        "Errors": [
+          {
+            "NextAction": "timesMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.available"
+      },
+      "Identifier": "checkDaysAvailable",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "bumpAvailabilityAttempts",
+        "Conditions": [
+          {
+            "NextAction": "setDaysMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpAvailabilityAttempts",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.daysPrefix $.External.daysList$.Attributes.daysSuffix"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setDaysMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "daysMenu",
+        "Errors": [
+          {
+            "NextAction": "daysMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.reachable"
+      },
+      "Identifier": "checkBookReachable",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "errorTransfer",
+        "Conditions": [
+          {
+            "NextAction": "checkBooked",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.errorTransfer"
+      },
+      "Identifier": "errorTransfer",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "transferQueue",
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-booking",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
         "LambdaInvocationAttributes": {
           "step": "book",
           "specialty": "$.Attributes.specialty",
@@ -754,207 +2065,718 @@
           "dayChoice": "$.Attributes.dayChoice",
           "timeChoice": "$.Attributes.timeChoice",
           "authenticated": "$.Attributes.authenticated",
-          "patientId": "$.Attributes.patientId"
+          "patientId": "$.Attributes.patientId",
+          "locale": "$.Attributes.locale"
         },
-        "ResponseValidation": { "ResponseType": "STRING_MAP" }
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
       },
+      "Identifier": "invokeBook",
+      "Type": "InvokeLambdaFunction",
       "Transitions": {
         "NextAction": "checkBookReachable",
-        "Errors": [{ "NextAction": "errorTransfer", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "checkBookReachable",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.reachable" },
-      "Transitions": {
-        "NextAction": "errorTransfer",
-        "Conditions": [
-          { "NextAction": "checkBooked", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "errorTransfer", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "checkBooked",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.External.booked" },
-      "Transitions": {
-        "NextAction": "failMsg",
-        "Conditions": [
-          { "NextAction": "successMsg", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "failMsg", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "successMsg",
-      "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "Wizyta została umówiona. Dziękuję." },
-      "Transitions": {
-        "NextAction": "transferToMainMenu",
-        "Errors": [{ "NextAction": "transferToMainMenu", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "failMsg",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "Niestety ten termin został już zajęty w międzyczasie. Spróbujmy jeszcze raz."
-      },
-      "Transitions": {
-        "NextAction": "invokeDays",
-        "Errors": [{ "NextAction": "invokeDays", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "bumpInputAttempts",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.Attributes.bookingInputAttempts" },
-      "Transitions": {
-        "NextAction": "setInputAttempts1",
-        "Conditions": [
-          { "NextAction": "giveUpInputMsg", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setInputAttempts2", "Condition": { "Operator": "Equals", "Operands": ["1"] } }
-        ],
-        "Errors": [{ "NextAction": "setInputAttempts1", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "setInputAttempts1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "bookingInputAttempts": "1" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgSpecialtyPage1",
-        "Errors": [{ "NextAction": "setMsgSpecialtyPage1", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setInputAttempts2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "bookingInputAttempts": "2" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setMsgSpecialtyPage1",
-        "Errors": [{ "NextAction": "setMsgSpecialtyPage1", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "giveUpInputMsg",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "Nie udało się dokończyć rezerwacji. Łączę z konsultantem."
-      },
-      "Transitions": {
-        "NextAction": "transferQueue",
-        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "bumpAvailabilityAttempts",
-      "Type": "Compare",
-      "Parameters": { "Attribute": "$.Attributes.availabilityAttempts" },
-      "Transitions": {
-        "NextAction": "setAvailAttempts1",
-        "Conditions": [
-          { "NextAction": "giveUpAvailabilityMsg", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setAvailAttempts2", "Condition": { "Operator": "Equals", "Operands": ["1"] } }
-        ],
-        "Errors": [{ "NextAction": "setAvailAttempts1", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "setAvailAttempts1",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "availabilityAttempts": "1" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setNoAvailabilityMsg",
-        "Errors": [{ "NextAction": "setNoAvailabilityMsg", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setAvailAttempts2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "availabilityAttempts": "2" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "setNoAvailabilityMsg",
-        "Errors": [{ "NextAction": "setNoAvailabilityMsg", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setNoAvailabilityMsg",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "Brak wolnych terminów dla wybranej specjalizacji i pory dnia. Wybierzmy inną specjalizację."
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "playNoAvailability",
-        "Errors": [{ "NextAction": "playNoAvailability", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "playNoAvailability",
-      "Type": "MessageParticipant",
-      "Parameters": { "SkipWhenDTMFBufferEnabled": "false", "Text": "$.Attributes.lastMessageText" },
-      "Transitions": {
-        "NextAction": "setMsgSpecialtyPage1",
-        "Errors": [{ "NextAction": "setMsgSpecialtyPage1", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "giveUpAvailabilityMsg",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "Nie udało się znaleźć wolnego terminu. Łączę z konsultantem."
-      },
-      "Transitions": {
-        "NextAction": "transferQueue",
-        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "errorTransfer",
-      "Type": "MessageParticipant",
-      "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "Przepraszam, mam teraz problem z systemem rezerwacji. Łączę z konsultantem."
-      },
-      "Transitions": {
-        "NextAction": "transferQueue",
-        "Errors": [{ "NextAction": "transferQueue", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "transferToMainMenu",
-      "Type": "TransferToFlow",
-      "Parameters": { "ContactFlowId": "REPLACE_WITH_MAIN_MENU_FLOW_ARN" },
-      "Transitions": {
-        "NextAction": "disconnectEnd",
-        "Errors": [{ "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "transferQueue",
-      "Type": "TransferContactToQueue",
-      "Parameters": {},
-      "Transitions": {
-        "NextAction": "disconnectEnd",
         "Errors": [
-          { "NextAction": "disconnectEnd", "ErrorType": "QueueAtCapacity" },
-          { "NextAction": "disconnectEnd", "ErrorType": "NoMatchingError" }
+          {
+            "NextAction": "errorTransfer",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
+      "Parameters": {
+        "ComparisonValue": "$.External.booked"
+      },
+      "Identifier": "checkBooked",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "failMsg",
+        "Conditions": [
+          {
+            "NextAction": "successMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "failMsg",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.available"
+      },
+      "Identifier": "checkConfirmAvailable",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "bumpAvailabilityAttempts",
+        "Conditions": [
+          {
+            "NextAction": "setConfirmMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpAvailabilityAttempts",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "<speak>$.External.message$.Attributes.confirmSuffix"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setConfirmMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "confirmPrompt",
+        "Errors": [
+          {
+            "NextAction": "confirmPrompt",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
       "Identifier": "disconnectEnd",
       "Type": "DisconnectParticipant",
-      "Parameters": {},
       "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "StoreInput": "False",
+        "Text": "$.Attributes.lastMessageText",
+        "InputTimeLimitSeconds": "10"
+      },
+      "Identifier": "specialtyMenuPage1",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "bumpInputAttempts",
+        "Conditions": [
+          {
+            "NextAction": "setSpecialty1",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty3",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "3"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty4",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "4"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty5",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "5"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty6",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "6"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty7",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "7"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty8",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "8"
+              ]
+            }
+          },
+          {
+            "NextAction": "setMsgSpecialtyPage2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "9"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferQueue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
+          },
+          {
+            "NextAction": "setMsgSpecialtyPage1",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "*"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferToMainMenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "#"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "StoreInput": "False",
+        "Text": "$.Attributes.lastMessageText",
+        "InputTimeLimitSeconds": "10"
+      },
+      "Identifier": "specialtyMenuPage2",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "bumpInputAttempts",
+        "Conditions": [
+          {
+            "NextAction": "setSpecialty9",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty10",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty11",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "3"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty12",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "4"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty13",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "5"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty14",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "6"
+              ]
+            }
+          },
+          {
+            "NextAction": "setSpecialty15",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "7"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferQueue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
+          },
+          {
+            "NextAction": "setMsgSpecialtyPage2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "*"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferToMainMenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "#"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "StoreInput": "False",
+        "Text": "$.Attributes.lastMessageText",
+        "InputTimeLimitSeconds": "10"
+      },
+      "Identifier": "timeOfDayMenu",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "bumpInputAttempts",
+        "Conditions": [
+          {
+            "NextAction": "setTimeRano",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "setTimePrzedPoludniem",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setTimePoPoludniu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "3"
+              ]
+            }
+          },
+          {
+            "NextAction": "setTimeWieczorem",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "4"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferQueue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
+          },
+          {
+            "NextAction": "setMsgTimeOfDay",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "*"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferToMainMenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "#"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "StoreInput": "False",
+        "InputTimeLimitSeconds": "10",
+        "SSML": "$.Attributes.lastMessageText"
+      },
+      "Identifier": "timesMenu",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "bumpInputAttempts",
+        "Conditions": [
+          {
+            "NextAction": "setTimeChoice1",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "setTimeChoice2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setTimeChoice3",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "3"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferQueue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
+          },
+          {
+            "NextAction": "setTimesMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "*"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferToMainMenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "#"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "StoreInput": "False",
+        "InputTimeLimitSeconds": "10",
+        "SSML": "$.Attributes.lastMessageText"
+      },
+      "Identifier": "daysMenu",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "bumpInputAttempts",
+        "Conditions": [
+          {
+            "NextAction": "setDayChoice1",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "setDayChoice2",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "setDayChoice3",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "3"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferQueue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
+          },
+          {
+            "NextAction": "setDaysMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "*"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferToMainMenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "#"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "$.Attributes.successMsg"
+      },
+      "Identifier": "successMsg",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "transferToMainMenu",
+        "Errors": [
+          {
+            "NextAction": "transferToMainMenu",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "StoreInput": "False",
+        "InputTimeLimitSeconds": "10",
+        "SSML": "$.Attributes.lastMessageText"
+      },
+      "Identifier": "confirmPrompt",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "bumpInputAttempts",
+        "Conditions": [
+          {
+            "NextAction": "invokeBook",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "invokeDays",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferQueue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
+          },
+          {
+            "NextAction": "setConfirmMsg",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "*"
+              ]
+            }
+          },
+          {
+            "NextAction": "transferToMainMenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "#"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bumpInputAttempts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/contact-flow/b4a58524-197b-4ce3-976d-346b3da22706"
+      },
+      "Identifier": "transferToMainMenu",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
     }
   ]
 }

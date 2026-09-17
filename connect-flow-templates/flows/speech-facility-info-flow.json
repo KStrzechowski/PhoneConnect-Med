@@ -1,136 +1,987 @@
 {
   "Version": "2019-10-30",
-  "StartAction": "voice",
+  "StartAction": "18ee5c6e-f83f-4329-8b06-a46e3d9f7c71",
   "Metadata": {
-    "entryPointPosition": { "x": 40, "y": 40 },
+    "entryPointPosition": {
+      "x": -3336,
+      "y": 321.6
+    },
     "ActionMetadata": {
-      "voice": { "position": { "x": 40, "y": 40 } },
-      "greet": { "position": { "x": 240, "y": 40 } },
-      "elicit": { "position": { "x": 460, "y": 40 } },
-      "elicitAgain": { "position": { "x": 700, "y": 40 } },
-      "checkOtpRequired": { "position": { "x": 460, "y": 260 } },
-      "initOtpMismatch": { "position": { "x": 660, "y": 500 } },
-      "elicitOtp": { "position": { "x": 860, "y": 500 } },
-      "checkOtpMismatch": { "position": { "x": 1060, "y": 500 } },
-      "bumpOtpMismatch": { "position": { "x": 1260, "y": 620 } },
-      "setOtpMismatch1": { "position": { "x": 1460, "y": 560 } },
-      "setOtpMismatch2": { "position": { "x": 1460, "y": 680 } },
-      "checkOtpSuccess": { "position": { "x": 1260, "y": 440 } },
-      "checkAuthTransfer": { "position": { "x": 660, "y": 260 } },
-      "storeIdentityAttrs": { "position": { "x": 560, "y": 260 } },
-      "checkFallback": { "position": { "x": 860, "y": 260 } },
-      "setTransferReasonCallerRequest": { "position": { "x": 1060, "y": 40 } },
-      "setTransferReasonAuthError": { "position": { "x": 1060, "y": 160 } },
-      "setTransferReasonOtpExceeded": { "position": { "x": 1460, "y": 800 } },
-      "setTransferReasonFallback": { "position": { "x": 1060, "y": 380 } },
-      "invokeAgentHandoverModule": { "position": { "x": 1260, "y": 260 } },
-      "disconnect": { "position": { "x": 1460, "y": 260 } }
+      "2df26b55-1aa3-4423-b997-4b8d37161aaf": {
+        "position": {
+          "x": -2205.6,
+          "y": 260
+        },
+        "children": [
+          "f48181b7-7c3d-4ea3-87f0-9750b01a3efd"
+        ],
+        "parameters": {
+          "TextToSpeechVoice": {
+            "languageCode": "pl-PL"
+          }
+        },
+        "overrideConsoleVoice": true,
+        "fragments": {
+          "SetContactData": "f48181b7-7c3d-4ea3-87f0-9750b01a3efd"
+        },
+        "overrideLanguageAttribute": true
+      },
+      "f48181b7-7c3d-4ea3-87f0-9750b01a3efd": {
+        "position": {
+          "x": -2205.6,
+          "y": 260
+        },
+        "dynamicParams": []
+      },
+      "4310e9a9-f1e7-4840-b5de-7251837172c9": {
+        "position": {
+          "x": -3.2,
+          "y": 54.4
+        },
+        "children": [
+          "8d0055a3-15b4-4fe8-b0c6-ec6f52865156"
+        ],
+        "parameters": {
+          "TextToSpeechVoice": {
+            "languageCode": "en-US"
+          },
+          "TextToSpeechEngine": {
+            "voiceProvider": "connect:agentic"
+          }
+        },
+        "overrideConsoleVoice": true,
+        "fragments": {
+          "SetContactData": "8d0055a3-15b4-4fe8-b0c6-ec6f52865156"
+        },
+        "overrideLanguageAttribute": true
+      },
+      "8d0055a3-15b4-4fe8-b0c6-ec6f52865156": {
+        "position": {
+          "x": -3.2,
+          "y": 54.4
+        },
+        "dynamicParams": []
+      },
+      "83087d78-26cc-4154-bd12-d605445b980f": {
+        "position": {
+          "x": -5.6,
+          "y": 284
+        },
+        "children": [
+          "6102d3a5-75ec-438d-afe7-9000980acd71"
+        ],
+        "parameters": {
+          "TextToSpeechVoice": {
+            "languageCode": "pl-PL"
+          }
+        },
+        "overrideConsoleVoice": true,
+        "fragments": {
+          "SetContactData": "6102d3a5-75ec-438d-afe7-9000980acd71"
+        },
+        "overrideLanguageAttribute": true
+      },
+      "6102d3a5-75ec-438d-afe7-9000980acd71": {
+        "position": {
+          "x": -5.6,
+          "y": 284
+        },
+        "dynamicParams": []
+      },
+      "disconnect": {
+        "position": {
+          "x": 3808.8,
+          "y": 224
+        }
+      },
+      "f5486b62-5fdc-49d2-8a32-fc9830ac5be9": {
+        "position": {
+          "x": 230.4,
+          "y": 55.2
+        },
+        "dynamicParams": []
+      },
+      "5744cd75-68c1-4c6e-96e0-8630667d61a9": {
+        "position": {
+          "x": 241.6,
+          "y": 291.2
+        },
+        "dynamicParams": []
+      },
+      "545e5d34-4bad-4bc5-820f-096f44b87c6c": {
+        "position": {
+          "x": -678.4,
+          "y": -47.2
+        }
+      },
+      "a390c456-421f-4969-b719-77febd16e48c": {
+        "position": {
+          "x": -2447.2,
+          "y": 269.6
+        },
+        "parameters": {
+          "PromptId": {
+            "displayName": "Beep.wav"
+          }
+        },
+        "promptName": "Beep.wav"
+      },
+      "d4a1a4d1-7794-403f-908b-0f6a57b1eb91": {
+        "position": {
+          "x": -2694.4,
+          "y": 269.6
+        },
+        "parameters": {
+          "PromptId": {
+            "displayName": "Beep.wav"
+          }
+        },
+        "promptName": "Beep.wav"
+      },
+      "5d57d5b3-4ec8-4196-bd37-9bbd7296c3aa": {
+        "position": {
+          "x": -2948,
+          "y": 276
+        },
+        "toCustomer": false,
+        "fromCustomer": true
+      },
+      "18ee5c6e-f83f-4329-8b06-a46e3d9f7c71": {
+        "position": {
+          "x": -3178.4,
+          "y": 297.6
+        }
+      },
+      "checkAuthTransfer": {
+        "position": {
+          "x": 1041.6,
+          "y": 607.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "b8fda83b-6353-4a67-8acd-7031d296951d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "e8a4eeed-df7f-4c5a-9759-ead463f7cf9d": {
+        "position": {
+          "x": 506.4,
+          "y": 254.4
+        },
+        "parameters": {
+          "LexV2Bot": {
+            "AliasArn": {
+              "displayName": "live",
+              "useLexBotDropdown": true,
+              "lexV2BotName": "PhoneConnect-Med-FacilityInfoSpeech"
+            }
+          },
+          "LexSessionAttributes": {
+            "pendingIntent": {
+              "useDynamic": true
+            },
+            "otpRequired": {
+              "useDynamic": true
+            },
+            "otpAttempts": {
+              "useDynamic": true
+            },
+            "isDemo": {
+              "useDynamic": true
+            },
+            "code": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "authenticated": false,
+          "firstName": false,
+          "lastName": false,
+          "patientId": false,
+          "phone": false,
+          "lastMessageText": false,
+          "pesel": false,
+          "fallbackCount": false,
+          "x-amz-lex:audio:start-timeout-ms:*:*": false,
+          "pendingIntent": true,
+          "otpRequired": true,
+          "otpAttempts": true,
+          "isDemo": true,
+          "code": true
+        },
+        "useLexBotDropdown": true,
+        "lexV2BotName": "PhoneConnect-Med-FacilityInfoSpeech",
+        "lexV2BotAliasName": "live",
+        "conditionMetadata": []
+      },
+      "78d39f2c-3b5c-49a0-83c7-fd39e36a28a9": {
+        "position": {
+          "x": 2221.6,
+          "y": 1236
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          },
+          "LexV2Bot": {
+            "AliasArn": {
+              "displayName": "live",
+              "useLexBotDropdown": true,
+              "lexV2BotName": "PhoneConnect-Med-FacilityInfoSpeech"
+            }
+          },
+          "LexSessionAttributes": {
+            "pendingIntent": {
+              "useDynamic": true
+            },
+            "otpRequired": {
+              "useDynamic": true
+            },
+            "otpAttempts": {
+              "useDynamic": true
+            },
+            "isDemo": {
+              "useDynamic": true
+            },
+            "code": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "authenticated": false,
+          "firstName": false,
+          "lastName": false,
+          "patientId": false,
+          "phone": false,
+          "lastMessageText": false,
+          "pesel": false,
+          "fallbackCount": false,
+          "x-amz-lex:audio:start-timeout-ms:*:*": false,
+          "pendingIntent": true,
+          "otpRequired": true,
+          "otpAttempts": true,
+          "isDemo": true,
+          "code": true
+        },
+        "useLexBotDropdown": true,
+        "lexV2BotName": "PhoneConnect-Med-FacilityInfoSpeech",
+        "lexV2BotAliasName": "live",
+        "useDynamic": true,
+        "conditionMetadata": []
+      },
+      "fe804342-f9aa-4399-aeda-08d9f3c6f3b4": {
+        "position": {
+          "x": 2215.2,
+          "y": 1032.8
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          },
+          "LexV2Bot": {
+            "AliasArn": {
+              "displayName": "live",
+              "useLexBotDropdown": true,
+              "lexV2BotName": "PhoneConnect-Med-FacilityInfoSpeech"
+            }
+          },
+          "LexSessionAttributes": {
+            "pendingIntent": {
+              "useDynamic": true
+            },
+            "otpRequired": {
+              "useDynamic": true
+            },
+            "otpAttempts": {
+              "useDynamic": true
+            },
+            "isDemo": {
+              "useDynamic": true
+            },
+            "code": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "authenticated": false,
+          "firstName": false,
+          "lastName": false,
+          "patientId": false,
+          "phone": false,
+          "lastMessageText": false,
+          "pesel": false,
+          "fallbackCount": false,
+          "x-amz-lex:audio:start-timeout-ms:*:*": false,
+          "pendingIntent": true,
+          "otpRequired": true,
+          "otpAttempts": true,
+          "isDemo": true,
+          "code": true
+        },
+        "useLexBotDropdown": true,
+        "lexV2BotName": "PhoneConnect-Med-FacilityInfoSpeech",
+        "lexV2BotAliasName": "live",
+        "useDynamic": true,
+        "conditionMetadata": []
+      },
+      "storeIdentityAttrs": {
+        "position": {
+          "x": 753.6,
+          "y": 620.8
+        },
+        "parameters": {
+          "Attributes": {
+            "pendingIntent": {
+              "useDynamic": true
+            },
+            "otpRequired": {
+              "useDynamic": true
+            },
+            "otpAttempts": {
+              "useDynamic": true
+            },
+            "isDemo": {
+              "useDynamic": true
+            },
+            "code": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "pendingIntent",
+          "otpRequired",
+          "otpAttempts",
+          "isDemo",
+          "code"
+        ]
+      },
+      "setTransferReasonAuthError": {
+        "position": {
+          "x": 2212,
+          "y": 450.4
+        },
+        "dynamicParams": []
+      },
+      "1bde95f7-4fb1-4436-a602-9eecfbda806f": {
+        "position": {
+          "x": -935.2,
+          "y": -40.8
+        }
+      },
+      "checkAgentRequested": {
+        "position": {
+          "x": 1304,
+          "y": 813.6
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "f1d46e76-14fc-465f-8b97-c415b38954e7",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "setTransferReasonCallerRequest": {
+        "position": {
+          "x": 2208.8,
+          "y": 647.2
+        },
+        "dynamicParams": []
+      },
+      "checkFallback": {
+        "position": {
+          "x": 1646.4,
+          "y": 988.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "65d5111f-08d0-429d-abb6-097ec012b67c",
+            "operator": {
+              "name": "Is greater or equal",
+              "value": "GreaterThanOrEqualTo",
+              "shortDisplay": ">="
+            },
+            "value": "3"
+          },
+          {
+            "id": "f8cc0c1a-fbea-4ac9-9557-487fafd9a263",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "0"
+          }
+        ]
+      },
+      "invokeAgentHandoverModule": {
+        "position": {
+          "x": 3304.8,
+          "y": 593.6
+        },
+        "parameters": {
+          "FlowModuleId": {
+            "displayName": "agent-handover-module",
+            "Alias": {
+              "displayName": "$LATEST"
+            }
+          }
+        },
+        "contactFlowModuleName": "agent-handover-module"
+      },
+      "setTransferReasonFallback": {
+        "position": {
+          "x": 2211.2,
+          "y": 840
+        },
+        "dynamicParams": []
+      },
+      "8f478813-d42b-48e8-a665-abb0481e5cb4": {
+        "position": {
+          "x": -1969.6,
+          "y": 258.4
+        }
+      },
+      "935dce0b-ad33-474c-988f-cd6fe94c12aa": {
+        "position": {
+          "x": -354.4,
+          "y": 760
+        },
+        "dynamicParams": []
+      },
+      "eedd950b-457e-41a4-b97f-413879c634a7": {
+        "position": {
+          "x": -602.4,
+          "y": 575.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "bf54cba3-f8e9-4245-bb43-e893f6c12a36",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "1"
+          }
+        ]
+      },
+      "d258470b-f372-418b-860f-85e395fb1505": {
+        "position": {
+          "x": -1736.8,
+          "y": 264.8
+        }
+      },
+      "dea4090a-bbc4-44a7-8321-751db85d5fa1": {
+        "position": {
+          "x": -104.8,
+          "y": 765.6
+        }
+      },
+      "93e4dea9-fb71-4b06-89f9-8089f001dc0b": {
+        "position": {
+          "x": -1219.2,
+          "y": 262.4
+        },
+        "parameters": {
+          "TimeLimitSeconds": {
+            "unit": 1
+          },
+          "MinimumWaitTimeSeconds": {
+            "unit": 1
+          }
+        },
+        "timeoutUnit": {
+          "display": "Seconds",
+          "value": "second"
+        }
+      },
+      "dab20fbe-da7f-4d76-8626-4222562382e9": {
+        "position": {
+          "x": -1478.4,
+          "y": 274.4
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "phoneconnect-med-language-detect"
+          }
+        },
+        "dynamicMetadata": {}
+      },
+      "f1f2aee4-f137-43d5-8344-3aedbed42f66": {
+        "position": {
+          "x": -317.6,
+          "y": 256
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "a0f23d76-2642-4960-9c41-06ee2a961d5e",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "en-US"
+          },
+          {
+            "id": "437f7120-5650-4b3e-90c5-6af254018bf5",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "pl-PL"
+          }
+        ]
+      },
+      "8f6a7833-b6dd-4b19-961f-97aa4091a864": {
+        "position": {
+          "x": -859.2,
+          "y": 350.4
+        }
+      },
+      "72fade31-fb4b-47cf-97ba-f603a609dbb5": {
+        "position": {
+          "x": -584.8,
+          "y": 276.8
+        },
+        "parameters": {
+          "Attributes": {
+            "pendingIntent": {
+              "useDynamic": true
+            },
+            "otpRequired": {
+              "useDynamic": true
+            },
+            "otpAttempts": {
+              "useDynamic": true
+            },
+            "isDemo": {
+              "useDynamic": true
+            },
+            "code": {
+              "useDynamic": true
+            },
+            "pendingSlots": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "pendingIntent",
+          "otpRequired",
+          "otpAttempts",
+          "isDemo",
+          "code",
+          "pendingSlots"
+        ]
+      }
     },
     "Annotations": [],
-    "name": "Facility Info Speech (S-02, S-03, S-04)",
-    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; contract-surfaces.md and the relevant plans' prose walkthroughs are. Supersedes speech-authintent-fragment.md and speech-otpintent-fragment.md (folded in here).",
+    "name": "speech-facility-info-flow",
+    "description": "",
     "type": "contactFlow",
     "status": "published",
     "hash": {}
   },
   "Actions": [
     {
-      "Identifier": "voice",
-      "Type": "UpdateContactTextToSpeechVoice",
       "Parameters": {
+        "TextToSpeechVoice": "Ola",
         "TextToSpeechEngine": "Neural",
-        "TextToSpeechVoice": "Ola"
+        "TextToSpeechStyle": "None"
       },
-      "Transitions": { "NextAction": "greet", "Errors": [], "Conditions": [] }
+      "Identifier": "2df26b55-1aa3-4423-b997-4b8d37161aaf",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Transitions": {
+        "NextAction": "f48181b7-7c3d-4ea3-87f0-9750b01a3efd",
+        "Errors": [
+          {
+            "NextAction": "8f478813-d42b-48e8-a665-abb0481e5cb4",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
     },
     {
-      "Identifier": "greet",
+      "Parameters": {
+        "LanguageCode": "pl-PL"
+      },
+      "Identifier": "f48181b7-7c3d-4ea3-87f0-9750b01a3efd",
+      "Type": "UpdateContactData",
+      "Transitions": {
+        "NextAction": "8f478813-d42b-48e8-a665-abb0481e5cb4",
+        "Errors": [
+          {
+            "NextAction": "8f478813-d42b-48e8-a665-abb0481e5cb4",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "TextToSpeechVoice": "JOANNA",
+        "TextToSpeechEngine": "connect:agentic"
+      },
+      "Identifier": "4310e9a9-f1e7-4840-b5de-7251837172c9",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Transitions": {
+        "NextAction": "8d0055a3-15b4-4fe8-b0c6-ec6f52865156",
+        "Errors": [
+          {
+            "NextAction": "f5486b62-5fdc-49d2-8a32-fc9830ac5be9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LanguageCode": "en-US"
+      },
+      "Identifier": "8d0055a3-15b4-4fe8-b0c6-ec6f52865156",
+      "Type": "UpdateContactData",
+      "Transitions": {
+        "NextAction": "f5486b62-5fdc-49d2-8a32-fc9830ac5be9",
+        "Errors": [
+          {
+            "NextAction": "f5486b62-5fdc-49d2-8a32-fc9830ac5be9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "TextToSpeechVoice": "Ola",
+        "TextToSpeechEngine": "Neural",
+        "TextToSpeechStyle": "None"
+      },
+      "Identifier": "83087d78-26cc-4154-bd12-d605445b980f",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Transitions": {
+        "NextAction": "6102d3a5-75ec-438d-afe7-9000980acd71",
+        "Errors": [
+          {
+            "NextAction": "5744cd75-68c1-4c6e-96e0-8630667d61a9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LanguageCode": "pl-PL"
+      },
+      "Identifier": "6102d3a5-75ec-438d-afe7-9000980acd71",
+      "Type": "UpdateContactData",
+      "Transitions": {
+        "NextAction": "5744cd75-68c1-4c6e-96e0-8630667d61a9",
+        "Errors": [
+          {
+            "NextAction": "5744cd75-68c1-4c6e-96e0-8630667d61a9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "disconnect",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "locale": "en",
+          "moreHelpQuestionPrompt": "Is there anything else I can help you with?"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "f5486b62-5fdc-49d2-8a32-fc9830ac5be9",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "e8a4eeed-df7f-4c5a-9759-ead463f7cf9d",
+        "Errors": [
+          {
+            "NextAction": "e8a4eeed-df7f-4c5a-9759-ead463f7cf9d",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "locale": "pl",
+          "moreHelpQuestionPrompt": "Czy mogę jeszcze w czymś pomóc?"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "5744cd75-68c1-4c6e-96e0-8630667d61a9",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "e8a4eeed-df7f-4c5a-9759-ead463f7cf9d",
+        "Errors": [
+          {
+            "NextAction": "e8a4eeed-df7f-4c5a-9759-ead463f7cf9d",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "SSML": "<speak><lang xml:lang=\"en-US\">Please wait</lang><break time=\"5s\"/></speak>"
+      },
+      "Identifier": "545e5d34-4bad-4bc5-820f-096f44b87c6c",
       "Type": "MessageParticipant",
-      "Parameters": {
-        "Text": "Dzień dobry, dodzwonił się Pan/Pani do przychodni Zdrowie. Proszę powiedzieć, o co chodzi — na przykład zapytać o adres i godziny otwarcia, poprosić o powtórzenie, albo o połączenie z konsultantem.",
-        "TextToSpeechType": "text"
-      },
       "Transitions": {
-        "NextAction": "elicit",
-        "Errors": [{ "NextAction": "elicit", "ErrorType": "NoMatchingError" }],
-        "Conditions": []
-      }
-    },
-    {
-      "Identifier": "elicit",
-      "Type": "GetParticipantInput",
-      "Parameters": {
-        "Text": "Słucham.",
-        "TextToSpeechType": "text",
-        "LexV2Bot": {
-          "AliasArn": "REPLACE_WITH_SPEECH_BOT_ALIAS_ARN"
-        },
-        "SessionAttributes": [
-          { "Key": "contactId", "Value": "$.ContactId" },
-          { "Key": "callerNumber", "Value": "$.CustomerEndpoint.Address" }
-        ]
-      },
-      "Transitions": {
-        "NextAction": "checkOtpRequired",
-        "Conditions": [
-          {
-            "NextAction": "setTransferReasonCallerRequest",
-            "Condition": { "Operator": "Equals", "Operands": ["Agenttransferintent"] }
-          }
-        ],
+        "NextAction": "1bde95f7-4fb1-4436-a602-9eecfbda806f",
         "Errors": [
-          { "NextAction": "checkOtpRequired", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "checkOtpRequired", "ErrorType": "NoMatchingError" },
-          { "NextAction": "checkOtpRequired", "ErrorType": "InputTimeLimitExceeded" }
+          {
+            "NextAction": "1bde95f7-4fb1-4436-a602-9eecfbda806f",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
-      "Identifier": "elicitAgain",
-      "Type": "GetParticipantInput",
       "Parameters": {
-        "Text": "Czy mogę jeszcze w czymś pomóc?",
-        "TextToSpeechType": "text",
-        "LexV2Bot": {
-          "AliasArn": "REPLACE_WITH_SPEECH_BOT_ALIAS_ARN"
-        },
-        "SessionAttributes": [
-          { "Key": "contactId", "Value": "$.ContactId" },
-          { "Key": "callerNumber", "Value": "$.CustomerEndpoint.Address" }
+        "SkipWhenDTMFBufferEnabled": "false",
+        "PromptId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/prompt/ee4585ab-9712-4015-b122-20cd3f611460"
+      },
+      "Identifier": "a390c456-421f-4969-b719-77febd16e48c",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "2df26b55-1aa3-4423-b997-4b8d37161aaf",
+        "Errors": [
+          {
+            "NextAction": "2df26b55-1aa3-4423-b997-4b8d37161aaf",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "PromptId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/prompt/ee4585ab-9712-4015-b122-20cd3f611460"
+      },
+      "Identifier": "d4a1a4d1-7794-403f-908b-0f6a57b1eb91",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "a390c456-421f-4969-b719-77febd16e48c",
+        "Errors": [
+          {
+            "NextAction": "a390c456-421f-4969-b719-77febd16e48c",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "MediaStreamingState": "Enabled",
+        "MediaStreamType": "Audio",
+        "Participants": [
+          {
+            "ParticipantType": "Customer",
+            "MediaDirections": [
+              "From"
+            ]
+          }
         ]
       },
+      "Identifier": "5d57d5b3-4ec8-4196-bd37-9bbd7296c3aa",
+      "Type": "UpdateContactMediaStreamingBehavior",
       "Transitions": {
-        "NextAction": "checkOtpRequired",
-        "Conditions": [
-          {
-            "NextAction": "setTransferReasonCallerRequest",
-            "Condition": { "Operator": "Equals", "Operands": ["Agenttransferintent"] }
-          }
-        ],
+        "NextAction": "d4a1a4d1-7794-403f-908b-0f6a57b1eb91",
         "Errors": [
-          { "NextAction": "checkOtpRequired", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "checkOtpRequired", "ErrorType": "NoMatchingError" },
-          { "NextAction": "checkOtpRequired", "ErrorType": "InputTimeLimitExceeded" }
+          {
+            "NextAction": "d4a1a4d1-7794-403f-908b-0f6a57b1eb91",
+            "ErrorType": "NoMatchingError"
+          }
         ]
       }
     },
     {
-      "Identifier": "checkOtpRequired",
+      "Parameters": {
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "18ee5c6e-f83f-4329-8b06-a46e3d9f7c71",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "5d57d5b3-4ec8-4196-bd37-9bbd7296c3aa"
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Lex.SessionAttributes.transfer"
+      },
+      "Identifier": "checkAuthTransfer",
       "Type": "Compare",
+      "Transitions": {
+        "NextAction": "checkAgentRequested",
+        "Conditions": [
+          {
+            "NextAction": "setTransferReasonAuthError",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "checkAgentRequested",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
       "Parameters": {
-        "Attribute": "$.Lex.SessionAttributes.otpRequired"
+        "SSML": "$.External.lexMessage",
+        "LexV2Bot": {
+          "AliasArn": "arn:aws:lex:eu-central-1:888054366039:bot-alias/IBWU01OLOU/NJ1JVXU8PG"
+        },
+        "LexSessionAttributes": {
+          "authenticated": "$.Attributes.authenticated",
+          "firstName": "$.Attributes.firstName",
+          "lastName": "$.Attributes.lastName",
+          "patientId": "$.Attributes.patientId",
+          "phone": "$.Attributes.phone",
+          "lastMessageText": "$.Attributes.lastMessageText",
+          "pesel": "$.Attributes.pesel",
+          "fallbackCount": "$.Attributes.fallbackCount",
+          "x-amz-lex:audio:start-timeout-ms:*:*": "8000",
+          "pendingIntent": "$.Attributes.pendingIntent",
+          "otpRequired": "$.Attributes.otpRequired",
+          "otpAttempts": "$.Attributes.otpAttempts",
+          "isDemo": "$.Attributes.isDemo",
+          "code": "$.Attributes.code"
+        }
       },
+      "Identifier": "e8a4eeed-df7f-4c5a-9759-ead463f7cf9d",
+      "Type": "ConnectParticipantWithLexBot",
       "Transitions": {
         "NextAction": "storeIdentityAttrs",
-        "Conditions": [
-          { "NextAction": "initOtpMismatch", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "storeIdentityAttrs", "ErrorType": "NoMatchingCondition" }]
+        "Errors": [
+          {
+            "NextAction": "storeIdentityAttrs",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "storeIdentityAttrs",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "storeIdentityAttrs",
-      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Text": "$.Attributes.moreHelpQuestionPrompt",
+        "LexV2Bot": {
+          "AliasArn": "arn:aws:lex:eu-central-1:888054366039:bot-alias/IBWU01OLOU/NJ1JVXU8PG"
+        },
+        "LexSessionAttributes": {
+          "authenticated": "$.Attributes.authenticated",
+          "firstName": "$.Attributes.firstName",
+          "lastName": "$.Attributes.lastName",
+          "patientId": "$.Attributes.patientId",
+          "phone": "$.Attributes.phone",
+          "lastMessageText": "$.Attributes.lastMessageText",
+          "pesel": "$.Attributes.pesel",
+          "fallbackCount": "$.Attributes.fallbackCount",
+          "x-amz-lex:audio:start-timeout-ms:*:*": "8000",
+          "pendingIntent": "$.Attributes.pendingIntent",
+          "otpRequired": "$.Attributes.otpRequired",
+          "otpAttempts": "$.Attributes.otpAttempts",
+          "isDemo": "$.Attributes.isDemo",
+          "code": "$.Attributes.code"
+        }
+      },
+      "Identifier": "78d39f2c-3b5c-49a0-83c7-fd39e36a28a9",
+      "Type": "ConnectParticipantWithLexBot",
+      "Transitions": {
+        "NextAction": "storeIdentityAttrs",
+        "Errors": [
+          {
+            "NextAction": "storeIdentityAttrs",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "storeIdentityAttrs",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.moreHelpQuestionPrompt",
+        "LexV2Bot": {
+          "AliasArn": "arn:aws:lex:eu-central-1:888054366039:bot-alias/IBWU01OLOU/NJ1JVXU8PG"
+        },
+        "LexSessionAttributes": {
+          "authenticated": "$.Attributes.authenticated",
+          "firstName": "$.Attributes.firstName",
+          "lastName": "$.Attributes.lastName",
+          "patientId": "$.Attributes.patientId",
+          "phone": "$.Attributes.phone",
+          "lastMessageText": "$.Attributes.lastMessageText",
+          "pesel": "$.Attributes.pesel",
+          "fallbackCount": "$.Attributes.fallbackCount",
+          "x-amz-lex:audio:start-timeout-ms:*:*": "8000",
+          "pendingIntent": "$.Attributes.pendingIntent",
+          "otpRequired": "$.Attributes.otpRequired",
+          "otpAttempts": "$.Attributes.otpAttempts",
+          "isDemo": "$.Attributes.isDemo",
+          "code": "$.Attributes.code"
+        }
+      },
+      "Identifier": "fe804342-f9aa-4399-aeda-08d9f3c6f3b4",
+      "Type": "ConnectParticipantWithLexBot",
+      "Transitions": {
+        "NextAction": "storeIdentityAttrs",
+        "Errors": [
+          {
+            "NextAction": "storeIdentityAttrs",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "storeIdentityAttrs",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
       "Parameters": {
         "Attributes": {
           "authenticated": "$.Lex.SessionAttributes.authenticated",
@@ -138,204 +989,445 @@
           "firstName": "$.Lex.SessionAttributes.firstName",
           "lastName": "$.Lex.SessionAttributes.lastName",
           "pesel": "$.Lex.SessionAttributes.pesel",
-          "phone": "$.Lex.SessionAttributes.phone"
+          "phone": "$.Lex.SessionAttributes.phone",
+          "lastMessageText": "$.Lex.SessionAttributes.lastMessageText",
+          "fallbackCount": "$.Lex.SessionAttributes.fallbackCount",
+          "pendingIntent": "$.Lex.SessionAttributes.pendingIntent",
+          "otpRequired": "$.Lex.SessionAttributes.otpRequired",
+          "otpAttempts": "$.Lex.SessionAttributes.otpAttempts",
+          "isDemo": "$.Lex.SessionAttributes.isDemo",
+          "code": "$.Lex.SessionAttributes.code"
         },
         "TargetContact": "Current"
       },
+      "Identifier": "storeIdentityAttrs",
+      "Type": "UpdateContactAttributes",
       "Transitions": {
         "NextAction": "checkAuthTransfer",
-        "Errors": [{ "NextAction": "checkAuthTransfer", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "checkAuthTransfer",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "checkAuthTransfer",
-      "Type": "Compare",
       "Parameters": {
-        "Attribute": "$.Lex.SessionAttributes.transfer"
+        "Attributes": {
+          "transferReason": "Błąd systemu podczas weryfikacji tożsamości."
+        },
+        "TargetContact": "Current"
       },
+      "Identifier": "setTransferReasonAuthError",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeAgentHandoverModule",
+        "Errors": [
+          {
+            "NextAction": "invokeAgentHandoverModule",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "SSML": "<speak><break time=\"5s\"/>Proszę czekać</speak>"
+      },
+      "Identifier": "1bde95f7-4fb1-4436-a602-9eecfbda806f",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "545e5d34-4bad-4bc5-820f-096f44b87c6c",
+        "Errors": [
+          {
+            "NextAction": "545e5d34-4bad-4bc5-820f-096f44b87c6c",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Lex.SessionAttributes.agentRequested"
+      },
+      "Identifier": "checkAgentRequested",
+      "Type": "Compare",
       "Transitions": {
         "NextAction": "checkFallback",
         "Conditions": [
-          { "NextAction": "setTransferReasonAuthError", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
+          {
+            "NextAction": "setTransferReasonCallerRequest",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
         ],
-        "Errors": [{ "NextAction": "checkFallback", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "initOtpMismatch",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "otpMismatchCount": "0" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "elicitOtp",
-        "Errors": [{ "NextAction": "elicitOtp", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "elicitOtp",
-      "Type": "GetParticipantInput",
-      "Parameters": {
-        "Text": "$.Lex.Messages[0].content",
-        "TextToSpeechType": "text",
-        "LexV2Bot": {
-          "AliasArn": "REPLACE_WITH_SPEECH_BOT_ALIAS_ARN"
-        },
-        "SessionAttributes": [
-          { "Key": "contactId", "Value": "$.ContactId" },
-          { "Key": "callerNumber", "Value": "$.CustomerEndpoint.Address" }
-        ],
-        "RequestAttributes": [
-          { "Key": "x-amz-lex:start-intent:REPLACE_WITH_SPEECH_BOT_ALIAS_ID:pl_PL", "Value": "OtpIntent" }
-        ]
-      },
-      "Transitions": {
-        "NextAction": "checkOtpMismatch",
         "Errors": [
-          { "NextAction": "bumpOtpMismatch", "ErrorType": "NoMatchingCondition" },
-          { "NextAction": "bumpOtpMismatch", "ErrorType": "NoMatchingError" },
-          { "NextAction": "bumpOtpMismatch", "ErrorType": "InputTimeLimitExceeded" }
+          {
+            "NextAction": "checkFallback",
+            "ErrorType": "NoMatchingCondition"
+          }
         ]
       }
     },
     {
-      "Identifier": "checkOtpMismatch",
-      "Type": "Compare",
       "Parameters": {
-        "Attribute": "$.Lex.SessionAttributes.otpMismatch"
+        "Attributes": {
+          "transferReason": "Klient poprosił o kontakt z konsultantem."
+        },
+        "TargetContact": "Current"
       },
-      "Transitions": {
-        "NextAction": "checkOtpSuccess",
-        "Conditions": [
-          { "NextAction": "bumpOtpMismatch", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "checkOtpSuccess", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "checkOtpSuccess",
-      "Type": "Compare",
-      "Parameters": {
-        "Attribute": "$.Lex.SessionAttributes.authenticated"
-      },
-      "Transitions": {
-        "NextAction": "elicitOtp",
-        "Conditions": [
-          { "NextAction": "elicitAgain", "Condition": { "Operator": "Equals", "Operands": ["true"] } }
-        ],
-        "Errors": [{ "NextAction": "elicitOtp", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "bumpOtpMismatch",
-      "Type": "Compare",
-      "Parameters": {
-        "Attribute": "$.Attributes.otpMismatchCount"
-      },
-      "Transitions": {
-        "NextAction": "setOtpMismatch1",
-        "Conditions": [
-          { "NextAction": "setTransferReasonOtpExceeded", "Condition": { "Operator": "Equals", "Operands": ["2"] } },
-          { "NextAction": "setOtpMismatch2", "Condition": { "Operator": "Equals", "Operands": ["1"] } }
-        ],
-        "Errors": [{ "NextAction": "setOtpMismatch1", "ErrorType": "NoMatchingCondition" }]
-      }
-    },
-    {
-      "Identifier": "setOtpMismatch1",
+      "Identifier": "setTransferReasonCallerRequest",
       "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "otpMismatchCount": "1" }, "TargetContact": "Current" },
       "Transitions": {
-        "NextAction": "elicitOtp",
-        "Errors": [{ "NextAction": "elicitOtp", "ErrorType": "NoMatchingError" }]
+        "NextAction": "invokeAgentHandoverModule",
+        "Errors": [
+          {
+            "NextAction": "invokeAgentHandoverModule",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "setOtpMismatch2",
-      "Type": "UpdateContactAttributes",
-      "Parameters": { "Attributes": { "otpMismatchCount": "2" }, "TargetContact": "Current" },
-      "Transitions": {
-        "NextAction": "elicitOtp",
-        "Errors": [{ "NextAction": "elicitOtp", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "checkFallback",
-      "Type": "Compare",
       "Parameters": {
         "ComparisonValue": "$.Lex.SessionAttributes.fallbackCount"
       },
+      "Identifier": "checkFallback",
+      "Type": "Compare",
       "Transitions": {
-        "NextAction": "elicitAgain",
+        "NextAction": "78d39f2c-3b5c-49a0-83c7-fd39e36a28a9",
         "Conditions": [
           {
             "NextAction": "setTransferReasonFallback",
-            "Condition": { "Operator": "NumberGreaterOrEqualTo", "Operands": ["3"] }
+            "Condition": {
+              "Operator": "NumberGreaterOrEqualTo",
+              "Operands": [
+                "3"
+              ]
+            }
+          },
+          {
+            "NextAction": "fe804342-f9aa-4399-aeda-08d9f3c6f3b4",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
           }
         ],
-        "Errors": [{ "NextAction": "elicitAgain", "ErrorType": "NoMatchingCondition" }]
+        "Errors": [
+          {
+            "NextAction": "78d39f2c-3b5c-49a0-83c7-fd39e36a28a9",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
       }
     },
     {
-      "Identifier": "setTransferReasonCallerRequest",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
-        "Attributes": { "transferReason": "Klient poprosił o kontakt z konsultantem." },
-        "TargetContact": "Current"
+        "FlowModuleId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/flow-module/cd835b16-5581-440a-8070-435b63e0b234"
       },
-      "Transitions": {
-        "NextAction": "invokeAgentHandoverModule",
-        "Errors": [{ "NextAction": "invokeAgentHandoverModule", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setTransferReasonAuthError",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": { "transferReason": "Błąd systemu podczas weryfikacji tożsamości." },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "invokeAgentHandoverModule",
-        "Errors": [{ "NextAction": "invokeAgentHandoverModule", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setTransferReasonOtpExceeded",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": { "transferReason": "Trzy nieudane próby wprowadzenia kodu." },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "invokeAgentHandoverModule",
-        "Errors": [{ "NextAction": "invokeAgentHandoverModule", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
-      "Identifier": "setTransferReasonFallback",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": { "transferReason": "Trzy niezrozumiałe wypowiedzi." },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "invokeAgentHandoverModule",
-        "Errors": [{ "NextAction": "invokeAgentHandoverModule", "ErrorType": "NoMatchingError" }]
-      }
-    },
-    {
       "Identifier": "invokeAgentHandoverModule",
       "Type": "InvokeFlowModule",
-      "Parameters": { "FlowModuleId": "REPLACE_WITH_AGENT_HANDOVER_MODULE_ARN" },
       "Transitions": {
         "NextAction": "disconnect",
-        "Errors": [{ "NextAction": "disconnect", "ErrorType": "NoMatchingError" }]
+        "Errors": [
+          {
+            "NextAction": "disconnect",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "disconnect",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
       }
     },
     {
-      "Identifier": "disconnect",
-      "Type": "DisconnectParticipant",
-      "Parameters": {},
-      "Transitions": {}
+      "Parameters": {
+        "Attributes": {
+          "transferReason": "Trzy niezrozumiałe wypowiedzi."
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setTransferReasonFallback",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeAgentHandoverModule",
+        "Errors": [
+          {
+            "NextAction": "invokeAgentHandoverModule",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "SSML": "<speak>Witamy w Przychodni Zdrowie.<lang xml:lang=\"en-US\">Welcome to Health Clinic.</lang></speak>"
+      },
+      "Identifier": "8f478813-d42b-48e8-a665-abb0481e5cb4",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "d258470b-f372-418b-860f-85e395fb1505",
+        "Errors": [
+          {
+            "NextAction": "d258470b-f372-418b-860f-85e395fb1505",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "invalLangRecognition": "1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "935dce0b-ad33-474c-988f-cd6fe94c12aa",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "dea4090a-bbc4-44a7-8321-751db85d5fa1",
+        "Errors": [
+          {
+            "NextAction": "dea4090a-bbc4-44a7-8321-751db85d5fa1",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.invalLangRecognition"
+      },
+      "Identifier": "eedd950b-457e-41a4-b97f-413879c634a7",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "935dce0b-ad33-474c-988f-cd6fe94c12aa",
+        "Conditions": [
+          {
+            "NextAction": "setTransferReasonAuthError",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "935dce0b-ad33-474c-988f-cd6fe94c12aa",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "SSML": "<speak>W czym możemy pomóc?<lang xml:lang=\"en-US\">How can we help?</lang></speak>"
+      },
+      "Identifier": "d258470b-f372-418b-860f-85e395fb1505",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "dab20fbe-da7f-4d76-8626-4222562382e9",
+        "Errors": [
+          {
+            "NextAction": "dab20fbe-da7f-4d76-8626-4222562382e9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "SSML": "<speak>Przepraszam, nie zrozumiałem. Czy możesz powtórzyć?<lang xml:lang=\"en-US\">I'm sorry, I didn't catch that. Can you repeat?</lang></speak>"
+      },
+      "Identifier": "dea4090a-bbc4-44a7-8321-751db85d5fa1",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "dab20fbe-da7f-4d76-8626-4222562382e9",
+        "Errors": [
+          {
+            "NextAction": "dab20fbe-da7f-4d76-8626-4222562382e9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "TimeLimitSeconds": "20",
+        "ContinueExecution": "TRUE",
+        "InterruptibleEvents": {
+          "lambda returned": {
+            "AsyncLambdaCompletionEvent": {
+              "Identifier": "$.LambdaInvocation.InvocationId"
+            }
+          }
+        },
+        "MinimumWaitTimeSeconds": "1"
+      },
+      "Identifier": "93e4dea9-fb71-4b06-89f9-8089f001dc0b",
+      "Type": "Wait",
+      "Transitions": {
+        "NextAction": "8f6a7833-b6dd-4b19-961f-97aa4091a864",
+        "Conditions": [
+          {
+            "NextAction": "1bde95f7-4fb1-4436-a602-9eecfbda806f",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "Continue"
+              ]
+            }
+          },
+          {
+            "NextAction": "8f6a7833-b6dd-4b19-961f-97aa4091a864",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "lambda returned"
+              ]
+            }
+          },
+          {
+            "NextAction": "8f6a7833-b6dd-4b19-961f-97aa4091a864",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "WaitCompleted"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "8f6a7833-b6dd-4b19-961f-97aa4091a864",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-language-detect",
+        "InvocationTimeLimitSeconds": "30",
+        "InvocationType": "ASYNCHRONOUS",
+        "ResponseValidation": {
+          "ResponseType": "JSON"
+        }
+      },
+      "Identifier": "dab20fbe-da7f-4d76-8626-4222562382e9",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "93e4dea9-fb71-4b06-89f9-8089f001dc0b",
+        "Errors": [
+          {
+            "NextAction": "93e4dea9-fb71-4b06-89f9-8089f001dc0b",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.languageCode"
+      },
+      "Identifier": "f1f2aee4-f137-43d5-8344-3aedbed42f66",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "eedd950b-457e-41a4-b97f-413879c634a7",
+        "Conditions": [
+          {
+            "NextAction": "4310e9a9-f1e7-4840-b5de-7251837172c9",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "en-US"
+              ]
+            }
+          },
+          {
+            "NextAction": "83087d78-26cc-4154-bd12-d605445b980f",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "pl-PL"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "eedd950b-457e-41a4-b97f-413879c634a7",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaInvocationId": "$.LambdaInvocation.InvocationId"
+      },
+      "Identifier": "8f6a7833-b6dd-4b19-961f-97aa4091a864",
+      "Type": "LoadLambdaFunctionResult",
+      "Transitions": {
+        "NextAction": "72fade31-fb4b-47cf-97ba-f603a609dbb5",
+        "Errors": [
+          {
+            "NextAction": "eedd950b-457e-41a4-b97f-413879c634a7",
+            "ErrorType": "NoMatchingError"
+          },
+          {
+            "NextAction": "eedd950b-457e-41a4-b97f-413879c634a7",
+            "ErrorType": "InProgress"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "authenticated": "$.External.sessionState.sessionAttributes.authenticated",
+          "patientId": "$.External.sessionState.sessionAttributes.patientId",
+          "firstName": "$.External.sessionState.sessionAttributes.firstName",
+          "lastName": "$.External.sessionState.sessionAttributes.lastName",
+          "pesel": "$.External.sessionState.sessionAttributes.pesel",
+          "phone": "$.External.sessionState.sessionAttributes.phone",
+          "lastMessageText": "$.External.sessionState.sessionAttributes.lastMessageText",
+          "fallbackCount": "$.External.sessionState.sessionAttributes.fallbackCount",
+          "pendingIntent": "$.External.sessionState.sessionAttributes.pendingIntent",
+          "otpRequired": "$.External.sessionState.sessionAttributes.otpRequired",
+          "otpAttempts": "$.External.sessionState.sessionAttributes.otpAttempts",
+          "isDemo": "$.External.sessionState.sessionAttributes.isDemo",
+          "code": "$.External.sessionState.sessionAttributes.code",
+          "pendingSlots": "$.External.sessionState.sessionAttributes.pendingSlots"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "72fade31-fb4b-47cf-97ba-f603a609dbb5",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "f1f2aee4-f137-43d5-8344-3aedbed42f66",
+        "Errors": [
+          {
+            "NextAction": "f1f2aee4-f137-43d5-8344-3aedbed42f66",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
     }
   ]
 }

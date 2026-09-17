@@ -1,241 +1,202 @@
 {
   "Version": "2019-10-30",
-  "StartAction": "copyPrompts",
+  "StartAction": "eaa3e815-0113-4cc5-988e-2149be5a44d2",
   "Metadata": {
     "entryPointPosition": {
-      "x": 40,
-      "y": 40
+      "x": -914.4,
+      "y": 296.8
     },
     "ActionMetadata": {
-      "copyPrompts": {
-        "position": {
-          "x": 140,
-          "y": 40
-        }
-      },
-      "checkLocaleForVoice": {
-        "position": {
-          "x": 190,
-          "y": 40
-        }
-      },
-      "setVoiceEn": {
-        "position": {
-          "x": 220,
-          "y": -40
-        }
-      },
-      "setVoicePl": {
-        "position": {
-          "x": 220,
-          "y": 100
-        }
-      },
-      "invokeAppointmentList": {
-        "position": {
-          "x": 240,
-          "y": 40
-        }
-      },
       "checkNeedsAuth": {
         "position": {
-          "x": 440,
-          "y": 40
-        }
+          "x": 23.2,
+          "y": 239.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "113d05ce-ae0e-4824-97e8-bdc888bd94d9",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
       },
       "checkReachable": {
         "position": {
-          "x": 640,
-          "y": 40
-        }
+          "x": 301.6,
+          "y": 244.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "e80065fa-e98b-422c-86e6-b31713a381bf",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
       },
-      "checkHasAppointments": {
+      "transferQueue": {
         "position": {
-          "x": 840,
-          "y": 40
-        }
-      },
-      "checkHasMore": {
-        "position": {
-          "x": 1040,
-          "y": 40
+          "x": 919.2,
+          "y": 644
         }
       },
       "setNeedsAuthMsg": {
         "position": {
-          "x": 640,
-          "y": -180
-        }
-      },
-      "setEmptyMsg": {
-        "position": {
-          "x": 1040,
-          "y": 220
-        }
+          "x": 320.8,
+          "y": -147.2
+        },
+        "dynamicParams": []
       },
       "setPopulatedMsgWithMore": {
         "position": {
-          "x": 1240,
-          "y": -80
-        }
+          "x": 1137.6,
+          "y": 5.6
+        },
+        "dynamicParams": []
+      },
+      "checkHasAppointments": {
+        "position": {
+          "x": 585.6,
+          "y": 226.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "f7ecd597-bfa4-45bd-93bb-a08ba59922ca",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          },
+          {
+            "id": "ea0305e8-a3e2-4127-8162-871042025c40",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "false"
+          }
+        ]
+      },
+      "setEmptyMsg": {
+        "position": {
+          "x": 1144.8,
+          "y": 482.4
+        },
+        "dynamicParams": []
+      },
+      "checkHasMore": {
+        "position": {
+          "x": 853.6,
+          "y": 132.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "82688bc0-9bb7-45cb-a46c-d3f14f7eef8d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
       },
       "setPopulatedMsgNoMore": {
         "position": {
-          "x": 1240,
-          "y": 40
+          "x": 1145.6,
+          "y": 275.2
+        },
+        "dynamicParams": []
+      },
+      "invokeAppointmentList": {
+        "position": {
+          "x": -239.2,
+          "y": 226.4
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "phoneconnect-med-appointment-list"
+          }
+        },
+        "dynamicMetadata": {
+          "authenticated": false,
+          "patientId": false,
+          "locale": false
+        }
+      },
+      "eaa3e815-0113-4cc5-988e-2149be5a44d2": {
+        "position": {
+          "x": -772.8,
+          "y": 202.4
+        },
+        "parameters": {
+          "DataTableId": {
+            "displayName": "AppointmentListPrompts"
+          }
+        }
+      },
+      "copyPrompts": {
+        "position": {
+          "x": -496.8,
+          "y": 216
+        },
+        "dynamicParams": []
+      },
+      "disconnectEnd": {
+        "position": {
+          "x": 2094.4,
+          "y": 183.2
         }
       },
       "playMsg": {
         "position": {
-          "x": 1440,
-          "y": -20
+          "x": 1418.4,
+          "y": -128
         }
       },
       "transferToAuthenticatedMenu": {
         "position": {
-          "x": 1640,
-          "y": -20
-        }
-      },
-      "transferQueue": {
-        "position": {
-          "x": 840,
-          "y": 400
-        }
-      },
-      "disconnectEnd": {
-        "position": {
-          "x": 1840,
-          "y": 200
+          "x": 1692,
+          "y": -51.2
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "keypad-facility-info-main-menu-flow"
+          }
+        },
+        "ContactFlow": {
+          "text": "keypad-facility-info-main-menu-flow"
         }
       }
     },
     "Annotations": [],
-    "name": "Appointment List (S-06, keypad)",
-    "description": "Generated import template - review and fix up every block in the designer before publishing. Not a source of truth; the plan's prose walkthrough is. Only reachable once $.Attributes.authenticated is 'true' (gated by the caller before transferring here). Single flow shared by both locales via $.Attributes.locale, forwarded as the 'locale' parameter on the Appointment List Lambda invoke so its own locale branch (day labels, specialty display name) fires correctly. MANUAL STEP (not expressible in this JSON - the Data Table block has no published Flow Language schema): after importing, insert a Data Table block as the true first action, Evaluate action, table 'AppointmentListPrompts', one query named 'AppointmentListPrompts', Primary Attribute locale=$.Attributes.locale, Query Attributes = every column listed in connect-flow-templates/data-tables.md's AppointmentListPrompts section. Set this flow's StartAction to your new block's Identifier, and its Success transition to 'copyPrompts' (currently the StartAction as a placeholder).",
+    "name": "keypad-appointment-list-flow",
+    "description": "",
     "type": "contactFlow",
-    "status": "SAVED",
+    "status": "published",
     "hash": {}
   },
   "Actions": [
     {
-      "Identifier": "copyPrompts",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "needsAuthMsg": "$.DataTables.AppointmentListPrompts.needsAuthMsg",
-          "emptyMsg": "$.DataTables.AppointmentListPrompts.emptyMsg",
-          "populatedPrefix": "$.DataTables.AppointmentListPrompts.populatedPrefix",
-          "populatedFrag2": "$.DataTables.AppointmentListPrompts.populatedFrag2",
-          "populatedFrag3": "$.DataTables.AppointmentListPrompts.populatedFrag3",
-          "populatedSuffixMore": "$.DataTables.AppointmentListPrompts.populatedSuffixMore",
-          "populatedSuffixNoMore": "$.DataTables.AppointmentListPrompts.populatedSuffixNoMore"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "checkLocaleForVoice",
-        "Errors": [
-          {
-            "NextAction": "checkLocaleForVoice",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "checkLocaleForVoice",
-      "Type": "Compare",
-      "Parameters": {
-        "ComparisonValue": "$.Attributes.locale"
-      },
-      "Transitions": {
-        "NextAction": "setVoicePl",
-        "Conditions": [
-          {
-            "NextAction": "setVoiceEn",
-            "Condition": {
-              "Operator": "Equals",
-              "Operands": [
-                "en"
-              ]
-            }
-          }
-        ],
-        "Errors": [
-          {
-            "NextAction": "setVoicePl",
-            "ErrorType": "NoMatchingCondition"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setVoiceEn",
-      "Type": "UpdateContactTextToSpeechVoice",
-      "Parameters": {
-        "TextToSpeechEngine": "Neural",
-        "TextToSpeechVoice": "Joanna"
-      },
-      "Transitions": {
-        "NextAction": "invokeAppointmentList",
-        "Errors": [
-          {
-            "NextAction": "invokeAppointmentList",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setVoicePl",
-      "Type": "UpdateContactTextToSpeechVoice",
-      "Parameters": {
-        "TextToSpeechEngine": "Neural",
-        "TextToSpeechVoice": "Ola"
-      },
-      "Transitions": {
-        "NextAction": "invokeAppointmentList",
-        "Errors": [
-          {
-            "NextAction": "invokeAppointmentList",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "invokeAppointmentList",
-      "Type": "InvokeLambdaFunction",
-      "Parameters": {
-        "LambdaFunctionARN": "REPLACE_WITH_APPOINTMENT_LIST_FUNCTION_ARN",
-        "InvocationType": "SYNCHRONOUS",
-        "InvocationTimeLimitSeconds": "8",
-        "LambdaInvocationAttributes": {
-          "authenticated": "$.Attributes.authenticated",
-          "patientId": "$.Attributes.patientId",
-          "locale": "$.Attributes.locale"
-        },
-        "ResponseValidation": {
-          "ResponseType": "STRING_MAP"
-        }
-      },
-      "Transitions": {
-        "NextAction": "checkNeedsAuth",
-        "Errors": [
-          {
-            "NextAction": "transferQueue",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "checkNeedsAuth",
-      "Type": "Compare",
       "Parameters": {
         "ComparisonValue": "$.External.needsAuth"
       },
+      "Identifier": "checkNeedsAuth",
+      "Type": "Compare",
       "Transitions": {
         "NextAction": "checkReachable",
         "Conditions": [
@@ -258,11 +219,11 @@
       }
     },
     {
-      "Identifier": "checkReachable",
-      "Type": "Compare",
       "Parameters": {
         "ComparisonValue": "$.External.reachable"
       },
+      "Identifier": "checkReachable",
+      "Type": "Compare",
       "Transitions": {
         "NextAction": "transferQueue",
         "Conditions": [
@@ -285,11 +246,67 @@
       }
     },
     {
-      "Identifier": "checkHasAppointments",
-      "Type": "Compare",
+      "Parameters": {},
+      "Identifier": "transferQueue",
+      "Type": "TransferContactToQueue",
+      "Transitions": {
+        "NextAction": "disconnectEnd",
+        "Errors": [
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "QueueAtCapacity"
+          },
+          {
+            "NextAction": "disconnectEnd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.needsAuthMsg"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setNeedsAuthMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "playMsg",
+        "Errors": [
+          {
+            "NextAction": "playMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.populatedPrefix$.External.apptsList$.Attributes.populatedSuffixMore"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setPopulatedMsgWithMore",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "playMsg",
+        "Errors": [
+          {
+            "NextAction": "playMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
       "Parameters": {
         "ComparisonValue": "$.External.hasAppointments"
       },
+      "Identifier": "checkHasAppointments",
+      "Type": "Compare",
       "Transitions": {
         "NextAction": "transferQueue",
         "Conditions": [
@@ -321,11 +338,30 @@
       }
     },
     {
-      "Identifier": "checkHasMore",
-      "Type": "Compare",
+      "Parameters": {
+        "Attributes": {
+          "lastMessageText": "$.Attributes.emptyMsg"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setEmptyMsg",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "playMsg",
+        "Errors": [
+          {
+            "NextAction": "playMsg",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
       "Parameters": {
         "ComparisonValue": "$.External.hasMore"
       },
+      "Identifier": "checkHasMore",
+      "Type": "Compare",
       "Transitions": {
         "NextAction": "setPopulatedMsgNoMore",
         "Conditions": [
@@ -348,71 +384,14 @@
       }
     },
     {
-      "Identifier": "setNeedsAuthMsg",
-      "Type": "UpdateContactAttributes",
       "Parameters": {
         "Attributes": {
-          "lastMessageText": "$.Attributes.needsAuthMsg"
+          "lastMessageText": "$.Attributes.populatedPrefix$.External.apptsList$.Attributes.populatedSuffixNoMore"
         },
         "TargetContact": "Current"
       },
-      "Transitions": {
-        "NextAction": "playMsg",
-        "Errors": [
-          {
-            "NextAction": "playMsg",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setEmptyMsg",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "$.Attributes.emptyMsg"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "playMsg",
-        "Errors": [
-          {
-            "NextAction": "playMsg",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "setPopulatedMsgWithMore",
-      "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "$.Attributes.populatedPrefix$.External.appt1$.Attributes.populatedFrag2$.External.appt2$.Attributes.populatedFrag3$.External.appt3$.Attributes.populatedSuffixMore"
-        },
-        "TargetContact": "Current"
-      },
-      "Transitions": {
-        "NextAction": "playMsg",
-        "Errors": [
-          {
-            "NextAction": "playMsg",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
       "Identifier": "setPopulatedMsgNoMore",
       "Type": "UpdateContactAttributes",
-      "Parameters": {
-        "Attributes": {
-          "lastMessageText": "$.Attributes.populatedPrefix$.External.appt1$.Attributes.populatedFrag2$.External.appt2$.Attributes.populatedFrag3$.External.appt3$.Attributes.populatedSuffixNoMore"
-        },
-        "TargetContact": "Current"
-      },
       "Transitions": {
         "NextAction": "playMsg",
         "Errors": [
@@ -424,12 +403,101 @@
       }
     },
     {
-      "Identifier": "playMsg",
-      "Type": "MessageParticipant",
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:eu-central-1:888054366039:function:phoneconnect-med-appointment-list",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "authenticated": "$.Attributes.authenticated",
+          "patientId": "$.Attributes.patientId",
+          "locale": "$.Attributes.locale"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "invokeAppointmentList",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "checkNeedsAuth",
+        "Errors": [
+          {
+            "NextAction": "transferQueue",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "DataTableId": "b08d751d-04cb-427f-b550-8915dc80e028",
+        "Queries": [
+          {
+            "QueryName": "AppointmentListPrompts",
+            "Attributes": [
+              "populatedSuffixNoMore",
+              "emptyMsg",
+              "populatedSuffixMore",
+              "needsAuthMsg",
+              "populatedPrefix"
+            ],
+            "PrimaryValues": [
+              {
+                "AttributeName": "locale",
+                "Value": "$.Attributes.locale"
+              }
+            ]
+          }
+        ]
+      },
+      "Identifier": "eaa3e815-0113-4cc5-988e-2149be5a44d2",
+      "Type": "EvaluateDataTableValues",
+      "Transitions": {
+        "NextAction": "copyPrompts",
+        "Errors": [
+          {
+            "NextAction": "copyPrompts",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "needsAuthMsg": "$.DataTables.AppointmentListPrompts.needsAuthMsg",
+          "emptyMsg": "$.DataTables.AppointmentListPrompts.emptyMsg",
+          "populatedPrefix": "$.DataTables.AppointmentListPrompts.populatedPrefix",
+          "populatedSuffixMore": "$.DataTables.AppointmentListPrompts.populatedSuffixMore",
+          "populatedSuffixNoMore": "$.DataTables.AppointmentListPrompts.populatedSuffixNoMore"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "copyPrompts",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "invokeAppointmentList",
+        "Errors": [
+          {
+            "NextAction": "invokeAppointmentList",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "disconnectEnd",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
       "Parameters": {
         "SkipWhenDTMFBufferEnabled": "false",
-        "Text": "$.Attributes.lastMessageText"
+        "SSML": "$.Attributes.lastMessageText"
       },
+      "Identifier": "playMsg",
+      "Type": "MessageParticipant",
       "Transitions": {
         "NextAction": "transferToAuthenticatedMenu",
         "Errors": [
@@ -441,11 +509,11 @@
       }
     },
     {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:eu-central-1:888054366039:instance/ab4806e6-46d9-4053-aa6d-ce97a9ffb471/contact-flow/b4a58524-197b-4ce3-976d-346b3da22706"
+      },
       "Identifier": "transferToAuthenticatedMenu",
       "Type": "TransferToFlow",
-      "Parameters": {
-        "ContactFlowId": "REPLACE_WITH_AUTHENTICATED_MENU_FLOW_ARN"
-      },
       "Transitions": {
         "NextAction": "disconnectEnd",
         "Errors": [
@@ -455,30 +523,6 @@
           }
         ]
       }
-    },
-    {
-      "Identifier": "transferQueue",
-      "Type": "TransferContactToQueue",
-      "Parameters": {},
-      "Transitions": {
-        "NextAction": "disconnectEnd",
-        "Errors": [
-          {
-            "NextAction": "disconnectEnd",
-            "ErrorType": "QueueAtCapacity"
-          },
-          {
-            "NextAction": "disconnectEnd",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Identifier": "disconnectEnd",
-      "Type": "DisconnectParticipant",
-      "Parameters": {},
-      "Transitions": {}
     }
   ]
 }
