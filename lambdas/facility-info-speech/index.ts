@@ -114,6 +114,11 @@ const RELATIVE_DAY_WORDS: { word: string; offsetDays: number }[] = [
   { word: 'dziś', offsetDays: 0 },
   { word: 'tomorrow', offsetDays: 1 },
   { word: 'today', offsetDays: 0 },
+  // "za tydzień" names one exact day (today + 7), unlike "przyszły/ten tydzień" below, which
+  // name a whole week and are handled separately in fallbackDate as a range, not a single day.
+  { word: 'za tydzień', offsetDays: 7 },
+  { word: 'in a week', offsetDays: 7 },
+  { word: 'a week from now', offsetDays: 7 },
 ];
 
 const WEEKDAY_WORDS: { word: string; day: number }[] = [
@@ -137,6 +142,33 @@ const nearestWeekday = (targetDay: number, now: Date): string => {
   const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
   const todayDay = new Date(todayUtc).getUTCDay();
   const offset = (targetDay - todayDay + 7) % 7;
+  return new Date(todayUtc + offset * 86400000).toISOString().slice(0, 10);
+};
+
+// "next week" names a whole week, not one day — there's no reading of it as an exact date, so
+// it always resolves as a starting point (next Monday), never through the od/po-marker check
+// below. This is the exact phrase from the thesis's own test scenario card ("w przyszłym
+// tygodniu rano"), so it's not a hypothetical gap.
+const NEXT_WEEK_WORDS = [
+  'przyszłym tygodniu',
+  'przyszły tydzień',
+  'przyszłego tygodnia',
+  'następnym tygodniu',
+  'następny tydzień',
+  'następnego tygodnia',
+  'next week',
+];
+
+// "this week" is the same kind of range as "next week" above — not a single day — but since a
+// plain, unqualified date search already starts from today with no upper bound, resolving it
+// just means making sure a date search happens at all, so a combined "this week morning" doesn't
+// silently drop the time-of-day word the same way an unresolved date already does elsewhere.
+const THIS_WEEK_WORDS = ['tym tygodniu', 'tego tygodnia', 'this week'];
+
+const nextMonday = (now: Date): string => {
+  const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayDay = new Date(todayUtc).getUTCDay();
+  const offset = ((1 - todayDay + 7) % 7) || 7;
   return new Date(todayUtc + offset * 86400000).toISOString().slice(0, 10);
 };
 
@@ -183,6 +215,13 @@ const DATE_AFTER_MARKERS = ['od ', 'po ', 'from ', 'after '];
 // doesn't get misread as "after the 24th" just because the sentence contains "po" somewhere
 // earlier.
 const fallbackDate = (transcript: string, now: Date = new Date()): { date?: string; dateAfter?: string } => {
+  if (NEXT_WEEK_WORDS.some((word) => transcript.includes(word))) {
+    return { dateAfter: nextMonday(now) };
+  }
+  if (THIS_WEEK_WORDS.some((word) => transcript.includes(word))) {
+    const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    return { dateAfter: new Date(todayUtc).toISOString().slice(0, 10) };
+  }
   const found = findDateWord(transcript, now);
   if (!found) return {};
   const before = transcript.slice(Math.max(0, found.index - 25), found.index);

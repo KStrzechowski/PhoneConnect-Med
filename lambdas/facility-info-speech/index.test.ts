@@ -154,6 +154,14 @@ const isoNearestWeekday = (targetDay: number): string => {
   return new Date(todayUtc + offset * 86400000).toISOString().slice(0, 10);
 };
 
+const isoNextMonday = (): string => {
+  const now = new Date();
+  const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayDay = new Date(todayUtc).getUTCDay();
+  const offset = ((1 - todayDay + 7) % 7) || 7;
+  return new Date(todayUtc + offset * 86400000).toISOString().slice(0, 10);
+};
+
 const captureRecords = () => {
   const logged: InvocationRecord[] = [];
   mock.method(console, 'log', (record: InvocationRecord) => void logged.push(record));
@@ -1030,6 +1038,92 @@ test('BookingIntent dialog hook recovers a weekday name ("w piątek") from the r
 
   assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
   assert.equal(result.sessionState.sessionAttributes.bookingDate, isoNearestWeekday(5));
+});
+
+test('BookingIntent dialog hook reads "w przyszłym tygodniu rano" as a search starting next Monday, morning only — the exact phrase from the thesis test scenario card', async () => {
+  const fetchSpy = mock.method(
+    globalThis,
+    'fetch',
+    async () => new Response(JSON.stringify({ nearest: { date: isoNextMonday(), time: '08:00' } })),
+  );
+  const result = await handler({
+    ...bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', preferredDate: null },
+      { authenticated: 'true' },
+    ),
+    inputTranscript: 'w przyszłym tygodniu rano',
+  });
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.sessionAttributes.bookingDate, isoNextMonday());
+  assert.equal(result.sessionState.sessionAttributes.bookingTime, '08:00');
+  const url = String(fetchSpy.mock.calls[0].arguments[0]);
+  assert.equal(url.includes(`minDate=${isoNextMonday()}`), true);
+  assert.equal(url.includes('minTime=06%3A00'), true);
+  assert.equal(url.includes('maxTime=11%3A59'), true);
+});
+
+test('BookingIntent dialog hook reads "za tydzień" as one exact day (today + 7), not a range', async () => {
+  mockFetchSequence([{ times: ['13:00'] }]);
+  const result = await handler({
+    ...bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', preferredDate: null },
+      { authenticated: 'true' },
+    ),
+    inputTranscript: 'za tydzień',
+  });
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.dialogAction.type, 'ConfirmIntent');
+  assert.equal(result.sessionState.sessionAttributes.bookingDate, isoDateOffset(7));
+});
+
+test('BookingIntent dialog hook reads "w tym tygodniu rano" as a search from today, morning only', async () => {
+  const fetchSpy = mock.method(
+    globalThis,
+    'fetch',
+    async () => new Response(JSON.stringify({ nearest: { date: isoDateOffset(0), time: '09:30' } })),
+  );
+  const result = await handler({
+    ...bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', preferredDate: null },
+      { authenticated: 'true' },
+    ),
+    inputTranscript: 'w tym tygodniu rano',
+  });
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.sessionAttributes.bookingDate, isoDateOffset(0));
+  const url = String(fetchSpy.mock.calls[0].arguments[0]);
+  assert.equal(url.includes(`minDate=${isoDateOffset(0)}`), true);
+  assert.equal(url.includes('minTime=06%3A00'), true);
+  assert.equal(url.includes('maxTime=11%3A59'), true);
+});
+
+test('BookingIntent dialog hook reads English "next week" the same way as "w przyszłym tygodniu"', async () => {
+  const fetchSpy = mock.method(
+    globalThis,
+    'fetch',
+    async () => new Response(JSON.stringify({ nearest: { date: isoNextMonday(), time: '18:30' } })),
+  );
+  const result = await handler({
+    ...bookingIntentEvent(
+      'DialogCodeHook',
+      { specialty: 'kardiolog', preferredDate: null },
+      { authenticated: 'true' },
+    ),
+    bot: { localeId: 'en_US' },
+    inputTranscript: 'next week evening',
+  });
+  mock.restoreAll();
+
+  assert.equal(result.sessionState.sessionAttributes.bookingDate, isoNextMonday());
+  const url = String(fetchSpy.mock.calls[0].arguments[0]);
+  assert.equal(url.includes(`minDate=${isoNextMonday()}`), true);
+  assert.equal(url.includes('minTime=18%3A00'), true);
 });
 
 test('BookingIntent dialog hook resolves an ambiguous spoken hour toward the only interpretation within clinic hours ("o piątej" -> 17:00, not 5:00)', async () => {
