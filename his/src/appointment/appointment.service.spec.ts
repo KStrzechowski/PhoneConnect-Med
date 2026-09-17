@@ -274,6 +274,16 @@ describe('AppointmentService', () => {
     expect(cancelled).toBe(false);
   });
 
+  it('findAvailableTimes applies a minTime floor in the query itself, not after the day is capped to 3 rows — the exact bug seen live where an evening slot never got past that cap', async () => {
+    const [date] = await service.findAvailableDays('ginekolog', 'wieczorem');
+
+    const uncapped = await service.findAvailableTimes('ginekolog', undefined, date);
+    expect(uncapped).toEqual(['08:00', '09:30', '11:00']);
+
+    const eveningOnly = await service.findAvailableTimes('ginekolog', undefined, date, '17:00');
+    expect(eveningOnly).toEqual(['17:00', '18:30']);
+  });
+
   it('excludes a past-dated appointment even when taken', async () => {
     const patientId = 503;
     await dataSource.query(`DELETE FROM slot WHERE "patientId" = $1`, [

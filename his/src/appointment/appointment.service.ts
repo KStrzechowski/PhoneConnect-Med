@@ -33,6 +33,8 @@ export class AppointmentService {
     specialty: string,
     timeOfDay: string | undefined,
     date: string,
+    minTime?: string,
+    maxTime?: string,
   ): Promise<string[]> {
     const query = this.slotRepository
       .createQueryBuilder('slot')
@@ -41,6 +43,11 @@ export class AppointmentService {
       .andWhere('slot.date = :date', { date })
       .andWhere('slot.taken = false');
     if (timeOfDay) query.andWhere('slot.timeOfDay = :timeOfDay', { timeOfDay });
+    // minTime/maxTime must be applied here, in the query, not by the caller filtering the
+    // result afterward — a caller-side filter would run on whatever survives the limit(3) below,
+    // silently dropping a real match that just wasn't among the day's 3 earliest times.
+    if (minTime) query.andWhere('slot.time >= :minTime', { minTime });
+    if (maxTime) query.andWhere('slot.time <= :maxTime', { maxTime });
     const rows = await query
       .select('slot.time', 'time')
       .distinct(true)

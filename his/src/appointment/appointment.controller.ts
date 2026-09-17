@@ -23,12 +23,16 @@ export class AppointmentController {
     @Query('specialty') specialty: string,
     @Query('timeOfDay') timeOfDay: string | undefined,
     @Query('date') date: string,
+    @Query('minTime') minTime: string | undefined,
+    @Query('maxTime') maxTime: string | undefined,
   ) {
     return {
       times: await this.appointmentService.findAvailableTimes(
         specialty,
         timeOfDay,
         date,
+        minTime,
+        maxTime,
       ),
     };
   }

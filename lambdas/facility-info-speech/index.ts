@@ -31,6 +31,12 @@ const TIME_OF_DAY_BOUNDS: Record<string, { min: string; max: string }> = {
   wieczorem: { min: '18:00', max: '21:59' },
 };
 
+// Mirrors the single facility row seeded in his/src/migrations/1756500000000-CreateFacility.ts
+// (opensAt 08:00, closesAt 18:00) — used only to resolve a spoken hour word with no am/pm marker
+// of its own (see resolveAmbiguousHour below).
+const CLINIC_OPENS_HOUR = 8;
+const CLINIC_CLOSES_HOUR = 18;
+
 const MONTHS_GENITIVE: Record<string, number> = {
   stycznia: 1,
   lutego: 2,
@@ -92,24 +98,85 @@ const DAY_ORDINAL_WORDS: { word: string; day: number }[] = [
   }),
 ].sort((a, b) => b.word.length - a.word.length);
 
+// Spoken relative days and weekday names — "jutro", "we wtorek" — never went through
+// MONTHS_GENITIVE at all before, so a caller who never names an explicit calendar date got no
+// date recovery whatsoever, regardless of how well the month/ordinal parsing below worked.
+// Both grammatical cases are listed for "jutro"/"pojutrze" — same reason as ORDINAL_FORMS above:
+// "od jutra" (genitive, after a preposition) is at least as common as bare "jutro" (nominative).
+// "dziś"/"dzisiaj" are indeclinable adverbs, so they only ever have the one form.
+const RELATIVE_DAY_WORDS: { word: string; offsetDays: number }[] = [
+  { word: 'pojutrze', offsetDays: 2 },
+  { word: 'pojutrza', offsetDays: 2 },
+  { word: 'jutro', offsetDays: 1 },
+  { word: 'jutra', offsetDays: 1 },
+  { word: 'dzisiaj', offsetDays: 0 },
+  { word: 'dziś', offsetDays: 0 },
+];
+
+const WEEKDAY_WORDS: { word: string; day: number }[] = [
+  { word: 'poniedziałek', day: 1 },
+  { word: 'wtorek', day: 2 },
+  { word: 'środę', day: 3 },
+  { word: 'czwartek', day: 4 },
+  { word: 'piątek', day: 5 },
+  { word: 'sobotę', day: 6 },
+  { word: 'niedzielę', day: 0 },
+];
+
+const nearestWeekday = (targetDay: number, now: Date): string => {
+  const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayDay = new Date(todayUtc).getUTCDay();
+  const offset = (targetDay - todayDay + 7) % 7;
+  return new Date(todayUtc + offset * 86400000).toISOString().slice(0, 10);
+};
+
 // Same problem as specialty/time-of-day, but for the date itself: Lex's AMAZON.Date built-in
 // regularly fails on spelled-out Polish ordinals — both grammatical cases have been seen failing
 // live — even though the exact same phrase parses fine as part of a fresh, full-sentence
-// utterance. Recover "day month" (digit or spelled-out) from the raw transcript, resolving to the
-// nearest future occurrence the same way AMAZON.Date itself does.
-const fallbackDate = (transcript: string, now: Date = new Date()): string | undefined => {
+// utterance. Recover a date (relative word, weekday, or "day month", digit or spelled-out) from
+// the raw transcript, resolving calendar dates to the nearest future occurrence the same way
+// AMAZON.Date itself does. Returns the match's position too, so the caller can tell "na {date}"
+// (exact) apart from "od {date}"/"po {date}" (starting from) by what word comes right before it.
+const findDateWord = (transcript: string, now: Date): { date: string; index: number } | undefined => {
+  const relative = RELATIVE_DAY_WORDS.find(({ word }) => transcript.includes(word));
+  if (relative) {
+    const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    return {
+      date: new Date(todayUtc + relative.offsetDays * 86400000).toISOString().slice(0, 10),
+      index: transcript.indexOf(relative.word),
+    };
+  }
+  const weekday = WEEKDAY_WORDS.find(({ word }) => transcript.includes(word));
+  if (weekday) return { date: nearestWeekday(weekday.day, now), index: transcript.indexOf(weekday.word) };
+
   const monthMatch = Object.entries(MONTHS_GENITIVE).find(([word]) => transcript.includes(word));
   if (!monthMatch) return undefined;
   const [monthWord, month] = monthMatch;
 
   const digitMatch = transcript.match(new RegExp(`(\\d{1,2})\\s+${monthWord}`));
-  const day = digitMatch ? Number(digitMatch[1]) : DAY_ORDINAL_WORDS.find(({ word }) => transcript.includes(word))?.day;
+  const ordinalMatch = DAY_ORDINAL_WORDS.find(({ word }) => transcript.includes(word));
+  const day = digitMatch ? Number(digitMatch[1]) : ordinalMatch?.day;
   if (!day || day < 1 || day > 31) return undefined;
+  const index = digitMatch ? (digitMatch.index ?? 0) : transcript.indexOf(ordinalMatch!.word);
 
   const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
   let candidate = Date.UTC(now.getFullYear(), month - 1, day);
   if (candidate < todayUtc) candidate = Date.UTC(now.getFullYear() + 1, month - 1, day);
-  return new Date(candidate).toISOString().slice(0, 10);
+  return { date: new Date(candidate).toISOString().slice(0, 10), index };
+};
+
+const DATE_AFTER_MARKERS = ['od ', 'po '];
+
+// "od {date}"/"po {date}" means "starting from", not "exactly on" — the same distinction the
+// preferredDate vs preferredDateAfter slots make. Only a marker directly in front of the matched
+// date counts, so "po południu 24 września" (afternoon, on the 24th) doesn't get misread as
+// "after the 24th" just because the sentence contains "po" somewhere earlier.
+const fallbackDate = (transcript: string, now: Date = new Date()): { date?: string; dateAfter?: string } => {
+  const found = findDateWord(transcript, now);
+  if (!found) return {};
+  const before = transcript.slice(Math.max(0, found.index - 25), found.index);
+  const isAfter = DATE_AFTER_MARKERS.some((marker) => before.endsWith(marker));
+  return isAfter ? { dateAfter: found.date } : { date: found.date };
 };
 
 // Lex only tries to fill the slot it's currently eliciting (preferredDate), so a combined answer
@@ -148,27 +215,90 @@ const HOUR_WORD_GROUPS: { canonical: string; words: string[] }[] = [
   { canonical: '22:00', words: ['dwudziesta druga', 'dwudziestej drugiej', 'dwudziestą drugą'] },
 ];
 
-const HOUR_WORDS: { word: string; canonical: string }[] = HOUR_WORD_GROUPS.flatMap(({ canonical, words }) =>
-  words.map((word) => ({ word, canonical })),
-).sort((a, b) => b.word.length - a.word.length);
+// 1-12 o'clock words carry no am/pm marker of their own ("piąta" could mean 5:00 or 17:00) — the
+// only thing that safely picks between them is checking which interpretation actually falls
+// within the clinic's opening hours (CLINIC_OPENS_HOUR/CLINIC_CLOSES_HOUR above). Where both
+// interpretations are open (noon) or neither is ("siódma" = 7:00 or 19:00, and the clinic is
+// 08:00-18:00), stay unresolved rather than guess — a wrong silent guess books the wrong half of
+// the day, which is worse than asking again.
+const AMBIGUOUS_HOUR_WORDS: { hour: number; words: string[] }[] = [
+  { hour: 1, words: ['pierwsza', 'pierwszej', 'pierwszą'] },
+  { hour: 2, words: ['druga', 'drugiej', 'drugą'] },
+  { hour: 3, words: ['trzecia', 'trzeciej', 'trzecią'] },
+  { hour: 4, words: ['czwarta', 'czwartej', 'czwartą'] },
+  { hour: 5, words: ['piąta', 'piątej', 'piątą'] },
+  { hour: 6, words: ['szósta', 'szóstej', 'szóstą'] },
+  { hour: 7, words: ['siódma', 'siódmej', 'siódmą'] },
+  { hour: 8, words: ['ósma', 'ósmej', 'ósmą'] },
+  { hour: 9, words: ['dziewiąta', 'dziewiątej', 'dziewiątą'] },
+  { hour: 10, words: ['dziesiąta', 'dziesiątej', 'dziesiątą'] },
+  { hour: 11, words: ['jedenasta', 'jedenastej', 'jedenastą'] },
+  { hour: 12, words: ['dwunasta', 'dwunastej', 'dwunastą', 'południe'] },
+];
+
+const resolveAmbiguousHour = (hour: number): number | undefined => {
+  if (hour === 12) return 12;
+  const amValid = hour >= CLINIC_OPENS_HOUR && hour < CLINIC_CLOSES_HOUR;
+  const pmHour = hour + 12;
+  const pmValid = pmHour >= CLINIC_OPENS_HOUR && pmHour < CLINIC_CLOSES_HOUR;
+  if (amValid === pmValid) return undefined;
+  return amValid ? hour : pmHour;
+};
+
+const HOUR_WORDS: { word: string; canonical: string }[] = [
+  ...HOUR_WORD_GROUPS.flatMap(({ canonical, words }) => words.map((word) => ({ word, canonical }))),
+  ...AMBIGUOUS_HOUR_WORDS.flatMap(({ hour, words }) => {
+    const resolved = resolveAmbiguousHour(hour);
+    if (resolved === undefined) return [];
+    const canonical = `${String(resolved).padStart(2, '0')}:00`;
+    return words.map((word) => ({ word, canonical }));
+  }),
+].sort((a, b) => b.word.length - a.word.length);
 
 // Same problem as fallbackTimeOfDay, but for an exact clock time (e.g. "24 września o 17") —
 // Lex only tries to fill preferredDate while eliciting it, so a trailing "o 17" / "at 5pm" is
-// dropped. Only recover hours that are unambiguous without am/pm (24h notation, or an explicit
-// am/pm marker) — guessing between 5am and 5pm would risk the same silent-wrong-booking mistake
-// the date guard above exists to avoid.
-const fallbackTime = (transcript: string): string | undefined => {
-  const match = transcript.match(/\b(?:o\s+godzinie|o|godzina|at)\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/i);
-  if (match) {
-    let hour = Number(match[1]);
-    const minute = match[2] ?? '00';
-    const meridiem = match[3]?.toLowerCase();
+// dropped. English ASR tends to normalize spoken hours to digits ("at five" -> "at 5") far more
+// often than Polish does, so a bare 1-12 digit with no am/pm marker gets the same
+// resolveAmbiguousHour treatment as the spelled-out Polish words below — same ambiguity, just in
+// digit form, and it affects both locales' bare hour statements equally.
+const findTimeWord = (transcript: string): { time: string; index: number } | undefined => {
+  const digitMatch = transcript.match(/\b(?:o\s+godzinie|o|godzina|at)\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/i);
+  if (digitMatch) {
+    let hour = Number(digitMatch[1]);
+    const minute = digitMatch[2] ?? '00';
+    const meridiem = digitMatch[3]?.toLowerCase();
     if (meridiem === 'pm' && hour < 12) hour += 12;
     if (meridiem === 'am' && hour === 12) hour = 0;
-    if (meridiem && hour >= 0 && hour <= 23) return `${String(hour).padStart(2, '0')}:${minute}`;
-    if (!meridiem && hour > 12 && hour <= 23) return `${String(hour).padStart(2, '0')}:${minute}`;
+    if (meridiem && hour >= 0 && hour <= 23) {
+      return { time: `${String(hour).padStart(2, '0')}:${minute}`, index: digitMatch.index ?? 0 };
+    }
+    if (!meridiem && hour > 12 && hour <= 23) {
+      return { time: `${String(hour).padStart(2, '0')}:${minute}`, index: digitMatch.index ?? 0 };
+    }
+    if (!meridiem && hour >= 1 && hour <= 12) {
+      const resolved = resolveAmbiguousHour(hour);
+      if (resolved !== undefined) {
+        return { time: `${String(resolved).padStart(2, '0')}:${minute}`, index: digitMatch.index ?? 0 };
+      }
+    }
   }
-  return HOUR_WORDS.find(({ word }) => transcript.includes(word))?.canonical;
+  const wordMatch = HOUR_WORDS.find(({ word }) => transcript.includes(word));
+  if (!wordMatch) return undefined;
+  return { time: wordMatch.canonical, index: transcript.indexOf(wordMatch.word) };
+};
+
+// "do godziny {time}"/"przed {time}" means "no later than", not "at" — the same distinction the
+// preferredTime vs preferredTimeBefore slots make. A bare "do {time}" is deliberately not a
+// marker here (mirrors the same ambiguity call already made for bookingUtterances in
+// infra-stack.ts): "do dwudziestego" reads as "until the 20th [of the month]", not "before 20:00".
+const TIME_BEFORE_MARKERS = ['przed ', 'do godziny ', 'do godziną '];
+
+const fallbackTime = (transcript: string): { time?: string; timeBefore?: string } => {
+  const found = findTimeWord(transcript);
+  if (!found) return {};
+  const before = transcript.slice(Math.max(0, found.index - 25), found.index);
+  const isBefore = TIME_BEFORE_MARKERS.some((marker) => before.endsWith(marker));
+  return isBefore ? { timeBefore: found.time } : { time: found.time };
 };
 
 // Mirrors the Specialty slot type's values/synonyms in infra-stack.ts (both locales) — keep in
@@ -479,15 +609,17 @@ const handleBookingDialog = async (
     );
   };
 
-  const preferredDate = slots.preferredDate?.value?.interpretedValue ?? fallbackDate(rawTranscript);
-  const preferredDateAfter = slots.preferredDateAfter?.value?.interpretedValue;
+  const dateFallback = fallbackDate(rawTranscript);
+  const preferredDate = slots.preferredDate?.value?.interpretedValue ?? dateFallback.date;
+  const preferredDateAfter = slots.preferredDateAfter?.value?.interpretedValue ?? dateFallback.dateAfter;
   const hasResolvedDate = Boolean(preferredDate || preferredDateAfter);
-  const preferredTime = slots.preferredTime?.value?.interpretedValue ?? (hasResolvedDate ? fallbackTime(rawTranscript) : undefined);
-  const preferredTimeBefore = slots.preferredTimeBefore?.value?.interpretedValue;
   // Only trust the transcript fallback once Lex has actually resolved a date — otherwise a lone
   // time-of-day word (e.g. caller said "24 września wieczorem" but only "wieczorem" was heard)
   // would make hasAnyDateOrTime true on its own and silently search from today, dropping the date
   // the caller stated instead of flagging that it wasn't understood.
+  const timeFallback = hasResolvedDate ? fallbackTime(rawTranscript) : {};
+  const preferredTime = slots.preferredTime?.value?.interpretedValue ?? timeFallback.time;
+  const preferredTimeBefore = slots.preferredTimeBefore?.value?.interpretedValue ?? timeFallback.timeBefore;
   const preferredTimeOfDay =
     slots.preferredTimeOfDay?.value?.interpretedValue ?? (hasResolvedDate ? fallbackTimeOfDay(rawTranscript) : undefined);
   const timeOfDayBounds = preferredTimeOfDay ? TIME_OF_DAY_BOUNDS[preferredTimeOfDay] : undefined;
@@ -517,9 +649,9 @@ const handleBookingDialog = async (
 
   try {
     if (preferredDate) {
-      let times = await downstream(record, () => findAvailableTimesForDate(specialty, preferredDate, abort));
-      if (effectiveMinTime) times = times.filter((t) => t >= effectiveMinTime);
-      if (effectiveMaxTime) times = times.filter((t) => t <= effectiveMaxTime);
+      const times = await downstream(record, () =>
+        findAvailableTimesForDate(specialty, preferredDate, abort, effectiveMinTime, effectiveMaxTime),
+      );
       if (times.length === 0) return proposeNearest(effectiveMinTime, effectiveMaxTime, preferredDate, 'dateUnavailable');
       const earliest = times[0];
       const message = isEn
@@ -674,7 +806,12 @@ const handleCancelDialog = async (
     const message = isEn
       ? `Cancelling appointment: ${specialtyLabel(appointment.specialty, isEn)}, ${dayLabel(appointment.date, isEn)} at ${spokenTime(appointment.time, isEn)}. Is that correct?`
       : `Odwołuję wizytę: ${appointment.specialty}, ${dayLabel(appointment.date, isEn)}, godzina ${spokenTime(appointment.time, isEn)}. Czy się zgadza?`;
-    return confirmIntent('CancelAppointmentIntent', { ...slots, selectedSlot: null }, { ...incoming, lastMessageText: message }, message);
+    return confirmIntent(
+      'CancelAppointmentIntent',
+      { ...slots, selectedSlot: null },
+      { ...incoming, lastMessageText: message, cancelSelection: String(selectedSlot) },
+      message,
+    );
   } catch (error) {
     record.outcome = 'error';
     record.error = String(error);
@@ -695,7 +832,10 @@ const handleCancelFulfillment = async (
     return redirectToAuth('CancelAppointmentIntent', slots, incoming, isEn);
   }
 
-  const selectedSlot = Number(slots.selectedSlot?.value?.interpretedValue ?? '');
+  // handleCancelDialog's own confirmation prompt nulls out selectedSlot in the slots it hands
+  // back to Lex (so a decline doesn't re-echo a stale number), which means Lex arrives here at
+  // fulfillment with that same null — the resolved index only survives in cancelSelection.
+  const selectedSlot = Number(incoming.cancelSelection ?? '');
   if (!incoming.patientId) {
     const message = isEn
       ? "Sorry, I'm having trouble cancelling the appointment right now. Connecting you to an agent."
@@ -913,13 +1053,15 @@ const handleRescheduleDialog = async (
     );
   };
 
-  const preferredDate = workingSlots.preferredDate?.value?.interpretedValue ?? fallbackDate(rawTranscript);
-  const preferredDateAfter = workingSlots.preferredDateAfter?.value?.interpretedValue;
+  const dateFallback = fallbackDate(rawTranscript);
+  const preferredDate = workingSlots.preferredDate?.value?.interpretedValue ?? dateFallback.date;
+  const preferredDateAfter = workingSlots.preferredDateAfter?.value?.interpretedValue ?? dateFallback.dateAfter;
   const hasResolvedDate = Boolean(preferredDate || preferredDateAfter);
-  const preferredTime = workingSlots.preferredTime?.value?.interpretedValue ?? (hasResolvedDate ? fallbackTime(rawTranscript) : undefined);
-  const preferredTimeBefore = workingSlots.preferredTimeBefore?.value?.interpretedValue;
   // Only trust the transcript fallback once Lex has actually resolved a date — see the same
   // guard in handleBookingDialog for why.
+  const timeFallback = hasResolvedDate ? fallbackTime(rawTranscript) : {};
+  const preferredTime = workingSlots.preferredTime?.value?.interpretedValue ?? timeFallback.time;
+  const preferredTimeBefore = workingSlots.preferredTimeBefore?.value?.interpretedValue ?? timeFallback.timeBefore;
   const preferredTimeOfDay =
     workingSlots.preferredTimeOfDay?.value?.interpretedValue ?? (hasResolvedDate ? fallbackTimeOfDay(rawTranscript) : undefined);
   const timeOfDayBounds = preferredTimeOfDay ? TIME_OF_DAY_BOUNDS[preferredTimeOfDay] : undefined;
@@ -949,9 +1091,9 @@ const handleRescheduleDialog = async (
 
   try {
     if (preferredDate) {
-      let times = await downstream(record, () => findAvailableTimesForDate(specialty, preferredDate, abort));
-      if (effectiveMinTime) times = times.filter((t) => t >= effectiveMinTime);
-      if (effectiveMaxTime) times = times.filter((t) => t <= effectiveMaxTime);
+      const times = await downstream(record, () =>
+        findAvailableTimesForDate(specialty, preferredDate, abort, effectiveMinTime, effectiveMaxTime),
+      );
       if (times.length === 0) return proposeNearest(effectiveMinTime, effectiveMaxTime, preferredDate, 'dateUnavailable');
       const earliest = times[0];
       const message = isEn

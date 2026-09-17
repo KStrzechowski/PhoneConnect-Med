@@ -13,11 +13,15 @@ export const findAvailableTimes = async (
   timeOfDay: string | null,
   date: string,
   signal: AbortSignal,
+  minTime?: string,
+  maxTime?: string,
 ): Promise<string[]> => {
   const url =
     `${baseUrl()}/appointment/times?specialty=${encodeURIComponent(specialty)}` +
     (timeOfDay ? `&timeOfDay=${encodeURIComponent(timeOfDay)}` : '') +
-    `&date=${encodeURIComponent(date)}`;
+    `&date=${encodeURIComponent(date)}` +
+    (minTime ? `&minTime=${encodeURIComponent(minTime)}` : '') +
+    (maxTime ? `&maxTime=${encodeURIComponent(maxTime)}` : '');
   const response = await fetch(url, { signal });
   if (!response.ok) throw new Error(`GET /appointment/times failed: ${response.status}`);
   const body = (await response.json()) as { times: string[] };
@@ -28,7 +32,9 @@ export const findAvailableTimesForDate = (
   specialty: string,
   date: string,
   signal: AbortSignal,
-): Promise<string[]> => findAvailableTimes(specialty, null, date, signal);
+  minTime?: string,
+  maxTime?: string,
+): Promise<string[]> => findAvailableTimes(specialty, null, date, signal, minTime, maxTime);
 
 export const findNearestAvailable = async (
   specialty: string,
