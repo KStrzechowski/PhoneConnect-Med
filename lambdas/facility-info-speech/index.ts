@@ -412,14 +412,14 @@ const fallbackTime = (transcript: string): { time?: string; timeBefore?: string 
 // match) when the caller's answer also names a date in the same breath, e.g. "do kardiologa na
 // dwudziestego września" — so we fall back to a plain substring check on the raw transcript.
 const SPECIALTY_SYNONYM_GROUPS: { canonical: string; synonyms: string[] }[] = [
-  { canonical: 'kardiolog', synonyms: ['kardiologa', 'lekarz od serca', 'kardiologia', 'serce', 'cardiologist', 'heart doctor', 'cardiology', 'heart'] },
-  { canonical: 'dermatolog', synonyms: ['dermatologa', 'lekarz od skóry', 'dermatologia', 'skóra', 'dermatologist', 'skin doctor', 'dermatology', 'skin'] },
+  { canonical: 'kardiolog', synonyms: ['kardiologa', 'lekarz od serca', 'kardiologia', 'serce', 'serca', 'cardiologist', 'heart doctor', 'cardiology', 'heart'] },
+  { canonical: 'dermatolog', synonyms: ['dermatologa', 'lekarz od skóry', 'dermatologia', 'skóra', 'wysypka', 'wysypki', 'pieprzyk', 'pieprzyki', 'trądzik', 'dermatologist', 'skin doctor', 'dermatology', 'skin'] },
   { canonical: 'okulista', synonyms: ['okulisty', 'lekarz od oczu', 'okulistyka', 'oczy', 'wzrok', 'ophthalmologist', 'eye doctor', 'ophthalmology', 'eyes', 'vision'] },
-  { canonical: 'laryngolog', synonyms: ['laryngologa', 'lekarz od gardła', 'lekarz od uszu nosa i gardła', 'laryngologia', 'uszy', 'gardło', 'ent doctor', 'ent', 'ear nose and throat doctor', 'throat doctor'] },
-  { canonical: 'neurolog', synonyms: ['neurologa', 'lekarz od nerwów', 'neurologia', 'neurologist', 'neurology'] },
-  { canonical: 'ortopeda', synonyms: ['ortopedy', 'ortopedia', 'kości', 'staw', 'orthopedist', 'orthopedics', 'bones', 'joint'] },
+  { canonical: 'laryngolog', synonyms: ['laryngologa', 'lekarz od gardła', 'lekarz od uszu nosa i gardła', 'laryngologia', 'uszy', 'gardło', 'gardła', 'zatoki', 'ent doctor', 'ent', 'ear nose and throat doctor', 'throat doctor'] },
+  { canonical: 'neurolog', synonyms: ['neurologa', 'lekarz od nerwów', 'neurologia', 'głowa', 'głowy', 'migrena', 'migreny', 'neurologist', 'neurology'] },
+  { canonical: 'ortopeda', synonyms: ['ortopedy', 'ortopedia', 'kości', 'staw', 'kolano', 'kolana', 'kręgosłup', 'kręgosłupa', 'biodro', 'ramię', 'orthopedist', 'orthopedics', 'bones', 'joint'] },
   { canonical: 'internista', synonyms: ['internisty', 'lekarz rodzinny', 'lekarza rodzinnego', 'lekarz pierwszego kontaktu', 'lekarz ogólny', 'lekarz poz', 'internistyczna', 'family doctor', 'general practitioner', 'internal medicine'] },
-  { canonical: 'ginekolog', synonyms: ['ginekologa', 'ginekologia', 'gynecologist', 'gynecology'] },
+  { canonical: 'ginekolog', synonyms: ['ginekologa', 'ginekologia', 'ciąża', 'ciąży', 'gynecologist', 'gynecology'] },
   { canonical: 'pediatra', synonyms: ['pediatry', 'lekarz dziecięcy', 'lekarza dziecięcego', 'pediatria', 'pediatrician', 'pediatrics', 'child doctor'] },
   { canonical: 'endokrynolog', synonyms: ['endokrynologa', 'endokrynologia', 'hormony', 'tarczyca', 'endocrinologist', 'endocrinology', 'hormones', 'thyroid'] },
   { canonical: 'chirurg', synonyms: ['chirurga', 'chirurgia', 'surgeon', 'surgery'] },

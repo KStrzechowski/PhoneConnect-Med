@@ -43,7 +43,7 @@ something that no test will catch.
   - **Read by:** `RepeatLastMessageIntent`'s handler, echoed back verbatim. The Lex-session-scoped analogue
     of the `lastMessageText` contact attribute above.
 - **`fallbackCount`**
-  - **Set by:** `lambdas/facility-info-speech/index.ts` — incremented on `FallbackIntent`, reset
+  - **Set by:** `lambdas/facility-info-speech/index.ts` — incremented on `FallbackIntent` and `OutOfScopeIntent`, reset
     to `'0'` on every other intent.
   - **Read by:** the contact flow, via `$.Lex.SessionAttributes.fallbackCount`, to decide
     loop-back vs. transfer to the agent queue after each turn.

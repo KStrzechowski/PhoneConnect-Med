@@ -220,6 +220,15 @@ test('FallbackIntent escalates across three consecutive invocations', async () =
   assert.equal(new Set(messages).size, 3);
 });
 
+test('OutOfScopeIntent counts as a fallback turn and escalates to the agent on the third', async () => {
+  const first = await handler(eventFor('OutOfScopeIntent', { fallbackCount: '0' }));
+  const third = await handler(eventFor('OutOfScopeIntent', { fallbackCount: '2' }));
+
+  assert.equal(first.sessionState.sessionAttributes.fallbackCount, '1');
+  assert.equal(third.sessionState.sessionAttributes.fallbackCount, '3');
+  assert.match(messageOf(third), /Łączę z konsultantem/);
+});
+
 test('a non-FallbackIntent invocation resets the fallback counter to 0', async () => {
   const result = await handler(eventFor('AgentTransferIntent', { fallbackCount: '2' }));
 
@@ -574,6 +583,19 @@ test('BookingIntent dialog hook recovers both specialty and date from the same r
   const slots = (result as { sessionState: { intent: { slots: Record<string, { value?: { interpretedValue?: string } } | null> } } })
     .sessionState.intent.slots;
   assert.equal(slots.specialty?.value?.interpretedValue, 'kardiolog');
+});
+
+test('BookingIntent dialog hook maps a body-part word in the raw transcript to a specialty when Lex resolved none', async () => {
+  const result = await handler({
+    ...bookingIntentEvent('DialogCodeHook', { specialty: null }, { authenticated: 'true' }),
+    inputTranscript: 'od tygodnia strasznie boli mnie głowa',
+  });
+
+  assert.equal(result.sessionState.dialogAction.type, 'ElicitSlot');
+  assert.equal(result.sessionState.dialogAction.slotToElicit, 'preferredDate');
+  const slots = (result as { sessionState: { intent: { slots: Record<string, { value?: { interpretedValue?: string } } | null> } } })
+    .sessionState.intent.slots;
+  assert.equal(slots.specialty?.value?.interpretedValue, 'neurolog');
 });
 
 test('BookingIntent dialog hook asks for day and time together on the first turn after specialty is known', async () => {
