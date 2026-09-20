@@ -173,7 +173,29 @@ test('the telephony instance may invoke the language-detect Lambda', () => {
   expect(Object.keys(permissions).length).toBeGreaterThan(0);
 });
 
-test('the speech bot has all 6 global-layer intents plus AuthIntent, OtpIntent and BookingIntent under pl_PL', () => {
+test('no sample utterance is declared by two intents in the same locale', () => {
+  const bots = template.findResources('AWS::Lex::Bot');
+  const [bot] = Object.values(bots);
+  const locales = bot.Properties.BotLocales as Array<{
+    LocaleId: string;
+    Intents: Array<{ Name: string; SampleUtterances?: Array<{ Utterance: string }> }>;
+  }>;
+
+  for (const locale of locales) {
+    const owners = new Map<string, string>();
+    for (const intent of locale.Intents) {
+      for (const { Utterance } of intent.SampleUtterances ?? []) {
+        const key = Utterance.toLowerCase();
+        const owner = owners.get(key);
+        expect(owner === undefined ? null : `${locale.LocaleId}: "${Utterance}" in ${owner} and ${intent.Name}`).toBeNull();
+        owners.set(key, intent.Name);
+      }
+    }
+    expect(owners.size).toBeGreaterThan(50);
+  }
+});
+
+test('the speech bot has all 7 global-layer intents plus AuthIntent, OtpIntent and BookingIntent under pl_PL', () => {
   template.hasResourceProperties('AWS::Lex::Bot', {
     DataPrivacy: { ChildDirected: false },
     BotLocales: Match.arrayWith([
@@ -185,6 +207,7 @@ test('the speech bot has all 6 global-layer intents plus AuthIntent, OtpIntent a
           Match.objectLike({ Name: 'RepeatLastMessageIntent' }),
           Match.objectLike({ Name: 'AgentTransferIntent' }),
           Match.objectLike({ Name: 'ListAppointmentsIntent' }),
+          Match.objectLike({ Name: 'OutOfScopeIntent' }),
           Match.objectLike({ Name: 'AuthIntent' }),
           Match.objectLike({ Name: 'OtpIntent' }),
           Match.objectLike({ Name: 'BookingIntent' }),
